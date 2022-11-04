@@ -3,22 +3,46 @@ import 'dart:convert';
 
 class CusApiReq {
   String baseUrl = "https://bluelemontech.in/websites/cs/api/api.php";
-  Future<List> postReq(String jdata) async {
+  String baseUrl2 = "https://bluelemontech.in/websites/swrv/api";
+
+  Future<List> postReq(String reqdata) async {
     try {
-      var request = http.Request('POST',
-          Uri.parse('https://bluelemontech.in/websites/cs/api/api.php'));
+      var request = await http.post(Uri.parse(baseUrl), body: reqdata);
 
-      request.body = jdata;
-
-      http.StreamedResponse response = await request.send();
-
-      if (response.statusCode == 200) {
-        final data = await response.stream.bytesToString(); 
-        return [json.decode(data)];
+      if (request.statusCode == 200) {
+        return [json.decode(request.body)];
       } else {
-        return [false,"api error call"];
+        return [false, "Something went wrong please try again"];
       }
-     
+    } catch (e) {
+      return [false, e];
+    }
+  }
+
+  Future<List> postUrlReq(String url, String reqdata) async {
+    try {
+      var request =
+          await http.post(Uri.parse(baseUrl2 + url), body: jsonDecode(reqdata));
+
+      if (request.statusCode == 200) {
+        return [json.decode(request.body)];
+      } else {
+        return [false, "Something went wrong please try again"];
+      }
+    } catch (e) {
+      return [false, e];
+    }
+  }
+
+  Future<List> createCmp(String url, String reqdata) async {
+    try {
+      var request = await http.post(Uri.parse(url), body: jsonDecode(reqdata));
+
+      if (request.statusCode == 200) {
+        return [json.decode(request.body)];
+      } else {
+        return [false, "Something went wrong please try again"];
+      }
     } catch (e) {
       return [false, e];
     }

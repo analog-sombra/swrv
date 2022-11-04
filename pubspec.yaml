@@ -45,6 +45,18 @@ dependencies:
   intl: ^0.17.0
   image_picker: ^0.8.6
   shared_preferences: ^2.0.15
+  stroke_text: ^0.0.2
+  email_validator: ^2.1.17
+  carousel_slider: ^4.1.1
+  dropdown_button2: ^1.8.5
+  flutter_switch: ^0.3.2
+  google_sign_in: ^5.4.2
+  firebase_core: ^2.1.1
+  firebase_auth: ^4.1.0
+  firebase_auth_platform_interface: ^6.11.0
+  crypto: ^3.0.2
+  sign_in_with_apple: ^4.1.0
+  
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +68,11 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  flutter_native_splash: ^2.2.11
+
+flutter_native_splash:
+  color: "#fefefe"
+  image: assets/images/logo.png
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
