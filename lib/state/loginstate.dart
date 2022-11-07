@@ -3,9 +3,11 @@
 import 'dart:math';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
+import 'dart:developer' as dev;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,22 +61,32 @@ Future<UserCredential> signInWithApple() async {
   return await FirebaseAuth.instance.signInWithCredential(oauthCredential);
 }
 
-//Google login start here
-Future<UserCredential> signInWithGoogle() async {
-  // Trigger the authentication flow
-  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+Future<UserCredential?> signInWithGoogle() async {
+  final googleSignIn = GoogleSignIn();
+  await googleSignIn.disconnect().catchError((e, stack) {
+    // dev.log(e);
+  });
 
-  // Obtain the auth details from the request
-  final GoogleSignInAuthentication? googleAuth =
-      await googleUser?.authentication;
+  final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
-  // Create a new credential
+  if (googleUser == null) return null;
+
+  final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
   final credential = GoogleAuthProvider.credential(
-    accessToken: googleAuth?.accessToken,
-    idToken: googleAuth?.idToken,
+    accessToken: googleAuth.accessToken,
+    idToken: googleAuth.idToken,
   );
+  return await FirebaseAuth.instance.signInWithCredential(credential);
+}
 
-  // Once signed in, return the UserCredential
+Future<UserCredential> signInWithFacebook() async {
+  final LoginResult loginResult = await FacebookAuth.instance.login();
+
+  final AccessToken accessToken = loginResult.accessToken!;
+  final OAuthCredential credential =
+      FacebookAuthProvider.credential(accessToken.token);
+
   return await FirebaseAuth.instance.signInWithCredential(credential);
 }
 
@@ -84,9 +96,6 @@ final loginStatus = ChangeNotifierProvider<LoginState>((ref) => LoginState());
 class LoginState extends ChangeNotifier {
   bool isChecked = false;
   bool isPassword = false;
-
-  TextEditingController email = TextEditingController();
-  TextEditingController password = TextEditingController();
 
   CusApiReq apiReq = CusApiReq();
 
@@ -100,22 +109,20 @@ class LoginState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> login(BuildContext context) async {
-    if (email.text == "") {
+  Future<bool> login(
+      BuildContext context, String email, String password) async {
+    if (email == "") {
       erroralert(
         context,
         "Empty Field",
         "Please fill the email",
       );
-    } else if (password.text == "") {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please fill the password"
-      );
+    } else if (password == "") {
+      erroralert(context, "Empty Field", "Please fill the password");
     } else {
-      final req = {"email": email.text.toString(), "password": password.text.toString()};
-      List data = await apiReq.postUrlReq("/login", jsonEncode(req));
+      final req = {"email": email, "password": password};
+
+      List data = await apiReq.postApi(jsonEncode(req), path: "/api/login");
 
       if (data[0] == false) {
         erroralert(
@@ -130,9 +137,10 @@ class LoginState extends ChangeNotifier {
           data[0]["message"],
         );
       } else {
+        dev.log(jsonEncode(data[0]["data"]).toString());
         setUserData(jsonEncode(data[0]["data"]));
         if (isChecked) {
-          setLogPref();
+          setLogPref(email, password);
         }
         notifyListeners();
         return true;
@@ -142,10 +150,10 @@ class LoginState extends ChangeNotifier {
     return false;
   }
 
-  void setLogPref() async {
+  void setLogPref(String email, String password) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool("isLogin", true);
-    await prefs.setStringList("userdata", [email.text, password.text]);
+    await prefs.setStringList("userdata", [email, password]);
   }
 
   void setUserData(String user) async {

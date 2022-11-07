@@ -21,9 +21,9 @@ class RegisterStatus extends ChangeNotifier {
   bool isCheck1 = false;
   bool isCheck2 = false;
 
-  TextEditingController email = TextEditingController();
-  TextEditingController pass = TextEditingController();
-  TextEditingController coPass = TextEditingController();
+  // TextEditingController email = TextEditingController();
+  // TextEditingController pass = TextEditingController();
+  // TextEditingController coPass = TextEditingController();
 
   CusApiReq apiReq = CusApiReq();
 
@@ -52,7 +52,12 @@ class RegisterStatus extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> register(BuildContext context) async {
+  Future<bool> register(
+    BuildContext context,
+    TextEditingController email,
+    TextEditingController pass,
+    TextEditingController coPass,
+  ) async {
     if (email.text == "") {
       erroralert(
         context,
@@ -114,7 +119,8 @@ class RegisterStatus extends ChangeNotifier {
             "isInfluencer": "0"
           };
 
-          final data = await apiReq.postUrlReq("/register", jsonEncode(req));
+          final data =
+              await apiReq.postApi(jsonEncode(req), path: "/api/register");
 
           if (data[0] == false) {
             erroralert(
@@ -134,7 +140,6 @@ class RegisterStatus extends ChangeNotifier {
           }
         }
       } else {
-
         final req = {
           "email": email.text,
           "password": pass.text,
@@ -143,7 +148,8 @@ class RegisterStatus extends ChangeNotifier {
           "isInfluencer": "1"
         };
 
-        final data = await apiReq.postUrlReq("/register", jsonEncode(req));
+        final data =
+            await apiReq.postApi(jsonEncode(req), path: "/api/register");
 
         if (data[0] == false) {
           erroralert(
@@ -165,5 +171,14 @@ class RegisterStatus extends ChangeNotifier {
     }
     notifyListeners();
     return false;
+  }
+
+  void clear() {
+    isCheck1 = false;
+    isCheck2 = false;
+
+    isBrand = false;
+    isShowPass1 = false;
+    isShowPass2 = false;
   }
 }

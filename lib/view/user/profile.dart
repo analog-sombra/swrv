@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -12,7 +13,7 @@ class Profile extends HookConsumerWidget {
   const Profile({super.key});
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     ValueNotifier<SharedPreferences?> prefs = useState(null);
 
     void init() async {
@@ -92,9 +93,8 @@ class Profile extends HookConsumerWidget {
                       ),
                     ),
                     GestureDetector(
-                      onTap: (){
-                        ref.watch(pageIndex.state).state =31;
-                        
+                      onTap: () {
+                        ref.watch(pageIndex.state).state = 31;
                       },
                       child: Icon(
                         Icons.edit_outlined,
@@ -285,13 +285,17 @@ class Profile extends HookConsumerWidget {
                 ),
                 GestureDetector(
                   onTap: () async {
+                    await FirebaseAuth.instance.signOut();
+                    FirebaseAuth.instance.currentUser;
+
                     bool? success = await prefs.value?.remove('isLogin');
-                    bool? userDel = await prefs.value?.remove('isLogin');
-                    if (success! && userDel!) {
+                    if (success!) {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const Login()));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const Login(),
+                        ),
+                      );
                     }
                   },
                   child: Padding(
@@ -309,7 +313,9 @@ class Profile extends HookConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(height: 80,)
+          const SizedBox(
+            height: 80,
+          )
         ],
       ),
     );

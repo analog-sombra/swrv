@@ -10,3 +10,6 @@ const blackC = Color(0xFF000000);
 const backgroundC = Color(0xFFEEEEEE);
 
 const shadowC = Color(0x0000000d);
+
+const redC = Color(0xffef4444);
+const greenC = Color(0xff10b981);

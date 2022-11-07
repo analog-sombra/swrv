@@ -7,7 +7,6 @@ import 'package:swrv/firebase_options.dart';
 
 import 'view/login.dart';
 
-
 //removing scroll grow
 class MyBehavior extends ScrollBehavior {
   @override
@@ -34,7 +33,6 @@ class SWRV extends HookWidget {
     return MaterialApp(
       title: "SWRV",
       debugShowCheckedModeBanner: false,
-
       theme:
           ThemeData(primaryColor: Colors.blue, canvasColor: Colors.transparent),
       builder: (context, child) {

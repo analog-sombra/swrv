@@ -129,7 +129,7 @@ class CusDrawer extends HookConsumerWidget {
                       height: 30,
                     ),
                     DrawerButton(
-                      index: 23,
+                      index: 12,
                       icon: Icons.help,
                       title: "Help",
                       isFontAwesome: false,

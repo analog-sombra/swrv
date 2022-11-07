@@ -4,6 +4,8 @@ import 'package:swrv/components/header.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
 
+import '../../state/navstate.dart';
+
 class FavouritePage extends HookConsumerWidget {
   const FavouritePage({super.key});
 
@@ -237,7 +239,9 @@ class FavouritePage extends HookConsumerWidget {
                   btnColor: primaryC,
                   btnText: "create campign",
                   textSize: 18,
-                  btnFunction: () {},
+                  btnFunction: () {
+                    ref.read(pageIndex.state).state = 23;
+                  },
                   elevation: 1,
                 ),
                 CusBtn(

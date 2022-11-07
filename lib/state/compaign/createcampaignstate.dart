@@ -14,84 +14,156 @@ final createCampState =
 
 class CreateCampState extends ChangeNotifier {
   CusApiReq apiReq = CusApiReq();
-  TextEditingController name = TextEditingController();
-  TextEditingController info = TextEditingController();
 
-  List platforms = [
-    "assets/images/facebook.png",
-    "assets/images/instagram.png",
-    "assets/images/snapchat.png",
-    "assets/images/twitter.png",
-    "assets/images/youtube.png",
-    "assets/images/linkedin.png"
-  ];
+  List platforms = [];
+  List selectedPlatfomrs = [];
+  List selectedPlatfomrsList = [];
 
-  List selectedPlatfomrs = [false, false, false, false, false, false];
-
-  String? categoryValue;
-  List categoryList = [
-    "Sponsored Post",
-    "Unboxing Review Posts",
-    "Discount codes",
-    "Giveaways & contest",
-    "Campaign",
-  ];
+  void setPlatforms(List data) {
+    platforms = data;
+    for (int i = 0; i < data.length; i++) {
+      selectedPlatfomrs.add(false);
+    }
+    notifyListeners();
+  }
 
   String? currencyValue;
-  List currencyList = ["USD", "INR", "EUR", "BSD", "BYN", "BZD"];
+  String? currencyId;
+  List currencyList = [];
+
+  void setCurrecny(List data) {
+    currencyList = data;
+    notifyListeners();
+  }
+
+  void setCurrencyId(int id) {
+    currencyId = currencyList[id]["id"];
+    notifyListeners();
+  }
+
+  void setCurrencyValue(String val) {
+    currencyValue = val;
+    notifyListeners();
+  }
+
+  String? categoryValue;
+  String? categoryId;
+  List categoryList = [];
+
+  void setCategory(List data) {
+    categoryList = data;
+    notifyListeners();
+  }
+
+  void setCategoryId(int id) {
+    categoryId = categoryList[id]["id"];
+    notifyListeners();
+  }
 
   void setCatValue(String val) {
     categoryValue = val;
     notifyListeners();
   }
 
-  void setCountryValue(String val) {
-    currencyValue = val;
+  String? cityValue;
+  String? cityId;
+  List cityList = [];
+
+  void setCity(List data) {
+    cityList = data;
+    notifyListeners();
+  }
+
+  void setCityId(int id) {
+    cityId = cityList[id]["id"];
+    notifyListeners();
+  }
+
+  void setCityValue(String val) {
+    cityValue = val;
     notifyListeners();
   }
 
   void togglePlatfroms(int val) {
     selectedPlatfomrs[val] = !selectedPlatfomrs[val];
+    if (selectedPlatfomrsList.contains(platforms[val]["id"])) {
+      selectedPlatfomrsList.remove(platforms[val]["id"]);
+    } else {
+      selectedPlatfomrsList.add(platforms[val]["id"]);
+    }
     notifyListeners();
   }
 
-  Future<bool> createCamp(BuildContext context) async {
-    if (name.text == "") {
+  Future<bool> createCamp(BuildContext context, List fields) async {
+    bool testcase = false;
+
+    for (int i = 0; i < fields.length; i++) {
+      if (fields[i] == "") {
+        testcase = true;
+      }
+    }
+
+    if (testcase) {
       erroralert(
         context,
-        "Empty Field1",
-        "Please fill the name of the campaigns",
-      );
-    } else if (info.text == "") {
-      erroralert(
-        context,
-        "Empty Field2",
-        "Please fill the info of the campaigns",
+        "Empty Field",
+        "Please fill all the fields",
       );
     } else if (categoryValue == null) {
       erroralert(
         context,
-        "Empty Field2",
+        "Empty Field",
         "Please select the category",
       );
     } else if (currencyValue == null) {
       erroralert(
         context,
-        "Empty Field2",
+        "Empty Field",
         "Please select the currency",
+      );
+    } else if (cityValue == null) {
+      erroralert(
+        context,
+        "Empty Field",
+        "Please select the city",
+      );
+    } else if (selectedPlatfomrsList.isEmpty) {
+      erroralert(
+        context,
+        "Empty Field",
+        "Please Select some platforms",
       );
     } else {
       final req = {
         "f": "createCampaign",
-        "campaignName": name.text.toString(),
-        "campaignInfo": info.text.toString(),
-        "currencyId": "1",
+        'brandId': "1",
+        'brandUserId': "1",
+        "cityId": cityId,
+        "campaignTypeId": categoryId,
+        "campaignName": fields[0],
+        "campaignInfo": fields[1],
+        "startAt": DateTime(
+                int.parse(fields[2].toString().split("-")[2]),
+                int.parse(fields[2].toString().split("-")[1]),
+                int.parse(fields[2].toString().split("-")[0]))
+            .toString(),
+        "endAt": DateTime(
+                int.parse(fields[3].toString().split("-")[2]),
+                int.parse(fields[3].toString().split("-")[1]),
+                int.parse(fields[3].toString().split("-")[0]))
+            .toString(),
+        "minReach": fields[4],
+        "maxReach": fields[5],
+        "costPerPost": fields[6],
+        "totalBudget": fields[7],
+        "minEligibleRating": fields[8],
+        "currencyId": currencyId,
         "categories": categoryValue.toString(),
         "platforms": selectedPlatformList()
       };
 
-      List data = await apiReq.createCmp(
-          "http://192.168.0.133/cs/api/api.php", jsonEncode(req));
+      List data = await apiReq.postApi(jsonEncode(req));
+
       if (data[0] == false) {
         erroralert(
           context,
@@ -105,6 +177,7 @@ class CreateCampState extends ChangeNotifier {
           data[0]["message"],
         );
       } else {
+        clearData();
         notifyListeners();
         return true;
       }
@@ -115,11 +188,27 @@ class CreateCampState extends ChangeNotifier {
 
   String selectedPlatformList() {
     String res = "";
-    for (int i = 0; i < selectedPlatfomrs.length; i++) {
-      if (selectedPlatfomrs[i]) {
-        res += "${i + 1},";
-      }
+    for (int i = 0; i < selectedPlatfomrsList.length; i++) {
+      res += "${selectedPlatfomrsList[i]},";
     }
     return res;
+  }
+
+  void clearData() {
+    platforms = [];
+    selectedPlatfomrs = [];
+    selectedPlatfomrsList = [];
+
+    currencyValue = null;
+    currencyId = null;
+    currencyList = [];
+
+    categoryValue = null;
+    categoryId = null;
+    categoryList = [];
+
+    cityValue = null;
+    cityId = null;
+    cityList = [];
   }
 }

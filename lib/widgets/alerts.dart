@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
@@ -304,6 +305,78 @@ void connectAlert(BuildContext context) {
                         textSize: 16,
                         textColor: whiteC,
                         btnFunction: () {}),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void exitAlert(BuildContext context) async {
+  return await showDialog(
+    context: context,
+    builder: (context) => BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: AlertDialog(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        contentPadding: const EdgeInsets.all(5),
+        backgroundColor: whiteC,
+        content: Container(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                "Exit!",
+                textScaleFactor: 1,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: blackC, fontSize: 25, fontWeight: FontWeight.w500),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Text(
+                  'Are you sure you want to exit the SWRV?',
+                  style: TextStyle(
+                    color: blackC.withOpacity(0.55),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  textAlign: TextAlign.center,
+                  textScaleFactor: 1,
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: redC,
+                      btnText: "Exit",
+                      textSize: 18,
+                      btnFunction: () {
+                        SystemNavigator.pop();
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: greenC,
+                      btnText: "Cancel",
+                      textSize: 18,
+                      btnFunction: () {
+                        Navigator.pop(context);
+                      },
+                    ),
                   ),
                 ],
               )

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -14,8 +14,11 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swrv/components/header.dart';
 import 'package:swrv/services/apirequest.dart';
+import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
-import 'package:swrv/view/user/profile.dart';
+
+import '../../state/userinputstate.dart';
+import '../../widgets/cuswidgets.dart';
 
 class UserInput extends HookConsumerWidget {
   const UserInput({Key? key}) : super(key: key);
@@ -23,13 +26,19 @@ class UserInput extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     SharedPreferences prefs;
-    ValueNotifier<String?> name= useState(null);
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    double statusBarHeight = MediaQuery.of(context).viewPadding.top;
+
+    ValueNotifier<String?> name = useState(null);
+
+    final userInputStateW = ref.watch(userInputState);
 
     void init() async {
       prefs = await SharedPreferences.getInstance();
       String? user = prefs.getString('user');
+      // log(user.toString());
       name.value = jsonDecode(user!)["userName"];
-
     }
 
     useEffect(() {
@@ -37,14 +46,9 @@ class UserInput extends HookConsumerWidget {
       return null;
     }, []);
 
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    double statusBarHeight = MediaQuery.of(context).viewPadding.top;
-
-    ValueNotifier<int> curinput = useState(0);
     List inputs = [
-      const UInput1(
-        name: "karn",
+      UInput1(
+        name: name.value ?? "Loading..",
       ),
       const UInput2(),
       const UInput3(),
@@ -80,11 +84,11 @@ class UserInput extends HookConsumerWidget {
                 ),
                 alignment: Alignment.topLeft,
                 child: Container(
-                  width: (curinput.value == 0)
+                  width: (userInputStateW.curInput == 0)
                       ? ((width - 60) / 4)
-                      : (curinput.value == 1)
+                      : (userInputStateW.curInput == 1)
                           ? ((width - 60) / 2)
-                          : (curinput.value == 2)
+                          : (userInputStateW.curInput == 2)
                               ? (width - 60) - (((width - 60) / 2) / 2)
                               : ((width - 60) / 1),
                   padding: const EdgeInsets.symmetric(vertical: 13),
@@ -94,11 +98,11 @@ class UserInput extends HookConsumerWidget {
                   ),
                   child: Center(
                     child: Text(
-                      (curinput.value == 0)
+                      (userInputStateW.curInput == 0)
                           ? "25% Completed"
-                          : (curinput.value == 1)
+                          : (userInputStateW.curInput == 1)
                               ? "50% Completed"
-                              : (curinput.value == 2)
+                              : (userInputStateW.curInput == 2)
                                   ? "75% Completed"
                                   : "100% Completed",
                       textScaleFactor: 1,
@@ -166,13 +170,13 @@ class UserInput extends HookConsumerWidget {
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  curinput.value = 0;
+                                  userInputStateW.setCurInput(0);
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 10),
                                   decoration: BoxDecoration(
-                                    color: (curinput.value >= 0)
+                                    color: (userInputStateW.curInput >= 0)
                                         ? Colors.pink
                                         : const Color(0xffe5e7eb),
                                     borderRadius: BorderRadius.circular(6),
@@ -183,7 +187,7 @@ class UserInput extends HookConsumerWidget {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
-                                      color: (curinput.value >= 0)
+                                      color: (userInputStateW.curInput >= 0)
                                           ? Colors.white
                                           : Colors.black.withOpacity(0.6),
                                     ),
@@ -192,13 +196,13 @@ class UserInput extends HookConsumerWidget {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  curinput.value = 1;
+                                  userInputStateW.setCurInput(1);
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 10),
                                   decoration: BoxDecoration(
-                                    color: (curinput.value >= 1)
+                                    color: (userInputStateW.curInput >= 1)
                                         ? Colors.pink
                                         : const Color(0xffe5e7eb),
                                     borderRadius: BorderRadius.circular(6),
@@ -209,7 +213,7 @@ class UserInput extends HookConsumerWidget {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
-                                      color: (curinput.value >= 1)
+                                      color: (userInputStateW.curInput >= 1)
                                           ? Colors.white
                                           : Colors.black.withOpacity(0.6),
                                     ),
@@ -218,13 +222,13 @@ class UserInput extends HookConsumerWidget {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  curinput.value = 2;
+                                  userInputStateW.setCurInput(2);
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 10),
                                   decoration: BoxDecoration(
-                                    color: (curinput.value >= 2)
+                                    color: (userInputStateW.curInput >= 2)
                                         ? Colors.pink
                                         : const Color(0xffe5e7eb),
                                     borderRadius: BorderRadius.circular(6),
@@ -235,7 +239,7 @@ class UserInput extends HookConsumerWidget {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
-                                      color: (curinput.value >= 2)
+                                      color: (userInputStateW.curInput >= 2)
                                           ? Colors.white
                                           : Colors.black.withOpacity(0.6),
                                     ),
@@ -244,13 +248,13 @@ class UserInput extends HookConsumerWidget {
                               ),
                               GestureDetector(
                                 onTap: () {
-                                  curinput.value = 3;
+                                  userInputStateW.setCurInput(3);
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 10),
                                   decoration: BoxDecoration(
-                                    color: (curinput.value >= 3)
+                                    color: (userInputStateW.curInput >= 3)
                                         ? Colors.pink
                                         : const Color(0xffe5e7eb),
                                     borderRadius: BorderRadius.circular(6),
@@ -261,7 +265,7 @@ class UserInput extends HookConsumerWidget {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
-                                      color: (curinput.value >= 3)
+                                      color: (userInputStateW.curInput >= 3)
                                           ? Colors.white
                                           : Colors.black.withOpacity(0.6),
                                     ),
@@ -271,90 +275,91 @@ class UserInput extends HookConsumerWidget {
                             ],
                           ),
                         ),
-                        inputs[curinput.value],
+                        inputs[userInputStateW.curInput],
                         const SizedBox(
                           height: 10,
                         ),
-                        if (curinput.value == 0) ...[
-                          ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              minimumSize: const Size.fromHeight(40),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              elevation: 0,
-                              backgroundColor: Colors.pink,
-                            ),
-                            onPressed: () {
-                              if (curinput.value < 3) {
-                                curinput.value += 1;
-                              }
-                            },
-                            child: const Text(
-                              "Next",
-                              textScaleFactor: 1,
-                              style:
-                                  TextStyle(fontSize: 18, color: Colors.white),
-                            ),
-                          ),
+                        if (userInputStateW.curInput == 0) ...[
+                          // ElevatedButton(
+                          //   style: ElevatedButton.styleFrom(
+                          //     minimumSize: const Size.fromHeight(40),
+                          //     shape: RoundedRectangleBorder(
+                          //       borderRadius: BorderRadius.circular(10),
+                          //     ),
+                          //     elevation: 0,
+                          //     backgroundColor: Colors.pink,
+                          //   ),
+                          //   onPressed: () {
+                          //     if (curinput.value < 3) {
+                          //       curinput.value += 1;
+                          //     }
+                          //   },
+                          //   child: const Text(
+                          //     "Next",
+                          //     textScaleFactor: 1,
+                          //     style:
+                          //         TextStyle(fontSize: 18, color: Colors.white),
+                          //   ),
+                          // ),
                         ] else ...[
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    elevation: 0,
-                                    backgroundColor: const Color(0xffe5e7eb),
-                                  ),
-                                  onPressed: () {
-                                    curinput.value -= 1;
-                                  },
-                                  child: Text(
-                                    "Back",
-                                    textScaleFactor: 1,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.black.withOpacity(0.8),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 20,
-                              ),
-                              Expanded(
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    elevation: 0,
-                                    backgroundColor: Colors.pink,
-                                  ),
-                                  onPressed: () {
-                                    if (curinput.value < 3) {
-                                      curinput.value += 1;
-                                    } else {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const Profile()));
-                                    }
-                                  },
-                                  child: const Text(
-                                    "Next",
-                                    textScaleFactor: 1,
-                                    style: TextStyle(
-                                        fontSize: 18, color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
+                          // Row(
+                          //   children: [
+                          //     Expanded(
+                          //       child: ElevatedButton(
+                          //         style: ElevatedButton.styleFrom(
+                          //           shape: RoundedRectangleBorder(
+                          //             borderRadius: BorderRadius.circular(10),
+                          //           ),
+                          //           elevation: 0,
+                          //           backgroundColor: const Color(0xffe5e7eb),
+                          //         ),
+                          //         onPressed: () {
+                          //           userInputStateW.setCurInput(val)
+                          //           curinput.value -= 1;
+                          //         },
+                          //         child: Text(
+                          //           "Back",
+                          //           textScaleFactor: 1,
+                          //           style: TextStyle(
+                          //             fontSize: 18,
+                          //             color: Colors.black.withOpacity(0.8),
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //     const SizedBox(
+                          //       width: 20,
+                          //     ),
+                          //     Expanded(
+                          //       child: ElevatedButton(
+                          //         style: ElevatedButton.styleFrom(
+                          //           shape: RoundedRectangleBorder(
+                          //             borderRadius: BorderRadius.circular(10),
+                          //           ),
+                          //           elevation: 0,
+                          //           backgroundColor: Colors.pink,
+                          //         ),
+                          //         onPressed: () {
+                          //           if (curinput.value < 3) {
+                          //             curinput.value += 1;
+                          //           } else {
+                          //             Navigator.push(
+                          //                 context,
+                          //                 MaterialPageRoute(
+                          //                     builder: (context) =>
+                          //                         const Profile()));
+                          //           }
+                          //         },
+                          //         child: const Text(
+                          //           "Next",
+                          //           textScaleFactor: 1,
+                          //           style: TextStyle(
+                          //               fontSize: 18, color: Colors.white),
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ],
+                          // )
                         ],
                       ],
                     ),
@@ -369,19 +374,19 @@ class UserInput extends HookConsumerWidget {
   }
 }
 
-class UInput1 extends HookWidget {
+class UInput1 extends HookConsumerWidget {
   final String name;
   const UInput1({Key? key, required this.name}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     TextEditingController email = useTextEditingController();
     TextEditingController username = useTextEditingController();
     TextEditingController nickname = useTextEditingController();
-
     TextEditingController dob = useTextEditingController();
 
     ValueNotifier<File?> imageFile = useState(null);
+
     useEffect(() {
       email.text = name;
       return null;
@@ -399,6 +404,8 @@ class UInput1 extends HookWidget {
         log('Failed to pick image: $e');
       }
     }
+
+    final userInputStateW = ref.watch(userInputState);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -647,27 +654,24 @@ class UInput1 extends HookWidget {
         const SizedBox(
           height: 15,
         ),
+        CusBtn(
+            btnColor: primaryC,
+            btnText: "Next",
+            textSize: 18,
+            btnFunction: () {
+              userInputStateW.setCurInput(userInputStateW.curInput + 1);
+            }),
       ],
     );
   }
 }
 
-class UInput2 extends HookWidget {
+class UInput2 extends HookConsumerWidget {
   const UInput2({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    ValueNotifier<List> accountList = useState([]);
-    ValueNotifier<List> categoryList = useState([]);
-    ValueNotifier<List> languagesList = useState([]);
-
-    ValueNotifier<List<bool>> accountVal = useState([]);
-    ValueNotifier<List<bool>> categoryVal = useState([]);
-    ValueNotifier<List<bool>> languagesVal = useState([]);
-
-    ValueNotifier<List> accountSel = useState([]);
-    ValueNotifier<List> categorySel = useState([]);
-    ValueNotifier<List> languagesSel = useState([]);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userInputStateW = ref.watch(userInputState);
 
     TextEditingController account = useTextEditingController();
     TextEditingController category = useTextEditingController();
@@ -675,41 +679,25 @@ class UInput2 extends HookWidget {
 
     CusApiReq apiReq = CusApiReq();
     void init() async {
+      final req1 = {};
       List accountRes =
-          await apiReq.postReq('{\r\n    "f": "currency_list"\r\n}');
+          await apiReq.postApi(jsonEncode(req1), path: "/api/getcurrency");
+
+      final req2 = {};
       List categoryRes =
-          await apiReq.postReq('{\r\n    "f": "category_list"\r\n}');
+          await apiReq.postApi(jsonEncode(req2), path: "/api/getcategory");
+      final req3 = {};
       List languagesRes =
-          await apiReq.postReq('{\r\n    "f": "language_list"\r\n}');
+          await apiReq.postApi(jsonEncode(req3), path: "/api/getlanguage");
 
       if (accountRes[0]["status"] &&
           categoryRes[0]["status"] &&
           languagesRes[0]["status"]) {
-        accountList.value = accountRes[0]["data"];
-        categoryList.value = categoryRes[0]["data"];
-        languagesList.value = languagesRes[0]["data"];
+        userInputStateW.setCurrencyList(accountRes[0]["data"]);
+        userInputStateW.setCategoryList(categoryRes[0]["data"]);
+        userInputStateW.setLanguageList(languagesRes[0]["data"]);
       } else {
-        var snackBar = SnackBar(
-          elevation: 0,
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.transparent,
-          content: AwesomeSnackbarContent(
-            title: 'Error',
-            message: "no Record Found",
-            contentType: ContentType.failure,
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
-
-      for (int i = 0; i < accountList.value.length; i++) {
-        accountVal.value = [...accountVal.value, false];
-      }
-      for (int i = 0; i < categoryList.value.length; i++) {
-        categoryVal.value = [...categoryVal.value, false];
-      }
-      for (int i = 0; i < languagesList.value.length; i++) {
-        languagesVal.value = [...languagesVal.value, false];
+        erroralert(context, "error", "No Record Fount");
       }
     }
 
@@ -721,6 +709,7 @@ class UInput2 extends HookWidget {
     void accountBox() {
       showModalBottomSheet(
         backgroundColor: whiteC,
+        isDismissible: false,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
         context: context,
@@ -748,26 +737,18 @@ class UInput2 extends HookWidget {
                   child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    for (int i = 0; i < accountVal.value.length; i++) ...[
+                    for (int i = 0;
+                        i < userInputStateW.currencyList.length;
+                        i++) ...[
                       CheckboxListTile(
-                        value: accountVal.value[i],
+                        value: userInputStateW.selectedCurrency[i],
                         onChanged: (val) {
-                          for (int i = 0; i < accountVal.value.length; i++) {
-                            accountVal.value[i] = false;
-                          }
-                          accountVal.value[i] = val!;
-
-                          accountSel.value = [
-                            i,
-                            accountList.value[i]["id"],
-                            accountList.value[i]["currencyName"],
-                            accountList.value[i]["currencyCode"]
-                          ];
+                          userInputStateW.setCurrency(i, val!);
 
                           setState(() {});
                         },
                         title: Text(
-                            '${accountList.value[i]["currencyName"]}   [ ${accountList.value[i]["currencyCode"]} ]'),
+                            '${userInputStateW.currencyList[i]["currencyName"]}   [ ${userInputStateW.currencyList[i]["currencyCode"]} ]'),
                       )
                     ]
                   ],
@@ -788,10 +769,11 @@ class UInput2 extends HookWidget {
                           backgroundColor: const Color(0xffef4444),
                         ),
                         onPressed: () {
+                          account.clear();
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          "Exit",
+                          "Clear",
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(
@@ -811,8 +793,12 @@ class UInput2 extends HookWidget {
                             ),
                             backgroundColor: const Color(0xff22c55e)),
                         onPressed: () {
-                          account.text =
-                              "${accountSel.value[2]} [${accountSel.value[3]}]";
+                          if (userInputStateW.currencyVal.isNotEmpty) {
+                            account.text =
+                                "${userInputStateW.currencyVal[0]["currencyName"]} [${userInputStateW.currencyVal[0]["currencyCode"]}]";
+                          } else {
+                            account.clear();
+                          }
                           setState(() {});
                           Navigator.pop(context);
                         },
@@ -829,7 +815,7 @@ class UInput2 extends HookWidget {
                     ),
                   ],
                 ),
-              )
+              ),
             ],
           );
         }),
@@ -839,6 +825,7 @@ class UInput2 extends HookWidget {
     void categoryBox() {
       showModalBottomSheet(
         backgroundColor: whiteC,
+        isDismissible: false,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
         context: context,
@@ -866,15 +853,17 @@ class UInput2 extends HookWidget {
                   child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    for (int i = 0; i < categoryVal.value.length; i++) ...[
+                    for (int i = 0;
+                        i < userInputStateW.categoryList.length;
+                        i++) ...[
                       CheckboxListTile(
-                        value: categoryVal.value[i],
+                        value: userInputStateW.selectedCategory[i],
                         onChanged: (val) {
-                          categoryVal.value[i] = val!;
+                          userInputStateW.setCategory(i, val!);
                           setState(() {});
                         },
                         title: Text(
-                            '${categoryList.value[i]["categoryName"]}   [ ${categoryList.value[i]["categoryCode"]} ]'),
+                            '${userInputStateW.categoryList[i]["categoryName"]}   [ ${userInputStateW.categoryList[i]["categoryCode"]} ]'),
                       )
                     ]
                   ],
@@ -895,10 +884,11 @@ class UInput2 extends HookWidget {
                           backgroundColor: const Color(0xffef4444),
                         ),
                         onPressed: () {
+                          category.clear();
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          "Exit",
+                          "Clear",
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(
@@ -918,6 +908,11 @@ class UInput2 extends HookWidget {
                             ),
                             backgroundColor: const Color(0xff22c55e)),
                         onPressed: () {
+                          if (userInputStateW.categoryVal.isNotEmpty) {
+                            category.text = userInputStateW.getCatValue();
+                          } else {
+                            category.clear();
+                          }
                           Navigator.pop(context);
                         },
                         child: const Text(
@@ -943,6 +938,7 @@ class UInput2 extends HookWidget {
     void languagesBox() {
       showModalBottomSheet(
         backgroundColor: whiteC,
+        isDismissible: false,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
         context: context,
@@ -970,26 +966,17 @@ class UInput2 extends HookWidget {
                   child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    for (int i = 0; i < languagesVal.value.length; i++) ...[
+                    for (int i = 0;
+                        i < userInputStateW.languageList.length;
+                        i++) ...[
                       CheckboxListTile(
-                        value: languagesVal.value[i],
+                        value: userInputStateW.selectedLanguage[i],
                         onChanged: (val) {
-                          for (int i = 0; i < languagesVal.value.length; i++) {
-                            languagesVal.value[i] = false;
-                          }
-                          languagesVal.value[i] = val!;
-
-                          languagesSel.value = [
-                            i,
-                            languagesList.value[i]["id"],
-                            languagesList.value[i]["languageName"],
-                            languagesList.value[i]["languageCode"]
-                          ];
-
+                          userInputStateW.setLanguage(i, val!);
                           setState(() {});
                         },
                         title: Text(
-                            '${languagesList.value[i]["languageName"]}   [ ${languagesList.value[i]["languageCode"]} ]'),
+                            '${userInputStateW.languageList[i]["languageName"]}   [ ${userInputStateW.languageList[i]["languageCode"]} ]'),
                       )
                     ]
                   ],
@@ -1010,10 +997,11 @@ class UInput2 extends HookWidget {
                           backgroundColor: const Color(0xffef4444),
                         ),
                         onPressed: () {
+                          languages.clear();
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          "Exit",
+                          "Clear",
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(
@@ -1033,8 +1021,12 @@ class UInput2 extends HookWidget {
                             ),
                             backgroundColor: const Color(0xff22c55e)),
                         onPressed: () {
-                          languages.text =
-                              "${languagesSel.value[2]} [${languagesSel.value[3]}]";
+                          if (userInputStateW.languageVal.isNotEmpty) {
+                            languages.text =
+                                "${userInputStateW.languageVal[0]["languageName"]} [${userInputStateW.languageVal[0]["languageCode"]}]";
+                          } else {
+                            languages.clear();
+                          }
                           setState(() {});
                           Navigator.pop(context);
                         },
@@ -1180,43 +1172,61 @@ class UInput2 extends HookWidget {
         const SizedBox(
           height: 15,
         ),
+        Row(
+          children: [
+            Expanded(
+              child: CusBtn(
+                btnColor: backgroundC,
+                btnText: "Back",
+                textSize: 18,
+                btnFunction: () {
+                  userInputStateW.setCurInput(userInputStateW.curInput - 1);
+                },
+                textColor: blackC,
+              ),
+            ),
+            const SizedBox(
+              width: 20,
+            ),
+            Expanded(
+              child: CusBtn(
+                btnColor: primaryC,
+                btnText: "Next",
+                textSize: 18,
+                btnFunction: () {
+                  userInputStateW.setCurInput(userInputStateW.curInput + 1);
+                },
+              ),
+            ),
+          ],
+        )
       ],
     );
   }
 }
 
-class UInput3 extends HookWidget {
+class UInput3 extends HookConsumerWidget {
   const UInput3({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    ValueNotifier<List> socialMedia = useState([]);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userInputStateW = ref.watch(userInputState);
+
     CusApiReq apiReq = CusApiReq();
 
-    ValueNotifier<int?> solSel = useState(null);
-
-    ValueNotifier<List<TextEditingController>> cont = useState([]);
-    ValueNotifier<List<bool>> isCompleted = useState([]);
-    ValueNotifier<List<String>> imgUrls = useState([]);
-
     void init() async {
-      List socialRes =
-          await apiReq.postReq('{\r\n    "f": "platform_list"\r\n}');
+      try {
+        final req = {};
+        List data =
+            await apiReq.postApi(jsonEncode(req), path: "/api/getplatform");
+        userInputStateW.setPlatforms(data[0]["data"]);
 
-      if (socialRes[0]["status"]) {
-        socialMedia.value = socialRes[0]["data"];
-      } else {
-        var snackBar = SnackBar(
-          elevation: 0,
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.transparent,
-          content: AwesomeSnackbarContent(
-            title: 'Error',
-            message: "no Record Found",
-            contentType: ContentType.failure,
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        if (data[0]["status"] == false) {
+          erroralert(
+              context, "Error", "Oops something went wrong please try again");
+        }
+      } catch (e) {
+        log(e.toString());
       }
     }
 
@@ -1245,43 +1255,52 @@ class UInput3 extends HookWidget {
         const SizedBox(
           height: 15,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            for (int i = 0; i < socialMedia.value.length - 1; i++) ...[
-              GestureDetector(
-                onTap: () {
-                  solSel.value = i;
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 5),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: (solSel.value == i)
-                          ? Colors.pink
-                          : Colors.transparent,
-                      width: 2,
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              for (int i = 0; i < userInputStateW.platforms.length; i++) ...[
+                GestureDetector(
+                  onTap: () {
+                    userInputStateW.setSelectPlatform(i);
+                  },
+                  child: Container(
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: (userInputStateW.selectedPlatform == i)
+                            ? Colors.pink
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black.withOpacity(0.2), blurRadius: 3)
+                      ],
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(6),
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                          color: Colors.black.withOpacity(0.2), blurRadius: 5)
-                    ],
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  width: 40,
-                  height: 40,
-                  padding: const EdgeInsets.all(10),
-                  child: Center(
-                    child: Image.network(
-                      socialMedia.value[i]["platformLogoUrl"],
-                      fit: BoxFit.cover,
+                    width: 50,
+                    height: 50,
+                    padding: const EdgeInsets.all(10),
+                    child: Center(
+                      child: CachedNetworkImage(
+                        imageUrl: userInputStateW.platforms[i]
+                            ["platformLogoUrl"],
+                        placeholder: (context, url) =>
+                            const CircularProgressIndicator(),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
-              ),
+              ],
             ],
-          ],
+          ),
         ),
         const SizedBox(
           height: 20,
@@ -1296,27 +1315,35 @@ class UInput3 extends HookWidget {
             backgroundColor: Colors.pink,
           ),
           onPressed: () {
-            if (solSel.value != null) {
-              cont.value = [...cont.value, TextEditingController()];
-              isCompleted.value = [...isCompleted.value, false];
-              imgUrls.value = [
-                ...imgUrls.value,
-                socialMedia.value[solSel.value!]["platformLogoUrl"]
-              ];
+            if (userInputStateW.cont.isEmpty) {
+              if (userInputStateW.selectedPlatform != null) {
+                userInputStateW.addControler();
+                userInputStateW.addIsCompleted(false);
+                userInputStateW.addImgUrl(
+                    userInputStateW.platforms[userInputStateW.selectedPlatform!]
+                        ["platformLogoUrl"]);
+                userInputStateW.setNullPlatform();
+              } else {
+                erroralert(
+                    context, "Error", "Please select any platform first");
+              }
+            } else if (userInputStateW.cont.last.text == "") {
+              erroralert(context, "Error", "Please fill the last field first");
             } else {
-              var snackBar = SnackBar(
-                elevation: 0,
-                behavior: SnackBarBehavior.floating,
-                backgroundColor: Colors.transparent,
-                content: AwesomeSnackbarContent(
-                  title: 'Error',
-                  message: "Please select any platform first",
-                  contentType: ContentType.failure,
-                ),
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              if (userInputStateW.selectedPlatform != null) {
+                userInputStateW.addControler();
+
+                // cont.value = [...cont.value, TextEditingController()];
+                userInputStateW.addIsCompleted(false);
+                userInputStateW.addImgUrl(
+                    userInputStateW.platforms[userInputStateW.selectedPlatform!]
+                        ["platformLogoUrl"]);
+                userInputStateW.setNullPlatform();
+              } else {
+                erroralert(
+                    context, "Error", "Please select any platform first");
+              }
             }
-            // isOpen.value = true;
           },
           child: const Text(
             "Add new Channel",
@@ -1327,37 +1354,66 @@ class UInput3 extends HookWidget {
         const SizedBox(
           height: 20,
         ),
-        for (int i = 0; i < cont.value.length; i++) ...[
+        for (int i = 0; i < userInputStateW.cont.length; i++) ...[
           CusFiels(
-            cont: cont.value[i],
-            isCom: isCompleted,
+            cont: userInputStateW.cont[i],
             index: i,
-            imgUrl: imgUrls.value[i],
+            imgUrl: userInputStateW.imgUrls[i],
           )
         ],
         const SizedBox(
           height: 15,
         ),
+        Row(
+          children: [
+            Expanded(
+              child: CusBtn(
+                btnColor: backgroundC,
+                btnText: "Back",
+                textSize: 18,
+                btnFunction: () {
+                  userInputStateW.setCurInput(userInputStateW.curInput - 1);
+                },
+                textColor: blackC,
+              ),
+            ),
+            const SizedBox(
+              width: 20,
+            ),
+            Expanded(
+              child: CusBtn(
+                btnColor: primaryC,
+                btnText: "Next",
+                textSize: 18,
+                btnFunction: () {
+                  userInputStateW.setCurInput(userInputStateW.curInput + 1);
+                },
+              ),
+            ),
+          ],
+        )
       ],
     );
   }
 }
 
-class CusFiels extends HookWidget {
+class CusFiels extends HookConsumerWidget {
   final TextEditingController cont;
-  final ValueNotifier<List<bool>> isCom;
+  // final ValueNotifier<List<bool>> isCom;
   final int index;
   final String imgUrl;
   const CusFiels({
     Key? key,
     required this.cont,
-    required this.isCom,
+    // required this.isCom,
     required this.index,
     required this.imgUrl,
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userInputStateW = ref.watch(userInputState);
+
     return StatefulBuilder(builder: (context, setStat) {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 8),
@@ -1392,7 +1448,7 @@ class CusFiels extends HookWidget {
                 borderRadius: BorderRadius.circular(10),
                 child: TextField(
                   controller: cont,
-                  readOnly: isCom.value[index],
+                  readOnly: userInputStateW.isCompleted[index],
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: const Color(0xfff3f4f6),
@@ -1411,10 +1467,10 @@ class CusFiels extends HookWidget {
                 ),
               ),
             ),
-            if (!isCom.value[index]) ...[
+            if (!userInputStateW.isCompleted[index]) ...[
               Container(
                 margin: const EdgeInsets.only(left: 10),
-                width: 100,
+                width: 80,
                 height: 45,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -1425,13 +1481,14 @@ class CusFiels extends HookWidget {
                     backgroundColor: Colors.pink,
                   ),
                   onPressed: () {
-                    isCom.value[index] = true;
+                    userInputStateW.setIsComplted(index, true);
+                    // isCom.value[index] = true;
                     setStat(() {});
                   },
                   child: const Text(
                     "Done",
                     textScaleFactor: 1,
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                    style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
                 ),
               ),
@@ -1443,11 +1500,13 @@ class CusFiels extends HookWidget {
   }
 }
 
-class UInput4 extends HookWidget {
+class UInput4 extends HookConsumerWidget {
   const UInput4({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userInputStateW = ref.watch(userInputState);
+
     TextEditingController country = useTextEditingController();
     TextEditingController number = useTextEditingController();
     TextEditingController gender = useTextEditingController();
@@ -1455,45 +1514,21 @@ class UInput4 extends HookWidget {
 
     ValueNotifier<bool> isMale = useState(true);
 
-    ValueNotifier<List> countryList = useState([]);
-    ValueNotifier<List> cityList = useState([]);
-
-    ValueNotifier<List<bool>> countryVal = useState([]);
-    ValueNotifier<List<bool>> cityVal = useState([]);
-
-    ValueNotifier<List> countrySel = useState([]);
-    ValueNotifier<List> citySel = useState([]);
-
     CusApiReq apiReq = CusApiReq();
     void init() async {
+      final req1 = {};
       List countryRes =
-          await apiReq.postReq('{\r\n    "f": "country_list"\r\n}');
+          await apiReq.postApi(jsonEncode(req1), path: "/api/getcountry");
 
-      List cityRes = await apiReq.postReq('{\r\n    "f": "city_list"\r\n}');
+      final req2 = {};
+      List cityRes =
+          await apiReq.postApi(jsonEncode(req2), path: "/api/getcity");
 
       if (countryRes[0]["status"] && cityRes[0]["status"]) {
-        countryList.value = countryRes[0]["data"];
-        cityList.value = cityRes[0]["data"];
+        userInputStateW.setCountryList(countryRes[0]["data"]);
+        userInputStateW.setCityList(cityRes[0]["data"]);
       } else {
-        var snackBar = SnackBar(
-          elevation: 0,
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.transparent,
-          content: AwesomeSnackbarContent(
-            title: 'Error',
-            message: "no Record Found",
-            contentType: ContentType.failure,
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      }
-
-      for (int i = 0; i < countryList.value.length; i++) {
-        countryVal.value = [...countryVal.value, false];
-      }
-
-      for (int i = 0; i < cityList.value.length; i++) {
-        cityVal.value = [...cityVal.value, false];
+        erroralert(context, "error", "No Record Fount");
       }
     }
 
@@ -1505,6 +1540,7 @@ class UInput4 extends HookWidget {
     void countryBox() {
       showModalBottomSheet(
         backgroundColor: whiteC,
+        isDismissible: false,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
         context: context,
@@ -1532,25 +1568,17 @@ class UInput4 extends HookWidget {
                   child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    for (int i = 0; i < countryVal.value.length; i++) ...[
+                    for (int i = 0;
+                        i < userInputStateW.countryList.length;
+                        i++) ...[
                       CheckboxListTile(
-                        value: countryVal.value[i],
+                        value: userInputStateW.selectedCountry[i],
                         onChanged: (val) {
-                          for (int i = 0; i < countryVal.value.length; i++) {
-                            countryVal.value[i] = false;
-                          }
-                          countryVal.value[i] = val!;
-
-                          countrySel.value = [
-                            i,
-                            countryList.value[i]["id"],
-                            countryList.value[i]["countryName"],
-                            countryList.value[i]["countryCode"]
-                          ];
+                          userInputStateW.setCountry(i, val!);
                           setState(() {});
                         },
                         title: Text(
-                            '${countryList.value[i]["id"]} ${countryList.value[i]["countryName"]}   [ ${countryList.value[i]["countryCode"]} ]'),
+                            '${userInputStateW.countryList[i]["id"]} ${userInputStateW.countryList[i]["countryName"]}   [ ${userInputStateW.countryList[i]["countryCode"]} ]'),
                       )
                     ]
                   ],
@@ -1571,10 +1599,11 @@ class UInput4 extends HookWidget {
                           backgroundColor: const Color(0xffef4444),
                         ),
                         onPressed: () {
+                          country.clear();
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          "Exit",
+                          "Clear",
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(
@@ -1594,8 +1623,12 @@ class UInput4 extends HookWidget {
                             ),
                             backgroundColor: const Color(0xff22c55e)),
                         onPressed: () {
-                          country.text =
-                              "${countrySel.value[2]} [${countrySel.value[3]}]";
+                          if (userInputStateW.countryVal.isNotEmpty) {
+                            country.text =
+                                "${userInputStateW.countryVal[0]["countryName"]} [${userInputStateW.countryVal[0]["countryCode"]}]";
+                          } else {
+                            country.clear();
+                          }
                           setState(() {});
                           Navigator.pop(context);
                         },
@@ -1622,6 +1655,7 @@ class UInput4 extends HookWidget {
     void genderBox() {
       showModalBottomSheet(
         backgroundColor: whiteC,
+        isDismissible: false,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
         context: context,
@@ -1683,10 +1717,11 @@ class UInput4 extends HookWidget {
                           backgroundColor: const Color(0xffef4444),
                         ),
                         onPressed: () {
+                          gender.clear();
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          "Exit",
+                          "Clear",
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(
@@ -1729,10 +1764,12 @@ class UInput4 extends HookWidget {
         }),
       );
     }
+    
 
     void cityBox() {
       showModalBottomSheet(
         backgroundColor: whiteC,
+        isDismissible: false,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
         context: context,
@@ -1760,26 +1797,17 @@ class UInput4 extends HookWidget {
                   child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    for (int i = 0; i < cityVal.value.length; i++) ...[
+                    for (int i = 0;
+                        i < userInputStateW.cityList.length;
+                        i++) ...[
                       CheckboxListTile(
-                        value: cityVal.value[i],
+                        value: userInputStateW.selectedCity[i],
                         onChanged: (val) {
-                          for (int i = 0; i < cityVal.value.length; i++) {
-                            cityVal.value[i] = false;
-                          }
-                          cityVal.value[i] = val!;
-
-                          citySel.value = [
-                            i,
-                            cityList.value[i]["id"],
-                            cityList.value[i]["cityName"],
-                            cityList.value[i]["cityCode"]
-                          ];
-
+                          userInputStateW.setCity(i, val!);
                           setState(() {});
                         },
                         title: Text(
-                            '${cityList.value[i]["id"]} ${cityList.value[i]["cityName"]}   [ ${cityList.value[i]["cityCode"]} ]'),
+                            '${userInputStateW.cityList[i]["id"]} ${userInputStateW.cityList[i]["cityName"]}   [ ${userInputStateW.cityList[i]["cityCode"]} ]'),
                       )
                     ]
                   ],
@@ -1800,10 +1828,11 @@ class UInput4 extends HookWidget {
                           backgroundColor: const Color(0xffef4444),
                         ),
                         onPressed: () {
+                          city.clear();
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          "Exit",
+                          "Clear",
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(
@@ -1823,8 +1852,13 @@ class UInput4 extends HookWidget {
                             ),
                             backgroundColor: const Color(0xff22c55e)),
                         onPressed: () {
-                          city.text =
-                              "${citySel.value[2]} [${citySel.value[3]}]";
+                          if (userInputStateW.cityVal.isNotEmpty) {
+                            city.text =
+                                "${userInputStateW.cityVal[0]["cityName"]} [${userInputStateW.cityVal[0]["cityCode"]}]";
+                          } else {
+                            city.clear();
+                          }
+
                           Navigator.pop(context);
                         },
                         child: const Text(
@@ -2000,6 +2034,34 @@ class UInput4 extends HookWidget {
         const SizedBox(
           height: 15,
         ),
+        Row(
+          children: [
+            Expanded(
+              child: CusBtn(
+                btnColor: backgroundC,
+                btnText: "Back",
+                textSize: 18,
+                btnFunction: () {
+                  userInputStateW.setCurInput(userInputStateW.curInput - 1);
+                },
+                textColor: blackC,
+              ),
+            ),
+            const SizedBox(
+              width: 20,
+            ),
+            Expanded(
+              child: CusBtn(
+                btnColor: primaryC,
+                btnText: "Next",
+                textSize: 18,
+                btnFunction: () {
+                  // userInputStateW.setCurInput(userInputStateW.curInput + 1);
+                },
+              ),
+            ),
+          ],
+        )
       ],
     );
   }
