@@ -15,3 +15,17 @@ void erroralert(BuildContext context, String title, String subTitle) {
     ),
   );
 }
+void susalert(BuildContext context, String title, String subTitle) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: title,
+        message: subTitle,
+        contentType: ContentType.success,
+      ),
+    ),
+  );
+}

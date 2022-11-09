@@ -17,7 +17,7 @@ class InvitePage extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Header(name: "analog-sombra"),
+          const Header(),
           Container(
             width: width,
             margin: const EdgeInsets.all(25),

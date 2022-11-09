@@ -19,7 +19,7 @@ class Inbox extends HookConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const Header(
-            name: "analog-sombra",
+    
           ),
           Container(
             width: width,

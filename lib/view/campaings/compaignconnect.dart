@@ -18,9 +18,7 @@ class CampaignConnect extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Header(
-            name: "analog-sombra",
-          ),
+          const Header(),
 
           Container(
             width: width,
@@ -766,7 +764,8 @@ class CampaignConnect extends HookConsumerWidget {
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                     color: blackC),
-                              ),   Text(
+                              ),
+                              Text(
                                 "Energeti face",
                                 textScaleFactor: 1,
                                 textAlign: TextAlign.left,
@@ -775,7 +774,7 @@ class CampaignConnect extends HookConsumerWidget {
                                     fontWeight: FontWeight.w400,
                                     color: blackC),
                               ),
-                                 Text(
+                              Text(
                                 "Sporty",
                                 textScaleFactor: 1,
                                 textAlign: TextAlign.left,
@@ -784,7 +783,7 @@ class CampaignConnect extends HookConsumerWidget {
                                     fontWeight: FontWeight.w400,
                                     color: blackC),
                               ),
-                                 Text(
+                              Text(
                                 "Action",
                                 textScaleFactor: 1,
                                 textAlign: TextAlign.left,

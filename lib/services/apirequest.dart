@@ -3,10 +3,14 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class CusApiReq {
-  // String baseUrl = "https://bluelemontech.in/websites/cs/api/api.php";
+import '../utils/const.dart';
 
-  String baseUrl = "http://192.168.0.133/swrv";
+class CusApiReq {
+  // // String baseUrl = "https://bluelemontech.in/websites/cs/api/api.php";
+  // const baseurl = "http://192.168.0.133/swrv";
+
+
+  // String baseUrl = "http://192.168.0.133/swrv";
 
   Future<List> postApi(String reqdata, {String path = ""}) async {
     try {
@@ -24,18 +28,22 @@ class CusApiReq {
     }
   }
 
-  Future<List> createCmp(String url, String reqdata) async {
+  Future<List> uploadImage(String filepath, String userid,
+      {String path = ""}) async {
     try {
-      var request = await http.post(Uri.parse(url), body: jsonDecode(reqdata));
+      var request = http.MultipartRequest('POST', Uri.parse('$baseUrl/$path'));
+      request.fields.addAll({'id': userid});
+      request.files.add(await http.MultipartFile.fromPath('image', filepath));
 
-      if (request.statusCode == 200) {
-        return [json.decode(request.body)];
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        return [jsonDecode(await response.stream.bytesToString())];
       } else {
-        return [false, "Something went wrong please try again"];
+        return [false, response.reasonPhrase!];
       }
     } catch (e) {
       return [false, e];
     }
   }
-  
 }

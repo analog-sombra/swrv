@@ -16,7 +16,7 @@ class DraftsPage extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Header(name: "analog-sombra"),
+          const Header(),
           const SizedBox(
             height: 20,
           ),

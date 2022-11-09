@@ -59,7 +59,7 @@ class CusDrawer extends HookConsumerWidget {
                       height: 30,
                     ),
                     DrawerButton(
-                      index: 0,
+                      index: 26,
                       icon: FontAwesomeIcons.folderOpen,
                       title: "My campaings",
                       isFontAwesome: true,

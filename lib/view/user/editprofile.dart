@@ -31,7 +31,6 @@ class EditProfile extends HookWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Header(
-            name: "analog-sombra",
             isShowUser: false,
           ),
           const SizedBox(

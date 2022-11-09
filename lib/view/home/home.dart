@@ -5,10 +5,12 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/components/header.dart';
+import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/componets.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
 
+import '../user/brandinput.dart';
 import '../user/userinput.dart';
 
 class HomePage extends HookConsumerWidget {
@@ -24,8 +26,26 @@ class HomePage extends HookConsumerWidget {
       "post5.jpg",
       "post6.jpg"
     ];
-    ValueNotifier<bool> isFill = useState(false);
+
     final width = MediaQuery.of(context).size.width;
+    ValueNotifier<bool> isCompleted = useState(false);
+
+    final userStateW = ref.watch(userState);
+    ValueNotifier<bool> isBrand = useState(false);
+    ValueNotifier<String> userName = useState("loading..");
+
+    void init() async {
+      // userStateW.setProfileComp(false);
+      final username = await userStateW.getUserName();
+      userName.value = username;
+      isBrand.value = await userStateW.isBrand();
+      isCompleted.value = await userStateW.isProfileComp();
+    }
+
+    useEffect(() {
+      init();
+      return null;
+    }, []);
 
     return SingleChildScrollView(
       child: Column(
@@ -33,10 +53,8 @@ class HomePage extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Header(
-              name: "analog-sombra",
-            ),
-            if (!isFill.value) ...[
+            const Header(),
+            if (isCompleted.value == false) ...[
               Container(
                 width: width,
                 margin: const EdgeInsets.all(25),
@@ -69,7 +87,7 @@ class HomePage extends HookConsumerWidget {
                         const Spacer(),
                         GestureDetector(
                           onTap: () {
-                            isFill.value = true;
+                            isCompleted.value = true;
                           },
                           child: const FaIcon(
                             FontAwesomeIcons.xmark,
@@ -96,12 +114,21 @@ class HomePage extends HookConsumerWidget {
                       btnText: "Click here to complete",
                       textSize: 16,
                       btnFunction: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: ((context) => const UserInput()),
-                          ),
-                        );
+                        if (isBrand.value) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: ((context) => const BrandInput()),
+                            ),
+                          );
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: ((context) => const UserInput()),
+                            ),
+                          );
+                        }
                       },
                     )
                   ],

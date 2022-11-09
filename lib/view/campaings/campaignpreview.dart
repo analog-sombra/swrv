@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/components/header.dart';
 import 'package:swrv/state/navstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
-import 'package:swrv/widgets/componets.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
 
-class CampaignsInfo extends HookConsumerWidget {
-  const CampaignsInfo({super.key});
+class CampaignsPreview extends HookConsumerWidget {
+  const CampaignsPreview({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +21,7 @@ class CampaignsInfo extends HookConsumerWidget {
           const Header(),
           Container(
             width: width,
-            margin: const EdgeInsets.all(25),
+            margin: const EdgeInsets.all(15),
             decoration: BoxDecoration(
               color: whiteC,
               borderRadius: BorderRadius.circular(16),
@@ -290,142 +288,9 @@ class CampaignsInfo extends HookConsumerWidget {
               ],
             ),
           ),
-          const CampaingList(),
           const SizedBox(
             height: 80,
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class CampaingList extends HookConsumerWidget {
-  const CampaingList({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    ValueNotifier<bool> isPast = useState(false);
-
-    final width = MediaQuery.of(context).size.width;
-    return Container(
-      width: width,
-      margin: const EdgeInsets.symmetric(horizontal: 25),
-      padding: const EdgeInsets.symmetric(vertical: 15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(color: shadowC, blurRadius: 5, offset: Offset(0, 6))
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      elevation: 0,
-                      backgroundColor:
-                          isPast.value ? backgroundC : const Color(0xff01fff4),
-                    ),
-                    onPressed: () {
-                      isPast.value = false;
-                    },
-                    child: Text(
-                      "Available Campaigns",
-                      textAlign: TextAlign.center,
-                      textScaleFactor: 1,
-                      style: TextStyle(
-                          color:
-                              isPast.value ? blackC.withOpacity(0.65) : blackC,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      backgroundColor:
-                          isPast.value ? const Color(0xff01fff4) : backgroundC,
-                    ),
-                    onPressed: () {
-                      isPast.value = true;
-                    },
-                    child: Text(
-                      "Past associations",
-                      textAlign: TextAlign.center,
-                      textScaleFactor: 1,
-                      style: TextStyle(
-                          color:
-                              isPast.value ? blackC : blackC.withOpacity(0.65),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "Learn more & apply",
-                  btnFunction: () {},
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
-                ),
-                HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "Learn more & apply",
-                  btnFunction: () {},
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
-                ),
-                HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "Learn more & apply",
-                  btnFunction: () {},
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
-                ),
-              ],
-            ),
-          )
         ],
       ),
     );

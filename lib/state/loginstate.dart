@@ -3,7 +3,6 @@
 import 'dart:math';
 import 'dart:convert';
 import 'package:crypto/crypto.dart';
-import 'dart:developer' as dev;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -137,13 +136,17 @@ class LoginState extends ChangeNotifier {
           data[0]["message"],
         );
       } else {
-        dev.log(jsonEncode(data[0]["data"]).toString());
-        setUserData(jsonEncode(data[0]["data"]));
-        if (isChecked) {
-          setLogPref(email, password);
+        final isuserset = await setNewUserData(context, data[0]["data"]["id"]);
+
+        if (isuserset) {
+          if (isChecked) {
+            setLogPref(email, password);
+          }
+          notifyListeners();
+          return true;
+        } else {
+          erroralert(context, "Error", "unable to set new user");
         }
-        notifyListeners();
-        return true;
       }
     }
     notifyListeners();
@@ -153,12 +156,6 @@ class LoginState extends ChangeNotifier {
   void setLogPref(String email, String password) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool("isLogin", true);
-    await prefs.setStringList("userdata", [email, password]);
-  }
-
-  void setUserData(String user) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user', user);
   }
 
   Future<bool> isLogin() async {
@@ -169,6 +166,28 @@ class LoginState extends ChangeNotifier {
         notifyListeners();
         return true;
       }
+    }
+    notifyListeners();
+    return false;
+  }
+
+  void setUserData(String user) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user', user);
+  }
+
+  Future<bool> setNewUserData(BuildContext context, String userid) async {
+    final req = {"id": userid};
+
+    final userdata =
+        await apiReq.postApi(jsonEncode(req), path: "/api/getuser");
+
+    if (userdata[0]["status"] == false) {
+      erroralert(context, "Empty User", "There is no user data");
+    } else {
+      setUserData(jsonEncode(userdata[0]["data"]));
+      notifyListeners();
+      return true;
     }
     notifyListeners();
     return false;

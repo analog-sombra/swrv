@@ -21,7 +21,10 @@ import 'package:swrv/view/user/editprofile.dart';
 import 'package:swrv/view/user/profile.dart';
 import 'package:swrv/widgets/alerts.dart';
 
+import '../brand/createbrand.dart';
+import '../campaings/campaignpreview.dart';
 import '../campaings/createcampaign.dart';
+import '../campaings/mycompaign.dart';
 
 class Bottomnav extends HookConsumerWidget {
   Bottomnav({super.key});
@@ -53,16 +56,18 @@ class Bottomnav extends HookConsumerWidget {
     //campaings 21 - 30
     CampaignsInfo(),
     CampaignConnect(),
+    CreateCampaignsPage(),
     CreateCampaings(),
-    CampaignConnect(),
-    CampaignConnect(),
-    CampaignConnect(),
+    CampaignsPreview(),
+    MyCampaings(),
     CampaignConnect(),
     CampaignConnect(),
     CampaignConnect(),
     CampaignConnect(),
     //user profile
     EditProfile(),
+    //band 32 - 35
+    CreateBrandPage()
   ];
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 

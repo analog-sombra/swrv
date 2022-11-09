@@ -11,45 +11,29 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swrv/components/header.dart';
 import 'package:swrv/services/apirequest.dart';
+import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
 
 import '../../state/userinputstate.dart';
 import '../../widgets/cuswidgets.dart';
+import '../navigation/bottomnavbar.dart';
 
 class UserInput extends HookConsumerWidget {
   const UserInput({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    SharedPreferences prefs;
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     double statusBarHeight = MediaQuery.of(context).viewPadding.top;
 
-    ValueNotifier<String?> name = useState(null);
-
     final userInputStateW = ref.watch(userInputState);
 
-    void init() async {
-      prefs = await SharedPreferences.getInstance();
-      String? user = prefs.getString('user');
-      // log(user.toString());
-      name.value = jsonDecode(user!)["userName"];
-    }
-
-    useEffect(() {
-      init();
-      return null;
-    }, []);
-
     List inputs = [
-      UInput1(
-        name: name.value ?? "Loading..",
-      ),
+      const UInput1(),
       const UInput2(),
       const UInput3(),
       const UInput4(),
@@ -65,7 +49,7 @@ class UserInput extends HookConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
             children: [
-              Header(name: name.value.toString().split("@")[0]),
+              const Header(),
               const SizedBox(
                 height: 25,
               ),
@@ -168,107 +152,87 @@ class UserInput extends HookConsumerWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              GestureDetector(
-                                onTap: () {
-                                  userInputStateW.setCurInput(0);
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 10),
-                                  decoration: BoxDecoration(
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: (userInputStateW.curInput >= 0)
+                                      ? Colors.pink
+                                      : const Color(0xffe5e7eb),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  "01",
+                                  textScaleFactor: 1,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
                                     color: (userInputStateW.curInput >= 0)
-                                        ? Colors.pink
-                                        : const Color(0xffe5e7eb),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    "01",
-                                    textScaleFactor: 1,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: (userInputStateW.curInput >= 0)
-                                          ? Colors.white
-                                          : Colors.black.withOpacity(0.6),
-                                    ),
+                                        ? Colors.white
+                                        : Colors.black.withOpacity(0.6),
                                   ),
                                 ),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  userInputStateW.setCurInput(1);
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 10),
-                                  decoration: BoxDecoration(
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: (userInputStateW.curInput >= 1)
+                                      ? Colors.pink
+                                      : const Color(0xffe5e7eb),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  "02",
+                                  textScaleFactor: 1,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
                                     color: (userInputStateW.curInput >= 1)
-                                        ? Colors.pink
-                                        : const Color(0xffe5e7eb),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    "02",
-                                    textScaleFactor: 1,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: (userInputStateW.curInput >= 1)
-                                          ? Colors.white
-                                          : Colors.black.withOpacity(0.6),
-                                    ),
+                                        ? Colors.white
+                                        : Colors.black.withOpacity(0.6),
                                   ),
                                 ),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  userInputStateW.setCurInput(2);
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 10),
-                                  decoration: BoxDecoration(
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: (userInputStateW.curInput >= 2)
+                                      ? Colors.pink
+                                      : const Color(0xffe5e7eb),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  "03",
+                                  textScaleFactor: 1,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
                                     color: (userInputStateW.curInput >= 2)
-                                        ? Colors.pink
-                                        : const Color(0xffe5e7eb),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    "03",
-                                    textScaleFactor: 1,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: (userInputStateW.curInput >= 2)
-                                          ? Colors.white
-                                          : Colors.black.withOpacity(0.6),
-                                    ),
+                                        ? Colors.white
+                                        : Colors.black.withOpacity(0.6),
                                   ),
                                 ),
                               ),
-                              GestureDetector(
-                                onTap: () {
-                                  userInputStateW.setCurInput(3);
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 10),
-                                  decoration: BoxDecoration(
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: (userInputStateW.curInput >= 3)
+                                      ? Colors.pink
+                                      : const Color(0xffe5e7eb),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  "04",
+                                  textScaleFactor: 1,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
                                     color: (userInputStateW.curInput >= 3)
-                                        ? Colors.pink
-                                        : const Color(0xffe5e7eb),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    "04",
-                                    textScaleFactor: 1,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500,
-                                      color: (userInputStateW.curInput >= 3)
-                                          ? Colors.white
-                                          : Colors.black.withOpacity(0.6),
-                                    ),
+                                        ? Colors.white
+                                        : Colors.black.withOpacity(0.6),
                                   ),
                                 ),
                               ),
@@ -279,88 +243,6 @@ class UserInput extends HookConsumerWidget {
                         const SizedBox(
                           height: 10,
                         ),
-                        if (userInputStateW.curInput == 0) ...[
-                          // ElevatedButton(
-                          //   style: ElevatedButton.styleFrom(
-                          //     minimumSize: const Size.fromHeight(40),
-                          //     shape: RoundedRectangleBorder(
-                          //       borderRadius: BorderRadius.circular(10),
-                          //     ),
-                          //     elevation: 0,
-                          //     backgroundColor: Colors.pink,
-                          //   ),
-                          //   onPressed: () {
-                          //     if (curinput.value < 3) {
-                          //       curinput.value += 1;
-                          //     }
-                          //   },
-                          //   child: const Text(
-                          //     "Next",
-                          //     textScaleFactor: 1,
-                          //     style:
-                          //         TextStyle(fontSize: 18, color: Colors.white),
-                          //   ),
-                          // ),
-                        ] else ...[
-                          // Row(
-                          //   children: [
-                          //     Expanded(
-                          //       child: ElevatedButton(
-                          //         style: ElevatedButton.styleFrom(
-                          //           shape: RoundedRectangleBorder(
-                          //             borderRadius: BorderRadius.circular(10),
-                          //           ),
-                          //           elevation: 0,
-                          //           backgroundColor: const Color(0xffe5e7eb),
-                          //         ),
-                          //         onPressed: () {
-                          //           userInputStateW.setCurInput(val)
-                          //           curinput.value -= 1;
-                          //         },
-                          //         child: Text(
-                          //           "Back",
-                          //           textScaleFactor: 1,
-                          //           style: TextStyle(
-                          //             fontSize: 18,
-                          //             color: Colors.black.withOpacity(0.8),
-                          //           ),
-                          //         ),
-                          //       ),
-                          //     ),
-                          //     const SizedBox(
-                          //       width: 20,
-                          //     ),
-                          //     Expanded(
-                          //       child: ElevatedButton(
-                          //         style: ElevatedButton.styleFrom(
-                          //           shape: RoundedRectangleBorder(
-                          //             borderRadius: BorderRadius.circular(10),
-                          //           ),
-                          //           elevation: 0,
-                          //           backgroundColor: Colors.pink,
-                          //         ),
-                          //         onPressed: () {
-                          //           if (curinput.value < 3) {
-                          //             curinput.value += 1;
-                          //           } else {
-                          //             Navigator.push(
-                          //                 context,
-                          //                 MaterialPageRoute(
-                          //                     builder: (context) =>
-                          //                         const Profile()));
-                          //           }
-                          //         },
-                          //         child: const Text(
-                          //           "Next",
-                          //           textScaleFactor: 1,
-                          //           style: TextStyle(
-                          //               fontSize: 18, color: Colors.white),
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ],
-                          // )
-                        ],
                       ],
                     ),
                   ),
@@ -375,8 +257,7 @@ class UserInput extends HookConsumerWidget {
 }
 
 class UInput1 extends HookConsumerWidget {
-  final String name;
-  const UInput1({Key? key, required this.name}) : super(key: key);
+  const UInput1({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -384,13 +265,11 @@ class UInput1 extends HookConsumerWidget {
     TextEditingController username = useTextEditingController();
     TextEditingController nickname = useTextEditingController();
     TextEditingController dob = useTextEditingController();
+    TextEditingController bio = useTextEditingController();
 
     ValueNotifier<File?> imageFile = useState(null);
 
-    useEffect(() {
-      email.text = name;
-      return null;
-    }, []);
+    ValueNotifier<String> userId = useState("0");
 
     Future pickImage() async {
       try {
@@ -406,6 +285,18 @@ class UInput1 extends HookConsumerWidget {
     }
 
     final userInputStateW = ref.watch(userInputState);
+    final userStateW = ref.watch(userState);
+
+    void init() async {
+      username.text = await userStateW.getUserName();
+      email.text = await userStateW.getUserEmail();
+      userId.value = await userStateW.getUserId();
+    }
+
+    useEffect(() {
+      init();
+      return null;
+    }, []);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -429,7 +320,7 @@ class UInput1 extends HookConsumerWidget {
                     width: 80,
                     height: 80,
                     child: (imageFile.value == null)
-                        ? Image.asset("assets/images/avatar.png")
+                        ? Image.asset("assets/images/user.png")
                         : Image.file(
                             imageFile.value!,
                             fit: BoxFit.cover,
@@ -482,7 +373,7 @@ class UInput1 extends HookConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.only(top: 2),
                         child: Text(
-                          "The image shoudl either be jpg or jpeg or png format and be a maximum seixe of 10 MB.",
+                          "The image should either be jpg or jpeg or png format and be a maximum seixe of 10 MB.",
                           textScaleFactor: 1,
                           style: TextStyle(
                             color: Colors.black.withOpacity(0.5),
@@ -651,6 +542,38 @@ class UInput1 extends HookConsumerWidget {
             ),
           ),
         ),
+        const Padding(
+          padding: EdgeInsets.only(top: 16),
+          child: Text(
+            "Bio",
+            textScaleFactor: 1,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 5),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: TextField(
+              minLines: 4,
+              maxLines: 8,
+              controller: bio,
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: Color(0xfff3f4f6),
+                border: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+              ),
+            ),
+          ),
+        ),
         const SizedBox(
           height: 15,
         ),
@@ -658,8 +581,30 @@ class UInput1 extends HookConsumerWidget {
             btnColor: primaryC,
             btnText: "Next",
             textSize: 18,
-            btnFunction: () {
-              userInputStateW.setCurInput(userInputStateW.curInput + 1);
+            btnFunction: () async {
+              if (imageFile.value == null) {
+                erroralert(context, "Image", "Please select one image");
+              } else {
+                final res = await userInputStateW.uloadAvatar(
+                    context, imageFile.value!.path, userId.value);
+
+                final result = await userInputStateW.userUpdate1(
+                  context,
+                  [
+                    email.text,
+                    username.text,
+                    nickname.text,
+                    dob.text,
+                    bio.text
+                  ],
+                  userId.value,
+                );
+
+                if (result && res) {
+                  userInputStateW.clear();
+                  userInputStateW.setCurInput(userInputStateW.curInput + 1);
+                }
+              }
             }),
       ],
     );
@@ -672,6 +617,9 @@ class UInput2 extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userInputStateW = ref.watch(userInputState);
+    final userStateW = ref.watch(userState);
+
+    ValueNotifier<String> userId = useState("0");
 
     TextEditingController account = useTextEditingController();
     TextEditingController category = useTextEditingController();
@@ -679,6 +627,9 @@ class UInput2 extends HookConsumerWidget {
 
     CusApiReq apiReq = CusApiReq();
     void init() async {
+      userId.value = await userStateW.getUserId();
+      log(userId.value);
+
       final req1 = {};
       List accountRes =
           await apiReq.postApi(jsonEncode(req1), path: "/api/getcurrency");
@@ -1022,8 +973,7 @@ class UInput2 extends HookConsumerWidget {
                             backgroundColor: const Color(0xff22c55e)),
                         onPressed: () {
                           if (userInputStateW.languageVal.isNotEmpty) {
-                            languages.text =
-                                "${userInputStateW.languageVal[0]["languageName"]} [${userInputStateW.languageVal[0]["languageCode"]}]";
+                            languages.text = userInputStateW.getlangValue();
                           } else {
                             languages.clear();
                           }
@@ -1180,6 +1130,8 @@ class UInput2 extends HookConsumerWidget {
                 btnText: "Back",
                 textSize: 18,
                 btnFunction: () {
+                  userInputStateW.clear();
+
                   userInputStateW.setCurInput(userInputStateW.curInput - 1);
                 },
                 textColor: blackC,
@@ -1193,8 +1145,20 @@ class UInput2 extends HookConsumerWidget {
                 btnColor: primaryC,
                 btnText: "Next",
                 textSize: 18,
-                btnFunction: () {
-                  userInputStateW.setCurInput(userInputStateW.curInput + 1);
+                btnFunction: () async {
+                  try {
+                    final restult = await userInputStateW.userUpdate2(
+                      context,
+                      userId.value,
+                    );
+
+                    if (restult) {
+                      userInputStateW.clear();
+                      userInputStateW.setCurInput(userInputStateW.curInput + 1);
+                    }
+                  } catch (e) {
+                    log(e.toString());
+                  }
                 },
               ),
             ),
@@ -1372,6 +1336,7 @@ class UInput3 extends HookConsumerWidget {
                 btnText: "Back",
                 textSize: 18,
                 btnFunction: () {
+                  userInputStateW.clear();
                   userInputStateW.setCurInput(userInputStateW.curInput - 1);
                 },
                 textColor: blackC,
@@ -1385,8 +1350,13 @@ class UInput3 extends HookConsumerWidget {
                 btnColor: primaryC,
                 btnText: "Next",
                 textSize: 18,
-                btnFunction: () {
-                  userInputStateW.setCurInput(userInputStateW.curInput + 1);
+                btnFunction: () async {
+                  if (userInputStateW.imgUrls.isEmpty) {
+                    erroralert(context, "Error", "Atleat add one platform");
+                  } else {
+                    userInputStateW.clear();
+                    userInputStateW.setCurInput(userInputStateW.curInput + 1);
+                  }
                 },
               ),
             ),
@@ -1413,6 +1383,17 @@ class CusFiels extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userInputStateW = ref.watch(userInputState);
+    ValueNotifier<String> userId = useState("0");
+    final userStateW = ref.watch(userState);
+
+    void init() async {
+      userId.value = await userStateW.getUserId();
+    }
+
+    useEffect(() {
+      init();
+      return null;
+    }, []);
 
     return StatefulBuilder(builder: (context, setStat) {
       return Container(
@@ -1481,9 +1462,18 @@ class CusFiels extends HookConsumerWidget {
                     backgroundColor: Colors.pink,
                   ),
                   onPressed: () {
-                    userInputStateW.setIsComplted(index, true);
-                    // isCom.value[index] = true;
-                    setStat(() {});
+                    if (userInputStateW.cont[index].text == "") {
+                      erroralert(context, "Error", "Field can't be empty");
+                    } else {
+                      userInputStateW.addHandal(
+                          context,
+                          userId.value,
+                          userInputStateW.platforms[index]["id"],
+                          userInputStateW.cont[index].text);
+                      userInputStateW.setIsComplted(index, true);
+
+                      setStat(() {});
+                    }
                   },
                   child: const Text(
                     "Done",
@@ -1506,16 +1496,18 @@ class UInput4 extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userInputStateW = ref.watch(userInputState);
+    final userStateW = ref.watch(userState);
+    ValueNotifier<String> userId = useState("0");
 
     TextEditingController country = useTextEditingController();
     TextEditingController number = useTextEditingController();
     TextEditingController gender = useTextEditingController();
     TextEditingController city = useTextEditingController();
 
-    ValueNotifier<bool> isMale = useState(true);
-
     CusApiReq apiReq = CusApiReq();
     void init() async {
+      userId.value = await userStateW.getUserId();
+
       final req1 = {};
       List countryRes =
           await apiReq.postApi(jsonEncode(req1), path: "/api/getcountry");
@@ -1683,22 +1675,18 @@ class UInput4 extends HookConsumerWidget {
                   child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    CheckboxListTile(
-                      value: isMale.value,
-                      onChanged: (val) {
-                        isMale.value = true;
-                        setState(() {});
-                      },
-                      title: const Text("Male"),
-                    ),
-                    CheckboxListTile(
-                      value: !isMale.value,
-                      onChanged: (val) {
-                        isMale.value = false;
-                        setState(() {});
-                      },
-                      title: const Text("Female"),
-                    ),
+                    for (int i = 0;
+                        i < userInputStateW.genderList.length;
+                        i++) ...[
+                      CheckboxListTile(
+                        value: userInputStateW.selectedGender[i],
+                        onChanged: (val) {
+                          userInputStateW.setGender(i, val!);
+                          setState(() {});
+                        },
+                        title: Text('${userInputStateW.genderList[i]}'),
+                      )
+                    ]
                   ],
                 ),
               )),
@@ -1741,7 +1729,11 @@ class UInput4 extends HookConsumerWidget {
                             ),
                             backgroundColor: const Color(0xff22c55e)),
                         onPressed: () {
-                          gender.text = (isMale.value) ? "Male" : "Female";
+                          if (userInputStateW.genderVal.isNotEmpty) {
+                            gender.text = "${userInputStateW.genderVal[0]}";
+                          } else {
+                            country.clear();
+                          }
                           setState(() {});
                           Navigator.pop(context);
                         },
@@ -1750,9 +1742,10 @@ class UInput4 extends HookConsumerWidget {
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
@@ -1764,7 +1757,6 @@ class UInput4 extends HookConsumerWidget {
         }),
       );
     }
-    
 
     void cityBox() {
       showModalBottomSheet(
@@ -2042,6 +2034,8 @@ class UInput4 extends HookConsumerWidget {
                 btnText: "Back",
                 textSize: 18,
                 btnFunction: () {
+                  userInputStateW.clear();
+
                   userInputStateW.setCurInput(userInputStateW.curInput - 1);
                 },
                 textColor: blackC,
@@ -2055,8 +2049,26 @@ class UInput4 extends HookConsumerWidget {
                 btnColor: primaryC,
                 btnText: "Next",
                 textSize: 18,
-                btnFunction: () {
-                  // userInputStateW.setCurInput(userInputStateW.curInput + 1);
+                btnFunction: () async {
+                  final result = await userInputStateW.userUpdate4(
+                    context,
+                    userId.value,
+                    [number.text, gender.text],
+                  );
+
+                  userStateW.clearUserData();
+
+                  final newuser =
+                      await userStateW.setNewUserData(context, userId.value);
+
+                  if (result && newuser) {
+                    userInputStateW.clear();
+                    userInputStateW.setCurInput(0);
+
+                    userStateW.setProfileComp(true);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Bottomnav()));
+                  }
                 },
               ),
             ),

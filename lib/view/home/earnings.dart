@@ -16,7 +16,7 @@ class EarningsPage extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Header(name: "analog-sombra"),
+          const Header(),
           const Padding(
             padding: EdgeInsets.only(left: 25, top: 20),
             child: Text(

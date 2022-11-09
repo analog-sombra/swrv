@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../services/apirequest.dart';
 import '../../utils/alerts.dart';
@@ -13,6 +14,22 @@ final createCampState =
     ChangeNotifierProvider<CreateCampState>((ref) => CreateCampState());
 
 class CreateCampState extends ChangeNotifier {
+
+
+  double rating = 3;
+
+  void setRating(double val) {
+    rating = val;
+    notifyListeners();
+  }
+
+  List campData = [];
+
+  void setCampData(List data){
+    campData = data;
+    notifyListeners();
+  }
+
   CusApiReq apiReq = CusApiReq();
 
   List platforms = [];
@@ -57,6 +74,8 @@ class CreateCampState extends ChangeNotifier {
 
   void setCategoryId(int id) {
     categoryId = categoryList[id]["id"];
+    setCatValue(categoryList[id]["categoryName"]);
+
     notifyListeners();
   }
 
@@ -109,7 +128,13 @@ class CreateCampState extends ChangeNotifier {
         "Empty Field",
         "Please fill all the fields",
       );
-    } else if (categoryValue == null) {
+    } else if (int.parse(fields[4]) >= int.parse(fields[5])) {
+      erroralert(
+        context,
+        "Error",
+        "Min reach should be lower then max reach",
+      );
+    } else if (categoryId == null) {
       erroralert(
         context,
         "Empty Field",
@@ -134,10 +159,11 @@ class CreateCampState extends ChangeNotifier {
         "Please Select some platforms",
       );
     } else {
+      final userdata = await getUser();
+
       final req = {
-        "f": "createCampaign",
-        'brandId': "1",
-        'brandUserId': "1",
+        "brandId": jsonDecode(userdata)["id"].toString(),
+        "brandUserId": jsonDecode(userdata)["brand"]["id"].toString(),
         "cityId": cityId,
         "campaignTypeId": categoryId,
         "campaignName": fields[0],
@@ -156,13 +182,14 @@ class CreateCampState extends ChangeNotifier {
         "maxReach": fields[5],
         "costPerPost": fields[6],
         "totalBudget": fields[7],
-        "minEligibleRating": fields[8],
+        "minEligibleRating": rating.toString(),
         "currencyId": currencyId,
         "categories": categoryValue.toString(),
         "platforms": selectedPlatformList()
       };
 
-      List data = await apiReq.postApi(jsonEncode(req));
+      List data =
+          await apiReq.postApi(jsonEncode(req), path: "/api/createchampaign");
 
       if (data[0] == false) {
         erroralert(
@@ -203,7 +230,6 @@ class CreateCampState extends ChangeNotifier {
     currencyId = null;
     currencyList = [];
 
-    categoryValue = null;
     categoryId = null;
     categoryList = [];
 
@@ -211,4 +237,11 @@ class CreateCampState extends ChangeNotifier {
     cityId = null;
     cityList = [];
   }
+
+  Future<dynamic> getUser() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.get("user");
+  }
+
+  
 }

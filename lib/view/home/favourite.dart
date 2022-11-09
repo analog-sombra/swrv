@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/components/header.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
 
 import '../../state/navstate.dart';
+import '../../state/userstate.dart';
 
 class FavouritePage extends HookConsumerWidget {
   const FavouritePage({super.key});
@@ -13,13 +15,25 @@ class FavouritePage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.of(context).size.width;
 
+    ValueNotifier<bool> isBrand = useState(false);
+    final userStateW = ref.watch(userState);
+
+    void init() async {
+      isBrand.value = await userStateW.isBrand();
+    }
+
+    useEffect(() {
+      init();
+      return null;
+    }, []);
+
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Header(name: "analog-sombra"),
+          const Header(),
           const SizedBox(
             height: 20,
           ),
@@ -205,55 +219,61 @@ class FavouritePage extends HookConsumerWidget {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 20),
-            width: width,
-            margin: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              color: whiteC,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: const [
-                BoxShadow(
-                  color: shadowC,
-                  blurRadius: 5,
-                  offset: Offset(0, 6),
-                ),
-              ],
+          if (isBrand.value) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 20),
+              width: width,
+              margin: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: whiteC,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    color: shadowC,
+                    blurRadius: 5,
+                    offset: Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Would yo like to collaorate ?",
+                    textScaleFactor: 1,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: blackC),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  CusBtn(
+                    btnColor: primaryC,
+                    btnText: "create campign",
+                    textSize: 18,
+                    btnFunction: () {
+                      ref.read(pageIndex.state).state = 23;
+                    },
+                    elevation: 1,
+                  ),
+                  CusBtn(
+                    btnColor: const Color(0xFF10BCE2),
+                    btnText: "Invite to a compaign",
+                    textSize: 18,
+                    btnFunction: () {
+                      ref.read(pageIndex.state).state = 32;
+                    },
+                    elevation: 1,
+                  ),
+                ],
+              ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  "Would yo like to collaorate ?",
-                  textScaleFactor: 1,
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w500, color: blackC),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                CusBtn(
-                  btnColor: primaryC,
-                  btnText: "create campign",
-                  textSize: 18,
-                  btnFunction: () {
-                    ref.read(pageIndex.state).state = 23;
-                  },
-                  elevation: 1,
-                ),
-                CusBtn(
-                  btnColor: const Color(0xFF10BCE2),
-                  btnText: "Invite to a compaign",
-                  textSize: 18,
-                  btnFunction: () {},
-                  elevation: 1,
-                ),
-              ],
-            ),
-          ),
+          ],
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 20),
             width: width,

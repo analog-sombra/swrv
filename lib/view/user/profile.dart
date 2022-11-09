@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -9,15 +10,25 @@ import 'package:swrv/components/header.dart';
 import 'package:swrv/state/navstate.dart';
 import 'package:swrv/view/login.dart';
 
+import '../../state/userstate.dart';
+import '../../utils/const.dart';
+
 class Profile extends HookConsumerWidget {
   const Profile({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ValueNotifier<SharedPreferences?> prefs = useState(null);
+    final userStateW = ref.watch(userState);
+    ValueNotifier<String> userName = useState("loading...");
+    ValueNotifier<String> nickname = useState("loading...");
+    ValueNotifier<String> userAvatar = useState("");
 
     void init() async {
       prefs.value = await SharedPreferences.getInstance();
+      userName.value = await userStateW.getUserName();
+      userAvatar.value = await userStateW.getUserAvatar();
+      nickname.value = await userStateW.getNickname();
     }
 
     useEffect(() {
@@ -32,7 +43,6 @@ class Profile extends HookConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const Header(
-            name: "analog-sombra",
             isShowUser: false,
           ),
           const SizedBox(
@@ -53,13 +63,31 @@ class Profile extends HookConsumerWidget {
               children: [
                 Row(
                   children: [
-                    Container(
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                        ),
+                        width: 100,
+                        height: 100,
+                        child: userAvatar.value == "" || userAvatar.value == "0"
+                            ? Image.asset(
+                                "assets/images/user.png",
+                                fit: BoxFit.cover,
+                              )
+                            : CachedNetworkImage(
+                                imageUrl:
+                                    "$baseUrl/public/assets/useravatar/${userAvatar.value}",
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                                fit: BoxFit.cover,
+                              ),
                       ),
-                      width: 100,
-                      height: 100,
-                      child: Image.asset("assets/images/avatar.png"),
                     ),
                     const SizedBox(
                       width: 10,
@@ -70,10 +98,10 @@ class Profile extends HookConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Analog Sombra",
+                          Text(
+                            userName.value.toString().split("@")[0],
                             textScaleFactor: 1,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w500,
                                 color: Colors.black),
@@ -82,7 +110,7 @@ class Profile extends HookConsumerWidget {
                             height: 5,
                           ),
                           Text(
-                            "Junior Developer",
+                            nickname.value,
                             textScaleFactor: 1,
                             style: TextStyle(
                                 fontSize: 14,
@@ -115,49 +143,54 @@ class Profile extends HookConsumerWidget {
                       fontWeight: FontWeight.w400,
                       color: Colors.black.withOpacity(0.75)),
                 ),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Color(0xff5eead4),
+                GestureDetector(
+                  onTap: () {
+                    ref.watch(pageIndex.state).state = 26;
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xff5eead4),
+                          ),
+                          width: 60,
+                          height: 60,
+                          child: const Icon(
+                            Icons.people_alt_outlined,
+                            color: Colors.white,
+                            size: 40,
+                          ),
                         ),
-                        width: 60,
-                        height: 60,
-                        child: const Icon(
-                          Icons.people_alt_outlined,
-                          color: Colors.white,
-                          size: 40,
+                        const SizedBox(
+                          width: 15,
                         ),
-                      ),
-                      const SizedBox(
-                        width: 15,
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Campaigns",
-                              textScaleFactor: 1,
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black),
-                            ),
-                          ],
+                        Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: const [
+                              Text(
+                                "Campaigns",
+                                textScaleFactor: 1,
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.black.withOpacity(0.65),
-                        size: 25,
-                      )
-                    ],
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.black.withOpacity(0.65),
+                          size: 25,
+                        )
+                      ],
+                    ),
                   ),
                 ),
                 Container(
@@ -203,47 +236,53 @@ class Profile extends HookConsumerWidget {
                     ],
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle, color: Color(0xff60a5fa)),
-                        width: 60,
-                        height: 60,
-                        child: const Icon(
-                          Icons.laptop_chromebook_outlined,
-                          color: Colors.white,
-                          size: 40,
+                GestureDetector(
+                  onTap: (){
+                      ref.watch(pageIndex.state).state = 12;
+                  
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                              shape: BoxShape.circle, color: Color(0xff60a5fa)),
+                          width: 60,
+                          height: 60,
+                          child: const Icon(
+                            Icons.laptop_chromebook_outlined,
+                            color: Colors.white,
+                            size: 40,
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        width: 15,
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Privacy",
-                              textScaleFactor: 1,
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black),
-                            ),
-                          ],
+                        const SizedBox(
+                          width: 15,
                         ),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.black.withOpacity(0.65),
-                        size: 25,
-                      )
-                    ],
+                        Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: const [
+                              Text(
+                                "Privacy",
+                                textScaleFactor: 1,
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.black.withOpacity(0.65),
+                          size: 25,
+                        )
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(
