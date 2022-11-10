@@ -151,14 +151,13 @@ class CreateCampState extends ChangeNotifier {
         "Error",
         "Min reach should be lower then max reach",
       );
-    }
-     else if (cmpId == null) {
+    } else if (cmpId == null) {
       erroralert(
         context,
         "Empty Field",
         "Please select the category",
       );
-    }  else if (categoryId == null) {
+    } else if (categoryId == null) {
       erroralert(
         context,
         "Empty Field",
@@ -183,11 +182,9 @@ class CreateCampState extends ChangeNotifier {
         "Please Select some platforms",
       );
     } else {
-      final userdata = await getUser();
-
       final req = {
-        "brandUserId": jsonDecode(userdata)[0]["id"].toString(),
-        "brandId": jsonDecode(userdata)[0]["brand"]["id"].toString(),
+        "brandUserId": await getUserId(),
+        "brandId": await getBrandId(),
         "cityId": cityId,
         "campaignTypeId": categoryId,
         "campaignName": fields[0],
@@ -228,7 +225,6 @@ class CreateCampState extends ChangeNotifier {
           data[0]["message"],
         );
       } else {
-        clearData();
         notifyListeners();
         return true;
       }
@@ -274,5 +270,23 @@ class CreateCampState extends ChangeNotifier {
   Future<dynamic> getUser() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.get("user");
+  }
+
+  Future<String> getUserId() async {
+    String userId = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    userId = jsonDecode(userdata!)[0]["id"].toString();
+    notifyListeners();
+    return userId;
+  }
+
+  Future<String> getUserBrandId() async {
+    String userbrandId = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    userbrandId = jsonDecode(userdata!)[0]["brandId"].toString();
+    notifyListeners();
+    return userbrandId;
   }
 }

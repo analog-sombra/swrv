@@ -1,28 +1,49 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swrv/components/header.dart';
+import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 
-class EditProfile extends HookWidget {
+import '../../utils/alerts.dart';
+
+class EditProfile extends HookConsumerWidget {
   const EditProfile({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // ValueNotifier<SharedPreferences?> prefs = useState(null);
+  Widget build(BuildContext context, WidgetRef ref) {
+    TextEditingController email = useTextEditingController();
+    TextEditingController userName = useTextEditingController();
+    TextEditingController knowAs = useTextEditingController();
     TextEditingController dob = useTextEditingController();
 
-    // void init() async {
-    //   prefs.value = await SharedPreferences.getInstance();
-    // }
+    ValueNotifier<String> userAvatar = useState("");
+    ValueNotifier<String> showuserName = useState("");
+    ValueNotifier<String> shownickName = useState("");
+
+    final userStateW = ref.watch(userState);
+    void init() async {
+      userAvatar.value = await userStateW.getUserAvatar();
+      showuserName.value = await userStateW.getUserName();
+      shownickName.value = await userStateW.getNickname();
+
+      email.text = await userStateW.getUserEmail();
+      userName.text = await userStateW.getUserName();
+      knowAs.text = await userStateW.getNickname();
+      // dob.text = await userStateW.g
+      // final userdata  = await userStateW.get
+      // log()
+    }
 
     useEffect(() {
-      // init();
+      init();
       return;
-    });
+    }, []);
 
     return SingleChildScrollView(
       child: Column(
@@ -60,7 +81,16 @@ class EditProfile extends HookWidget {
                           ),
                           width: 100,
                           height: 100,
-                          child: Image.asset("assets/images/avatar.png"),
+                          child: CachedNetworkImage(
+                            imageUrl: userAvatar.value,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) =>
+                                    CircularProgressIndicator(
+                                        value: downloadProgress.progress),
+                            errorWidget: (context, url, error) =>
+                                Image.asset("assets/images/user.png"),
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
                       Align(
@@ -92,10 +122,10 @@ class EditProfile extends HookWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Analog Sombra",
+                      Text(
+                        showuserName.value,
                         textScaleFactor: 1,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
                             color: Colors.black),
@@ -104,7 +134,7 @@ class EditProfile extends HookWidget {
                         height: 5,
                       ),
                       Text(
-                        "Junior Developer",
+                        shownickName.value,
                         textScaleFactor: 1,
                         style: TextStyle(
                             fontSize: 14,
@@ -130,9 +160,10 @@ class EditProfile extends HookWidget {
                   padding: const EdgeInsets.only(top: 5),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: const TextField(
+                    child: TextField(
+                      controller: email,
                       readOnly: true,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         filled: true,
                         fillColor: Color(0xfff3f4f6),
                         border: InputBorder.none,
@@ -147,7 +178,7 @@ class EditProfile extends HookWidget {
                 const Padding(
                   padding: EdgeInsets.only(top: 16),
                   child: Text(
-                    "Lastname",
+                    "UserName",
                     textScaleFactor: 1,
                     style: TextStyle(
                       color: Colors.black,
@@ -160,8 +191,9 @@ class EditProfile extends HookWidget {
                   padding: const EdgeInsets.only(top: 5),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: const TextField(
-                      decoration: InputDecoration(
+                    child: TextField(
+                      controller: userName,
+                      decoration: const InputDecoration(
                         filled: true,
                         fillColor: Color(0xfff3f4f6),
                         border: InputBorder.none,
@@ -176,7 +208,7 @@ class EditProfile extends HookWidget {
                 const Padding(
                   padding: EdgeInsets.only(top: 16),
                   child: Text(
-                    "Nickname",
+                    "Know As",
                     textScaleFactor: 1,
                     style: TextStyle(
                       color: Colors.black,
@@ -189,8 +221,9 @@ class EditProfile extends HookWidget {
                   padding: const EdgeInsets.only(top: 5),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: const TextField(
-                      decoration: InputDecoration(
+                    child: TextField(
+                      controller: knowAs,
+                      decoration: const InputDecoration(
                         filled: true,
                         fillColor: Color(0xfff3f4f6),
                         border: InputBorder.none,
@@ -335,30 +368,30 @@ class EditProfile extends HookWidget {
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                elevation: 0,
-                                backgroundColor: backgroundC,
-                              ),
-                              onPressed: () {},
-                              child: const Text(
-                                "Back",
-                                textAlign: TextAlign.center,
-                                textScaleFactor: 1,
-                                style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 20,
-                          ),
+                          // Expanded(
+                          //   child: ElevatedButton(
+                          //     style: ElevatedButton.styleFrom(
+                          //       shape: RoundedRectangleBorder(
+                          //         borderRadius: BorderRadius.circular(10),
+                          //       ),
+                          //       elevation: 0,
+                          //       backgroundColor: backgroundC,
+                          //     ),
+                          //     onPressed: () {},
+                          //     child: const Text(
+                          //       "Back",
+                          //       textAlign: TextAlign.center,
+                          //       textScaleFactor: 1,
+                          //       style: TextStyle(
+                          //           color: Colors.black,
+                          //           fontSize: 16,
+                          //           fontWeight: FontWeight.w500),
+                          //     ),
+                          //   ),
+                          // ),
+                          // const SizedBox(
+                          //   width: 20,
+                          // ),
                           Expanded(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
@@ -367,7 +400,9 @@ class EditProfile extends HookWidget {
                                   ),
                                   elevation: 0,
                                   backgroundColor: secondaryC),
-                              onPressed: () {},
+                              onPressed: () {
+                                comingalert(context);
+                              },
                               child: const Text(
                                 "Save",
                                 textAlign: TextAlign.center,

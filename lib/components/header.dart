@@ -1,3 +1,4 @@
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -7,7 +8,6 @@ import 'package:swrv/state/navstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 
 import '../state/userstate.dart';
-import '../utils/const.dart';
 
 class Header extends HookConsumerWidget {
   final bool isShowUser;
@@ -22,6 +22,7 @@ class Header extends HookConsumerWidget {
     void init() async {
       userName.value = await userStateW.getUserName();
       userAvatar.value = await userStateW.getUserAvatar();
+
     }
 
     useEffect(() {
@@ -67,7 +68,7 @@ class Header extends HookConsumerWidget {
                       )
                     : CachedNetworkImage(
                         imageUrl:
-                            "$baseUrl/public/assets/useravatar/${userAvatar.value}",
+                            userAvatar.value,
                         progressIndicatorBuilder:
                             (context, url, downloadProgress) =>
                                 CircularProgressIndicator(

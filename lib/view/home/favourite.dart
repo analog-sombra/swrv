@@ -9,6 +9,7 @@ import 'package:swrv/widgets/cuswidgets.dart';
 
 import '../../state/navstate.dart';
 import '../../state/userstate.dart';
+import '../../utils/alerts.dart';
 
 class FavouritePage extends HookConsumerWidget {
   const FavouritePage({super.key});
@@ -215,7 +216,9 @@ class FavouritePage extends HookConsumerWidget {
                     btnColor: secondaryC,
                     btnText: "Sent Message",
                     textSize: 18,
-                    btnFunction: () {},
+                    btnFunction: () {
+                      comingalert(context);
+                    },
                     elevation: 1,
                   ),
                 ),
@@ -315,7 +318,7 @@ class FavouritePage extends HookConsumerWidget {
                     child: Row(
                       children: [
                         const Text(
-                          "Emgament Per Post",
+                          "Engagement Per Post",
                           textScaleFactor: 1,
                           textAlign: TextAlign.left,
                           style: TextStyle(
@@ -409,7 +412,7 @@ class FavouritePage extends HookConsumerWidget {
                     child: Row(
                       children: const [
                         Text(
-                          "Emgament Per Post",
+                          "Engagement Per Post",
                           textScaleFactor: 1,
                           textAlign: TextAlign.left,
                           style: TextStyle(

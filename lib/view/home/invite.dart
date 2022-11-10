@@ -4,6 +4,8 @@ import 'package:swrv/components/header.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
 
+import '../../utils/alerts.dart';
+
 class InvitePage extends HookConsumerWidget {
   const InvitePage({super.key});
 
@@ -152,7 +154,9 @@ class InvitePage extends HookConsumerWidget {
                   btnColor: const Color(0xff01FFF4),
                   btnText: "Invite",
                   textSize: 18,
-                  btnFunction: () {},
+                  btnFunction: () {
+                    comingalert(context);
+                  },
                   textColor: secondaryC,
                   elevation: 0,
                 ),
@@ -193,7 +197,9 @@ class InvitePage extends HookConsumerWidget {
                   child: Column(
                     children: [
                       Container(
-                        decoration: BoxDecoration(color: backgroundC,borderRadius: BorderRadius.circular(12)),
+                        decoration: BoxDecoration(
+                            color: backgroundC,
+                            borderRadius: BorderRadius.circular(12)),
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         margin: const EdgeInsets.symmetric(vertical: 5),
                         child: Row(

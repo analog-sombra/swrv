@@ -8,7 +8,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../services/apirequest.dart';
 import '../utils/alerts.dart';
-import '../utils/utilsmethods.dart';
 
 final registerState =
     ChangeNotifierProvider<RegisterStatus>((ref) => RegisterStatus());
@@ -82,13 +81,15 @@ class RegisterStatus extends ChangeNotifier {
         'Empty Field',
         'Please fill the Re-Password!',
       );
-    } else if (!validatePassword(pass.text)) {
-      erroralert(
-        context,
-        'Password Error',
-        'Your Password is weak try a different password',
-      );
-    } else if (pass.text != coPass.text) {
+    } 
+    // else if (!validatePassword(pass.text)) {
+    //   erroralert(
+    //     context,
+    //     'Password Error',
+    //     'Your Password is weak try a different password',
+    //   );
+    // } 
+    else if (pass.text != coPass.text) {
       erroralert(
         context,
         'Same Password!',

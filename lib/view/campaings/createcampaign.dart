@@ -29,14 +29,15 @@ class CreateCampaignsPage extends HookConsumerWidget {
 
     void init() async {
       final req3 = {};
-      List category =
-          await apiReq.postApi(jsonEncode(req3), path: "api/get-campaign-type");
+      List category = await apiReq.postApi(jsonEncode(req3),
+          path: "/api/get-campaign-type");
 
       if (category[0]["status"]) {
         createCmpSW.setCategory(category[0]["data"]);
       } else {
         erroralert(context, "error", "No Record Fount");
       }
+     
     }
 
     useEffect(() {
@@ -659,10 +660,8 @@ class CreateCampaings extends HookConsumerWidget {
                               DropdownMenuItem(
                                 onTap: () {
                                   createCmpSW.setCmpId(i);
-                   
                                 },
-                                value: createCmpSW.cmpList[i]
-                                    ["categoryName"],
+                                value: createCmpSW.cmpList[i]["categoryName"],
                                 child: Container(
                                   decoration: BoxDecoration(
                                     border: Border(
@@ -933,19 +932,6 @@ class CreateCampaings extends HookConsumerWidget {
                       btnText: "Create",
                       textSize: 18,
                       btnFunction: () async {
-                        // createCmpSW.setCampData([
-                        //   name.text,
-                        //   info.text,
-                        //   startDate.text,
-                        //   endDate.text,
-                        //   minReach.text,
-                        //   maxReach.text,
-                        //   costPerPage.text,
-                        //   totalBaudget.text,
-                        // ]);
-
-                        ref.watch(pageIndex.state).state = 0;
-
                         try {
                           final res = await createCmpSW.createCamp(context, [
                             name.text,

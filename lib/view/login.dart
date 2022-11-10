@@ -1,7 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:stroke_text/stroke_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:swrv/state/navstate.dart';
@@ -60,13 +60,13 @@ class Login extends HookConsumerWidget {
                     child: SizedBox(
                       width: width,
                       child: Center(
-                        child: StrokeText(
-                          text: "Welcome",
-                          strokeWidth: 2,
-                          textStyle: TextStyle(
-                              fontSize: width / 5,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.transparent),
+                        child: Text(
+                          "WELCOME",
+                          style: GoogleFonts.londrinaShadow(
+                            textStyle: TextStyle(
+                                color: Colors.black, fontSize: width / 4),
+                          ),
+                          
                         ),
                       ),
                     ),
@@ -297,7 +297,7 @@ class Login extends HookConsumerWidget {
                                       width: 10,
                                     ),
                                     const Text(
-                                      'Keep me Logined in.',
+                                      'Keep me Logged in.',
                                       textAlign: TextAlign.left,
                                       style: TextStyle(fontSize: 14),
                                     )

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/components/header.dart';
+import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
+
+import '../../utils/alerts.dart';
 
 class HelpPage extends HookConsumerWidget {
   const HelpPage({super.key});
@@ -9,6 +13,17 @@ class HelpPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.of(context).size.width;
+
+    ValueNotifier<String> username = useState("");
+    final userStateW = ref.watch(userState);
+    void init() async {
+      username.value = await userStateW.getUserName();
+    }
+
+    useEffect(() {
+      init();
+      return null;
+    }, []);
 
     return Stack(
       children: [
@@ -37,21 +52,21 @@ class HelpPage extends HookConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     RichText(
-                      text: const TextSpan(
+                      text: TextSpan(
                           text: "Hi ",
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: secondaryC,
                             fontSize: 25,
                             fontWeight: FontWeight.w600,
                           ),
                           children: [
                             TextSpan(
-                              text: "@analog-sombra",
-                              style: TextStyle(
+                              text: username.value,
+                              style: const TextStyle(
                                 color: whiteC,
                               ),
                             ),
-                            TextSpan(
+                            const TextSpan(
                               text: "\nHow can we help?",
                             ),
                           ]),
@@ -63,7 +78,6 @@ class HelpPage extends HookConsumerWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: TextField(
-                          readOnly: true,
                           decoration: InputDecoration(
                             prefixIcon: const Icon(Icons.search),
                             filled: true,
@@ -186,7 +200,7 @@ class HelpPage extends HookConsumerWidget {
                               Padding(
                                 padding: EdgeInsets.symmetric(vertical: 10),
                                 child: Text(
-                                  "Registraction",
+                                  "Registration",
                                   textScaleFactor: 1,
                                   textAlign: TextAlign.start,
                                   style: TextStyle(
@@ -303,17 +317,23 @@ class HelpPage extends HookConsumerWidget {
         Positioned(
           bottom: 80,
           right: 20,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-            decoration: BoxDecoration(
-              color: whiteC,
-              borderRadius: BorderRadius.circular(6),
-              boxShadow: [BoxShadow(color: blackC.withOpacity(0.1),blurRadius: 6)]
-            ),
-            child: const Icon(
-              Icons.message,
-              size: 40,
-              color: secondaryC,
+          child: GestureDetector(
+            onTap: () {
+              comingalert(context);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+              decoration: BoxDecoration(
+                  color: whiteC,
+                  borderRadius: BorderRadius.circular(6),
+                  boxShadow: [
+                    BoxShadow(color: blackC.withOpacity(0.1), blurRadius: 6)
+                  ]),
+              child: const Icon(
+                Icons.message,
+                size: 40,
+                color: secondaryC,
+              ),
             ),
           ),
         ),

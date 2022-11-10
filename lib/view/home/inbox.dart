@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/components/header.dart';
 import 'package:swrv/state/navstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
+
+import '../../utils/alerts.dart';
 
 class Inbox extends HookConsumerWidget {
   const Inbox({super.key});
@@ -12,15 +15,52 @@ class Inbox extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.of(context).size.width;
 
+    ValueNotifier<List> darfData = useState([
+      {
+        "img": "assets/images/1.jpg",
+        "name": "sohan",
+        "msg":
+            "There’s just one more thing you need to do to get started with us."
+      },
+      {
+        "img": "assets/images/2.jpg",
+        "name": "Rahul",
+        "msg":
+            "Thank you for scheduling an appointment with our office. You are confirmed for an appointment with"
+      },
+      {
+        "img": "assets/images/3.jpg",
+        "name": "Mohan",
+        "msg":
+            "Thank you for providing the information we requested. We will follow up with you shortly regarding the next steps."
+      },
+      {
+        "img": "assets/images/4.jpg",
+        "name": "Soniya",
+        "msg":
+            "We’re super excited to announce that we’re opening our doors on DATE at TIME. Come join us!"
+      },
+      {
+        "img": "assets/images/5.jpg",
+        "name": "Sonali",
+        "msg":
+            "Thank you for your business! We pride ourselves on great service and it’s your feedback that makes that possible!"
+      },
+      {
+        "img": "assets/images/6.jpg",
+        "name": "Sakhi",
+        "msg":
+            "We just wanted to remind you that we’re waiting for the DOCUMENT you agreed to send us so we can complete the TRANSACTION we discussed."
+      },
+    ]);
+
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Header(
-    
-          ),
+          const Header(),
           Container(
             width: width,
             margin: const EdgeInsets.all(25),
@@ -182,7 +222,7 @@ class Inbox extends HookConsumerWidget {
                           textSize: 16,
                           textColor: blackC,
                           btnFunction: () {
-                          
+                            comingalert(context);
                           }),
                     ),
                   ],
@@ -190,7 +230,7 @@ class Inbox extends HookConsumerWidget {
                 const SizedBox(
                   height: 10,
                 ),
-                for (int i = 0; i < 5; i++) ...[
+                for (int i = 0; i < darfData.value.length; i++) ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8),
                     child: Row(
@@ -204,7 +244,7 @@ class Inbox extends HookConsumerWidget {
                             width: 40,
                             height: 40,
                             child: Image.asset(
-                              "assets/images/post1.jpg",
+                              darfData.value[i]["img"],
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -212,12 +252,12 @@ class Inbox extends HookConsumerWidget {
                         const SizedBox(
                           width: 15,
                         ),
-                        const Expanded(
+                        Expanded(
                           child: Text(
-                            "Want to awaken your body after a hectic work week? Or, enjoy that after-shower glow by sealing in moisture?",
+                            darfData.value[i]["msg"],
                             textScaleFactor: 1,
                             textAlign: TextAlign.start,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
                               color: blackC,

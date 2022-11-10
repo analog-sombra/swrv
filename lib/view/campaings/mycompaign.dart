@@ -33,10 +33,9 @@ class MyCampaings extends HookConsumerWidget {
             path: "/api/get-my-campaigns");
 
         champ.value = data[0]["data"]["campaigns"];
-        // log(data.toString());
 
         // log(data[0]["data"].toString());
-        // log(data[0]["data"]["campaigns"].toString());
+        log(data[0]["data"]["campaigns"].toString());
       } catch (e) {
         log(e.toString());
       }
@@ -144,66 +143,93 @@ class MyCampaings extends HookConsumerWidget {
               ],
             ),
           ),
-          Container(
-            width: width,
-            margin: const EdgeInsets.symmetric(horizontal: 25),
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: const [
-                BoxShadow(color: shadowC, blurRadius: 5, offset: Offset(0, 6))
-              ],
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      for (int i = 0; i < champ.value.length; i++) ...[
-                        HomeCard(
-                          imgUrl: "assets/images/post1.jpg",
-                          title: champ.value[i]["name"],
-                          btnColor: const Color(0xfffbc98e),
-                          btnText: "View",
-                          btnFunction: () {
-                            ref.read(pageIndex.state).state = 21;
-                          },
-                          website:
-                              "Min Eligible Rating : ${champ.value[i]["minEligibleRating"]}",
-                          category:
-                              "Category: ${champ.value[i]["type"]["name"]}",
-                          isHeart: false,
-                          amount: "${champ.value[i]["totalBudget"]}",
-                          currency: "${champ.value[i]["currency"]["code"]}",
-                          platforms: platformUrls(champ.value[i]["platforms"]),
-                          // platforms:  champ.value[i]["platforms"],
-                          // platforms: [
-                          //   for (int j = 0;
-                          //       j < champ.value[i]["platforms"].length;
-                          //       j++)
-                          //     {
-                          //        "${champ.value[i]["platforms"][j]["platformLogoUrl"]}",
-                          //     }
-                          // ]
-                        ),
-                      ],
-                    ],
+          if (champ.value.isEmpty) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 20),
+              width: width,
+              margin: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: whiteC,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    color: shadowC,
+                    blurRadius: 5,
+                    offset: Offset(0, 6),
                   ),
-                )
-              ],
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Text(
+                    "You have no compaign right now",
+                    textScaleFactor: 1,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: blackC),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ] else ...[
+            Container(
+              width: width,
+              margin: const EdgeInsets.symmetric(horizontal: 25),
+              padding: const EdgeInsets.symmetric(vertical: 15),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(color: shadowC, blurRadius: 5, offset: Offset(0, 6))
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        for (int i = 0; i < champ.value.length; i++) ...[
+                          HomeCard(
+                            imgUrl: "assets/images/post1.jpg",
+                            title: champ.value[i]["name"],
+                            btnColor: const Color(0xfffbc98e),
+                            btnText: "View",
+                            btnFunction: () {
+                              ref.read(pageIndex.state).state = 21;
+                            },
+                            website:
+                                "Min Eligible Rating : ${champ.value[i]["minEligibleRating"]}",
+                            category:
+                                "Category: ${champ.value[i]["type"]["name"]}",
+                            isHeart: false,
+                            amount: "${champ.value[i]["totalBudget"]}",
+                            currency: "${champ.value[i]["currency"]["code"]}",
+                            platforms:
+                                platformUrls(champ.value[i]["platforms"]),
+                          ),
+                        ],
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ],
           const SizedBox(
             height: 80,
           ),

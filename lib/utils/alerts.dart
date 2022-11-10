@@ -15,6 +15,7 @@ void erroralert(BuildContext context, String title, String subTitle) {
     ),
   );
 }
+
 void susalert(BuildContext context, String title, String subTitle) {
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
@@ -25,6 +26,21 @@ void susalert(BuildContext context, String title, String subTitle) {
         title: title,
         message: subTitle,
         contentType: ContentType.success,
+      ),
+    ),
+  );
+}
+
+void comingalert(BuildContext context) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      elevation: 0,
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: Colors.transparent,
+      content: AwesomeSnackbarContent(
+        title: "Upcomming",
+        message: "This feature is coming soon in next release",
+        contentType: ContentType.help,
       ),
     ),
   );

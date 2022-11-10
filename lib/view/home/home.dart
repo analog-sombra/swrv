@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +10,7 @@ import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/componets.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
 
-import '../user/brandinput.dart';
+import '../../utils/alerts.dart';
 import '../user/userinput.dart';
 
 class HomePage extends HookConsumerWidget {
@@ -21,12 +19,12 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     List postImg = [
-      "post1.jpg",
-      'post2.jpg',
-      "post3.jpg",
-      "post4.jpg",
-      "post5.jpg",
-      "post6.jpg"
+      "user1.jpg",
+      'user2.jpg',
+      "user3.jpg",
+      "user4.jpg",
+      "user5.jpg",
+      "user6.jpg"
     ];
 
     final width = MediaQuery.of(context).size.width;
@@ -37,9 +35,6 @@ class HomePage extends HookConsumerWidget {
     ValueNotifier<String> userName = useState("loading..");
 
     void init() async {
-      final userdata = await userStateW.getUserData(context);
-      log(userdata);
-      // userStateW.setProfileComp(false);
       final username = await userStateW.getUserName();
       userName.value = username;
       isBrand.value = await userStateW.isBrand();
@@ -119,10 +114,16 @@ class HomePage extends HookConsumerWidget {
                       textSize: 16,
                       btnFunction: () {
                         if (isBrand.value) {
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: ((context) => const BrandInput()),
+                          //   ),
+                          // );
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: ((context) => const BrandInput()),
+                              builder: ((context) => const UserInput()),
                             ),
                           );
                         } else {
@@ -310,43 +311,50 @@ class CampaingList extends HookConsumerWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 HomeCard(
-                    imgUrl: "assets/images/post1.jpg",
+                    imgUrl: "assets/images/brand/adidas.jpg",
                     title: "Adidas Cases",
                     btnColor: const Color(0xfffbc98e),
                     btnText: "Learn more & apply",
-                    btnFunction: () {},
+                    btnFunction: () {
+                      comingalert(context);
+                    },
                     website: "www.adidas.co.in",
-                    category: "Category: Consumer Electronics",
+                    category: "Category: Sport Apparels",
                     isHeart: false,
                     amount: "3500",
                     currency: "USD",
                     platforms: const [
                       "assets/images/instagram.png",
                       "assets/images/facebook.png"
+                          "assets/images/facebook.png"
+                          "assets/images/facebook.png"
                     ]),
                 HomeCard(
-                    imgUrl: "assets/images/post1.jpg",
-                    title: "Adidas Cases",
+                    imgUrl: "assets/images/brand/furinicom.jpg",
+                    title: "Furnicom",
                     btnColor: const Color(0xfffbc98e),
                     btnText: "Learn more & apply",
-                    btnFunction: () {},
-                    website: "www.adidas.co.in",
-                    category: "Category: Consumer Electronics",
+                    btnFunction: () {
+                      comingalert(context);
+                    },
+                    website: "www.furniture.com",
+                    category: "Category: furniture Store",
                     isHeart: false,
                     amount: "3500",
                     currency: "USD",
                     platforms: const [
                       "assets/images/instagram.png",
-                      "assets/images/facebook.png"
                     ]),
                 HomeCard(
-                    imgUrl: "assets/images/post1.jpg",
-                    title: "Adidas Cases",
+                    imgUrl: "assets/images/brand/hilton.jpg",
+                    title: "Hilton",
                     btnColor: const Color(0xfffbc98e),
                     btnText: "Learn more & apply",
-                    btnFunction: () {},
-                    website: "www.adidas.co.in",
-                    category: "Category: Consumer Electronics",
+                    btnFunction: () {
+                      comingalert(context);
+                    },
+                    website: "www.hilton.in",
+                    category: "Category: Hotels",
                     isHeart: false,
                     amount: "3500",
                     currency: "USD",
@@ -414,15 +422,15 @@ class TopBrandsList extends HookConsumerWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 HomeCard(
-                    imgUrl: "assets/images/post1.jpg",
-                    title: "Adidas Cases",
+                    imgUrl: "assets/images/brand/lucent.jpg",
+                    title: "Lucent Skin",
                     btnColor: const Color(0xff80fff9),
                     btnText: "View",
                     btnFunction: () {
-                      Scaffold.of(context).openDrawer();
+                      comingalert(context);
                     },
-                    website: "www.adidas.co.in",
-                    category: "Category: Consumer Electronics",
+                    website: "www.lucent.co.in",
+                    category: "Category: Dermatologist",
                     isSocial: false,
                     amount: "3500",
                     currency: "USD",
@@ -431,13 +439,15 @@ class TopBrandsList extends HookConsumerWidget {
                       "assets/images/facebook.png"
                     ]),
                 HomeCard(
-                    imgUrl: "assets/images/post1.jpg",
-                    title: "Adidas Cases",
+                    imgUrl: "assets/images/brand/powerfitgym.jpg",
+                    title: "PoweerFIT Gym",
                     btnColor: const Color(0xff80fff9),
                     btnText: "View",
-                    btnFunction: () {},
-                    website: "www.adidas.co.in",
-                    category: "Category: Consumer Electronics",
+                    btnFunction: () {
+                      comingalert(context);
+                    },
+                    website: "www.powerfit.co.in",
+                    category: "Category: Fitness",
                     isSocial: false,
                     amount: "3500",
                     currency: "USD",
@@ -446,13 +456,15 @@ class TopBrandsList extends HookConsumerWidget {
                       "assets/images/facebook.png"
                     ]),
                 HomeCard(
-                    imgUrl: "assets/images/post1.jpg",
-                    title: "View",
+                    imgUrl: "assets/images/brand/ups.jpg",
+                    title: "UPS",
                     btnColor: const Color(0xff80fff9),
-                    btnText: "Adidas Cases",
-                    btnFunction: () {},
-                    website: "www.adidas.co.in",
-                    category: "Category: Consumer Electronics",
+                    btnText: "View",
+                    btnFunction: () {
+                      comingalert(context);
+                    },
+                    website: "www.usp.in",
+                    category: "Category: Delivery",
                     isSocial: false,
                     amount: "3500",
                     currency: "USD",

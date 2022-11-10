@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -6,14 +5,11 @@ import 'dart:convert';
 import '../utils/const.dart';
 
 class CusApiReq {
-  // // String baseUrl = "https://bluelemontech.in/websites/cs/api/api.php";
-  // const baseurl = "http://192.168.0.133/swrv";
 
-  // String baseUrl = "http://192.168.0.133/swrv";
 
   Future<List> postApi(String reqdata, {String path = ""}) async {
     try {
-      log(Uri.parse("$baseUrl$path").toString());
+      
       var request = await http.post(Uri.parse("$baseUrl/$path"),
           body: jsonDecode(reqdata));
 

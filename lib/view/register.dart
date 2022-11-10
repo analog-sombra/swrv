@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/view/login.dart';
 
 import '../state/registerstate.dart';
+import '../utils/alerts.dart';
 import '../widgets/alerts.dart';
 
 class Register extends HookConsumerWidget {
@@ -293,20 +294,30 @@ class Register extends HookConsumerWidget {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      SizedBox(
-                                        width: 40,
-                                        height: 40,
-                                        child: Image.asset(
-                                            "assets/images/apple.png"),
+                                      GestureDetector(
+                                        onTap: () {
+                                          comingalert(context);
+                                        },
+                                        child: SizedBox(
+                                          width: 40,
+                                          height: 40,
+                                          child: Image.asset(
+                                              "assets/images/apple.png"),
+                                        ),
                                       ),
                                       const SizedBox(
                                         width: 10,
                                       ),
-                                      SizedBox(
-                                        width: 40,
-                                        height: 40,
-                                        child: Image.asset(
-                                            "assets/images/google.png"),
+                                      GestureDetector(
+                                        onTap: () {
+                                          comingalert(context);
+                                        },
+                                        child: SizedBox(
+                                          width: 40,
+                                          height: 40,
+                                          child: Image.asset(
+                                              "assets/images/google.png"),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -390,7 +401,7 @@ class Register extends HookConsumerWidget {
                                         width: 10,
                                       ),
                                       const Text(
-                                        'Also i conform i am of eligible to age.',
+                                        'Also i confirm i am of eligible to age.',
                                         textAlign: TextAlign.left,
                                         style: TextStyle(fontSize: 11),
                                       )
@@ -403,7 +414,7 @@ class Register extends HookConsumerWidget {
                                 Row(
                                   children: [
                                     const Text(
-                                      "I am alredy registered ",
+                                      "I am already registered ",
                                       textScaleFactor: 1,
                                       style: TextStyle(
                                           fontSize: 14,

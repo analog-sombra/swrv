@@ -37,7 +37,6 @@ class CreateBrandState extends ChangeNotifier {
   Future<bool> createBrand(
       BuildContext context, List fields, String userid) async {
     bool testcase = false;
-    log("working");
 
     for (int i = 0; i < fields.length; i++) {
       if (fields[i] == "") {
@@ -117,7 +116,6 @@ class CreateBrandState extends ChangeNotifier {
         data['message'],
       );
     } else {
-      log("photo upload");
       brandlogo = data['data']['filePath'];
       notifyListeners();
       return true;

@@ -8,12 +8,10 @@ import 'package:swrv/view/home/favourite.dart';
 import 'package:swrv/view/home/help.dart';
 import 'package:swrv/view/home/inbox.dart';
 import 'package:swrv/view/home/invite.dart';
-import 'package:swrv/view/infopages/forgetpassword.dart';
-import 'package:swrv/view/infopages/termsandcon.dart';
 import 'package:swrv/view/navigation/drawer.dart';
 import 'package:swrv/state/navstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
-import 'package:swrv/view/campaings/campaign.dart';
+import 'package:swrv/view/campaings/findcampaign.dart';
 import 'package:swrv/view/campaings/campaigninfo.dart';
 import 'package:swrv/view/campaings/compaignconnect.dart';
 import 'package:swrv/view/home/home.dart';
@@ -33,9 +31,11 @@ class Bottomnav extends HookConsumerWidget {
     //bottom nav pages 0 t0 5
     HomePage(),
     HomePage(),
-    ForgetPassInfo(),
+    EarningsPage(),
+    // ForgetPassInfo(),
     HomePage(),
-    TermsAndConInfo(),
+    DraftsPage(),
+    // TermsAndConInfo(),
     Profile(),
     //drawer pages 6 to 20
     FindCampaings(),

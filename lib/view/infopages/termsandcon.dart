@@ -67,7 +67,7 @@ class TermsAndConInfo extends HookConsumerWidget {
                   height: 10,
                 ),
                 const Text(
-                  "Welcome to www.lorem-ipsum.info. This site is provided as a service to our visitors and may be used for informational purposes only. Because the Terms and Conditions contain legal obligations, please read them carefully.",
+                  "Welcome to www.swrv.info. This site is provided as a service to our visitors and may be used for informational purposes only. Because the Terms and Conditions contain legal obligations, please read them carefully.",
                   textScaleFactor: 1,
                   textAlign: TextAlign.start,
                   style: TextStyle(

@@ -11,7 +11,7 @@ import 'package:swrv/state/navstate.dart';
 import 'package:swrv/view/login.dart';
 
 import '../../state/userstate.dart';
-import '../../utils/const.dart';
+import '../../utils/alerts.dart';
 
 class Profile extends HookConsumerWidget {
   const Profile({super.key});
@@ -34,7 +34,7 @@ class Profile extends HookConsumerWidget {
     useEffect(() {
       init();
       return;
-    });
+    }, []);
 
     return SingleChildScrollView(
       child: Column(
@@ -77,8 +77,7 @@ class Profile extends HookConsumerWidget {
                                 fit: BoxFit.cover,
                               )
                             : CachedNetworkImage(
-                                imageUrl:
-                                    "$baseUrl/public/assets/useravatar/${userAvatar.value}",
+                                imageUrl: userAvatar.value,
                                 progressIndicatorBuilder:
                                     (context, url, downloadProgress) =>
                                         CircularProgressIndicator(
@@ -193,53 +192,57 @@ class Profile extends HookConsumerWidget {
                     ),
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 10),
-                  child: Row(
-                    children: [
-                      Container(
-                        decoration: const BoxDecoration(
-                            shape: BoxShape.circle, color: Color(0xfffdba74)),
-                        width: 60,
-                        height: 60,
-                        child: const Icon(
-                          Icons.wallet_giftcard_outlined,
-                          color: Colors.white,
-                          size: 40,
+                GestureDetector(
+                  onTap: () {
+                    comingalert(context);
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    child: Row(
+                      children: [
+                        Container(
+                          decoration: const BoxDecoration(
+                              shape: BoxShape.circle, color: Color(0xfffdba74)),
+                          width: 60,
+                          height: 60,
+                          child: const Icon(
+                            Icons.wallet_giftcard_outlined,
+                            color: Colors.white,
+                            size: 40,
+                          ),
                         ),
-                      ),
-                      const SizedBox(
-                        width: 15,
-                      ),
-                      Expanded(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: const [
-                            Text(
-                              "Payment",
-                              textScaleFactor: 1,
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.black),
-                            ),
-                          ],
+                        const SizedBox(
+                          width: 15,
                         ),
-                      ),
-                      Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.black.withOpacity(0.65),
-                        size: 25,
-                      )
-                    ],
+                        Expanded(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: const [
+                              Text(
+                                "Payment",
+                                textScaleFactor: 1,
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.black.withOpacity(0.65),
+                          size: 25,
+                        )
+                      ],
+                    ),
                   ),
                 ),
                 GestureDetector(
-                  onTap: (){
-                      ref.watch(pageIndex.state).state = 12;
-                  
+                  onTap: () {
+                    ref.watch(pageIndex.state).state = 12;
                   },
                   child: Container(
                     margin: const EdgeInsets.symmetric(vertical: 10),
@@ -288,15 +291,20 @@ class Profile extends HookConsumerWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5),
-                  child: Text(
-                    "My account",
-                    textScaleFactor: 1,
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.black.withOpacity(0.75)),
+                GestureDetector(
+                  onTap: () {
+                    comingalert(context);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 5),
+                    child: Text(
+                      "My account",
+                      textScaleFactor: 1,
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black.withOpacity(0.75)),
+                    ),
                   ),
                 ),
                 GestureDetector(
@@ -310,15 +318,20 @@ class Profile extends HookConsumerWidget {
                               builder: (context) => const Login()));
                     }
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: Text(
-                      "Switch to Other Account",
-                      textScaleFactor: 1,
-                      style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                          color: Colors.blue.withOpacity(0.75)),
+                  child: GestureDetector(
+                    onTap: () {
+                      comingalert(context);
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5),
+                      child: Text(
+                        "Switch to Other Account",
+                        textScaleFactor: 1,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.blue.withOpacity(0.75)),
+                      ),
                     ),
                   ),
                 ),

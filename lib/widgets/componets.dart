@@ -167,7 +167,7 @@ class HomeCard extends HookConsumerWidget {
                                   CircularProgressIndicator(
                                       value: downloadProgress.progress),
                           errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
+                              Image.asset("assets/images/instagram.png"),
                           fit: BoxFit.cover,
                         ),
                       ),
