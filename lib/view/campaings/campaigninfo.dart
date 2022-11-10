@@ -7,6 +7,8 @@ import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/componets.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
 
+import '../../utils/alerts.dart';
+
 class CampaignsInfo extends HookConsumerWidget {
   const CampaignsInfo({super.key});
 
@@ -394,44 +396,56 @@ class CampaingList extends HookConsumerWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "Learn more & apply",
-                  btnFunction: () {},
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
+                    imgUrl: "assets/images/brand/lucent.jpg",
+                    title: "Lucent Skin",
+                    btnColor: const Color(0xff80fff9),
+                    btnText: "View",
+                    btnFunction: () {
+                      comingalert(context);
+                    },
+                    website: "www.lucent.co.in",
+                    category: "Category: Dermatologist",
+                    isSocial: false,
                     amount: "3500",
-                  currency: "USD",
-                    platforms:const ["assets/images/instagram.png","assets/images/facebook.png"]
-                ),
+                    currency: "USD",
+                    platforms: const [
+                      "assets/images/instagram.png",
+                      "assets/images/facebook.png"
+                    ]),
                 HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "Learn more & apply",
-                  btnFunction: () {},
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
+                    imgUrl: "assets/images/brand/powerfitgym.jpg",
+                    title: "PoweerFIT Gym",
+                    btnColor: const Color(0xff80fff9),
+                    btnText: "View",
+                    btnFunction: () {
+                      comingalert(context);
+                    },
+                    website: "www.powerfit.co.in",
+                    category: "Category: Fitness",
+                    isSocial: false,
                     amount: "3500",
-                  currency: "USD",
-                    platforms:const ["assets/images/instagram.png","assets/images/facebook.png"]
-                ),
+                    currency: "USD",
+                    platforms: const [
+                      "assets/images/instagram.png",
+                      "assets/images/facebook.png"
+                    ]),
                 HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "Learn more & apply",
-                  btnFunction: () {},
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
+                    imgUrl: "assets/images/brand/ups.jpg",
+                    title: "UPS",
+                    btnColor: const Color(0xff80fff9),
+                    btnText: "View",
+                    btnFunction: () {
+                      comingalert(context);
+                    },
+                    website: "www.usp.in",
+                    category: "Category: Delivery",
+                    isSocial: false,
                     amount: "3500",
-                  currency: "USD",
-                    platforms:const ["assets/images/instagram.png","assets/images/facebook.png"]
-                ),
+                    currency: "USD",
+                    platforms: const [
+                      "assets/images/instagram.png",
+                      "assets/images/facebook.png"
+                    ]),
               ],
             ),
           )

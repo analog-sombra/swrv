@@ -26,6 +26,13 @@ class FavouritePage extends HookConsumerWidget {
       log(isBrand.value.toString());
     }
 
+    ValueNotifier<List> data = useState([
+      {"name": "Posts", "num": "345"},
+      {"name": "Followers", "num": "654"},
+      {"name": "Post Engagement", "num": "643"},
+      {"name": "Post Reach", "num": "456"},
+      {"name": "Post View", "num": "335"},
+    ]);
     useEffect(() {
       init();
       return null;
@@ -303,7 +310,7 @@ class FavouritePage extends HookConsumerWidget {
                 const SizedBox(
                   height: 10,
                 ),
-                for (int i = 0; i < 5; i++) ...[
+                for (int i = 0; i < data.value.length; i++) ...[
                   Container(
                     padding: const EdgeInsets.symmetric(
                       vertical: 20,
@@ -317,11 +324,11 @@ class FavouritePage extends HookConsumerWidget {
                     ),
                     child: Row(
                       children: [
-                        const Text(
-                          "Engagement Per Post",
+                        Text(
+                          data.value[i]["name"],
                           textScaleFactor: 1,
                           textAlign: TextAlign.left,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: secondaryC,
@@ -332,18 +339,18 @@ class FavouritePage extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
+                          children: [
                             Text(
-                              "25589+",
+                              data.value[i]["num"],
                               textScaleFactor: 1,
                               textAlign: TextAlign.left,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                                 color: secondaryC,
                               ),
                             ),
-                            Text(
+                            const Text(
                               "30% of stands",
                               textScaleFactor: 1,
                               textAlign: TextAlign.left,
@@ -397,7 +404,7 @@ class FavouritePage extends HookConsumerWidget {
                 const SizedBox(
                   height: 10,
                 ),
-                for (int i = 0; i < 5; i++) ...[
+                for (int i = 0; i < data.value.length; i++) ...[
                   Container(
                     padding: const EdgeInsets.symmetric(
                       vertical: 20,
@@ -410,23 +417,23 @@ class FavouritePage extends HookConsumerWidget {
                       ),
                     ),
                     child: Row(
-                      children: const [
+                      children: [
                         Text(
-                          "Engagement Per Post",
+                          data.value[i]["name"],
                           textScaleFactor: 1,
                           textAlign: TextAlign.left,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: secondaryC,
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         Text(
-                          "25589+",
+                          data.value[i]["num"],
                           textScaleFactor: 1,
                           textAlign: TextAlign.left,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w500,
                             color: secondaryC,

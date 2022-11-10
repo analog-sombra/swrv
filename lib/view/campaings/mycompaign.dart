@@ -165,7 +165,7 @@ class MyCampaings extends HookConsumerWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: const [
                   Text(
-                    "You have no compaign right now",
+                    "You have no campaign right now",
                     textScaleFactor: 1,
                     textAlign: TextAlign.center,
                     style: TextStyle(
