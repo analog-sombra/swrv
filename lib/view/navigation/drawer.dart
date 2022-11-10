@@ -61,7 +61,7 @@ class CusDrawer extends HookConsumerWidget {
                     DrawerButton(
                       index: 26,
                       icon: FontAwesomeIcons.folderOpen,
-                      title: "My campaings",
+                      title: "My Campaign",
                       isFontAwesome: true,
                       scaffoldKey: scaffoldKey,
                     ),
@@ -71,7 +71,7 @@ class CusDrawer extends HookConsumerWidget {
                     DrawerButton(
                       index: 6,
                       icon: Icons.search,
-                      title: "Find campaings",
+                      title: "Find Campaign",
                       isFontAwesome: false,
                       scaffoldKey: scaffoldKey,
                     ),

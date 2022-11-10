@@ -65,7 +65,7 @@ class MyCampaings extends HookConsumerWidget {
           const Padding(
             padding: EdgeInsets.only(left: 25, top: 20),
             child: Text(
-              "My campaigs",
+              "My campaign",
               textScaleFactor: 1,
               textAlign: TextAlign.start,
               style: TextStyle(

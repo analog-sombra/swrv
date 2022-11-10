@@ -754,7 +754,7 @@ class UInput2 extends HookConsumerWidget {
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          "Conform",
+                          "confirm",
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(
@@ -867,7 +867,7 @@ class UInput2 extends HookConsumerWidget {
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          "Conform",
+                          "confirm",
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(
@@ -981,7 +981,7 @@ class UInput2 extends HookConsumerWidget {
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          "Conform",
+                          "confirm",
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(
@@ -1352,7 +1352,7 @@ class UInput3 extends HookConsumerWidget {
                 textSize: 18,
                 btnFunction: () async {
                   if (userInputStateW.imgUrls.isEmpty) {
-                    erroralert(context, "Error", "Atleat add one platform");
+                    erroralert(context, "Error", "Atleast add one platform");
                   } else {
                     userInputStateW.clear();
                     userInputStateW.setCurInput(userInputStateW.curInput + 1);
@@ -1625,7 +1625,7 @@ class UInput4 extends HookConsumerWidget {
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          "Conform",
+                          "confirm",
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(
@@ -1738,7 +1738,7 @@ class UInput4 extends HookConsumerWidget {
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          "Conform",
+                          "confirm",
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(
@@ -1854,7 +1854,7 @@ class UInput4 extends HookConsumerWidget {
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          "Conform",
+                          "confirm",
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(

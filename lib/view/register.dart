@@ -371,7 +371,7 @@ class Register extends HookConsumerWidget {
                                       width: 10,
                                     ),
                                     const Text(
-                                      'I agree with Terms of use and acknowledge that my \npersonal data is begin collected and processed in.',
+                                      'I agree with Terms of use and acknowledge that my \npersonal data is being collected and processed in.',
                                       textAlign: TextAlign.left,
                                       style: TextStyle(fontSize: 11),
                                     )

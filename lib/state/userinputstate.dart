@@ -384,7 +384,7 @@ class UserInputState extends ChangeNotifier {
       susalert(
         context,
         "Successfully",
-        "Successfully added new Handal",
+        "Successfully added new handle",
       );
       notifyListeners();
       return true;

@@ -38,7 +38,7 @@ void comingalert(BuildContext context) {
       behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.transparent,
       content: AwesomeSnackbarContent(
-        title: "Upcomming",
+        title: "Upcoming",
         message: "This feature is coming soon in next release",
         contentType: ContentType.help,
       ),
