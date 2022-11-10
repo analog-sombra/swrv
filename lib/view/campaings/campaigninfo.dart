@@ -402,6 +402,9 @@ class CampaingList extends HookConsumerWidget {
                   website: "www.adidas.co.in",
                   category: "Category: Consumer Electronics",
                   isHeart: false,
+                    amount: "3500",
+                  currency: "USD",
+                    platforms:const ["assets/images/instagram.png","assets/images/facebook.png"]
                 ),
                 HomeCard(
                   imgUrl: "assets/images/post1.jpg",
@@ -412,6 +415,9 @@ class CampaingList extends HookConsumerWidget {
                   website: "www.adidas.co.in",
                   category: "Category: Consumer Electronics",
                   isHeart: false,
+                    amount: "3500",
+                  currency: "USD",
+                    platforms:const ["assets/images/instagram.png","assets/images/facebook.png"]
                 ),
                 HomeCard(
                   imgUrl: "assets/images/post1.jpg",
@@ -422,6 +428,9 @@ class CampaingList extends HookConsumerWidget {
                   website: "www.adidas.co.in",
                   category: "Category: Consumer Electronics",
                   isHeart: false,
+                    amount: "3500",
+                  currency: "USD",
+                    platforms:const ["assets/images/instagram.png","assets/images/facebook.png"]
                 ),
               ],
             ),

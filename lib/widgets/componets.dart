@@ -1,12 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
-
-
-
 
 class HomeCard extends HookConsumerWidget {
   final String title;
@@ -18,6 +16,9 @@ class HomeCard extends HookConsumerWidget {
   final String category;
   final bool isHeart;
   final bool isSocial;
+  final String currency;
+  final String amount;
+  final List platforms;
   const HomeCard({
     super.key,
     required this.title,
@@ -27,6 +28,9 @@ class HomeCard extends HookConsumerWidget {
     required this.btnFunction,
     required this.website,
     required this.category,
+    required this.currency,
+    required this.amount,
+    required this.platforms,
     this.isHeart = true,
     this.isSocial = true,
   });
@@ -142,61 +146,53 @@ class HomeCard extends HookConsumerWidget {
             ),
             Row(
               children: [
-                Container(
-                  margin: const EdgeInsets.only(right: 5),
-                  padding: const EdgeInsets.all(3),
-                  decoration: BoxDecoration(
-                    color: whiteC,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.blue, width: 2),
-                  ),
-                  child: const SizedBox(
-                    width: 35,
-                    height: 35,
-                    child: CircleAvatar(
-                      backgroundImage: AssetImage(
-                        "assets/images/facebook.png",
+                for (int i = 0; i < platforms.length; i++) ...[
+                  Container(
+                    margin: const EdgeInsets.only(right: 5),
+                    padding: const EdgeInsets.all(3),
+                    decoration: BoxDecoration(
+                      color: whiteC,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.blue, width: 2),
+                    ),
+                    child: SizedBox(
+                      width: 35,
+                      height: 35,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(50),
+                        child: CachedNetworkImage(
+                          imageUrl: platforms[i],
+                          progressIndicatorBuilder:
+                              (context, url, downloadProgress) =>
+                                  CircularProgressIndicator(
+                                      value: downloadProgress.progress),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(right: 5),
-                  padding: const EdgeInsets.all(3),
-                  decoration: BoxDecoration(
-                    color: whiteC,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.blue, width: 2),
-                  ),
-                  child: const SizedBox(
-                    width: 35,
-                    height: 35,
-                    child: CircleAvatar(
-                      backgroundImage: AssetImage(
-                        "assets/images/instagram.png",
-                      ),
-                    ),
-                  ),
-                ),
+                ],
                 const Spacer(),
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   mainAxisAlignment: MainAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
-                      "3500",
+                      amount,
                       textAlign: TextAlign.end,
                       textScaleFactor: 1,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                     Text(
-                      "USD/post",
+                      "$currency/post",
                       textAlign: TextAlign.end,
                       textScaleFactor: 1,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.w600),
                     )
                   ],
                 )

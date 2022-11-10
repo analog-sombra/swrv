@@ -9,7 +9,6 @@ class CusApiReq {
   // // String baseUrl = "https://bluelemontech.in/websites/cs/api/api.php";
   // const baseurl = "http://192.168.0.133/swrv";
 
-
   // String baseUrl = "http://192.168.0.133/swrv";
 
   Future<List> postApi(String reqdata, {String path = ""}) async {
@@ -44,6 +43,26 @@ class CusApiReq {
       }
     } catch (e) {
       return [false, e];
+    }
+  }
+
+  Future uploadFile(String filepath, {String path = ""}) async {
+    try {
+      var request =
+          http.MultipartRequest('POST', Uri.parse('$baseUrl/api/add-file'));
+      request.fields.addAll({'fileAttPathTEC': path});
+      request.files
+          .add(await http.MultipartFile.fromPath('fileAttTEC', filepath));
+
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        return jsonDecode(await response.stream.bytesToString());
+      } else {
+        return {'status': false, 'message': response.reasonPhrase!};
+      }
+    } catch (e) {
+      return {'status': false, 'message': e.toString()};
     }
   }
 }

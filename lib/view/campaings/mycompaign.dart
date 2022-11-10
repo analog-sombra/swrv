@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -6,14 +9,52 @@ import 'package:swrv/state/navstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/componets.dart';
 
+import '../../services/apirequest.dart';
+import '../../state/userstate.dart';
+
 class MyCampaings extends HookConsumerWidget {
   const MyCampaings({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.of(context).size.width;
-
+    final userStateW = ref.watch(userState);
     ValueNotifier<bool> isFinished = useState(false);
+    CusApiReq apiReq = CusApiReq();
+
+    ValueNotifier<List> champ = useState([]);
+
+    void init() async {
+      final userid = await userStateW.getUserId();
+      final req = {"id": userid};
+      try {
+        log(userid.toString());
+        dynamic data = await apiReq.postApi(jsonEncode(req),
+            path: "/api/get-my-campaigns");
+
+        champ.value = data[0]["data"]["campaigns"];
+        // log(data.toString());
+
+        // log(data[0]["data"].toString());
+        // log(data[0]["data"]["campaigns"].toString());
+      } catch (e) {
+        log(e.toString());
+      }
+    }
+
+    useEffect(() {
+      init();
+      return null;
+    }, []);
+
+    List platformUrls(List plt) {
+      List data = [];
+
+      for (int j = 0; j < plt.length; j++) {
+        data.add(plt[j]["platformLogoUrl"]);
+      }
+      return data;
+    }
 
     return SingleChildScrollView(
       child: Column(
@@ -21,9 +62,7 @@ class MyCampaings extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const Header(
-
-          ),
+          const Header(),
           const Padding(
             padding: EdgeInsets.only(left: 25, top: 20),
             child: Text(
@@ -70,7 +109,7 @@ class MyCampaings extends HookConsumerWidget {
                           color: isFinished.value
                               ? blackC.withOpacity(0.65)
                               : blackC,
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w400),
                     ),
                   ),
@@ -97,7 +136,7 @@ class MyCampaings extends HookConsumerWidget {
                           color: isFinished.value
                               ? blackC
                               : blackC.withOpacity(0.65),
-                          fontSize: 14,
+                          fontSize: 12,
                           fontWeight: FontWeight.w400),
                     ),
                   ),
@@ -105,87 +144,69 @@ class MyCampaings extends HookConsumerWidget {
               ],
             ),
           ),
-          const CampaingList(),
+          Container(
+            width: width,
+            margin: const EdgeInsets.symmetric(horizontal: 25),
+            padding: const EdgeInsets.symmetric(vertical: 15),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: const [
+                BoxShadow(color: shadowC, blurRadius: 5, offset: Offset(0, 6))
+              ],
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  height: 20,
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      for (int i = 0; i < champ.value.length; i++) ...[
+                        HomeCard(
+                          imgUrl: "assets/images/post1.jpg",
+                          title: champ.value[i]["name"],
+                          btnColor: const Color(0xfffbc98e),
+                          btnText: "View",
+                          btnFunction: () {
+                            ref.read(pageIndex.state).state = 21;
+                          },
+                          website:
+                              "Min Eligible Rating : ${champ.value[i]["minEligibleRating"]}",
+                          category:
+                              "Category: ${champ.value[i]["type"]["name"]}",
+                          isHeart: false,
+                          amount: "${champ.value[i]["totalBudget"]}",
+                          currency: "${champ.value[i]["currency"]["code"]}",
+                          platforms: platformUrls(champ.value[i]["platforms"]),
+                          // platforms:  champ.value[i]["platforms"],
+                          // platforms: [
+                          //   for (int j = 0;
+                          //       j < champ.value[i]["platforms"].length;
+                          //       j++)
+                          //     {
+                          //        "${champ.value[i]["platforms"][j]["platformLogoUrl"]}",
+                          //     }
+                          // ]
+                        ),
+                      ],
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
           const SizedBox(
             height: 80,
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class CampaingList extends HookConsumerWidget {
-  const CampaingList({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final width = MediaQuery.of(context).size.width;
-    return Container(
-      width: width,
-      margin: const EdgeInsets.symmetric(horizontal: 25),
-      padding: const EdgeInsets.symmetric(vertical: 15),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(color: shadowC, blurRadius: 5, offset: Offset(0, 6))
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "View",
-                  btnFunction: () {
-                    ref.read(pageIndex.state).state = 21;
-                  },
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
-                ),
-                HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "View",
-                  btnFunction: () {
-                    ref.read(pageIndex.state).state = 21;
-                  },
-                  website: "www.adidas.co.in",
-                  category: "Category",
-                  isHeart: false,
-                ),
-                HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "View",
-                  btnFunction: () {
-                    ref.read(pageIndex.state).state = 21;
-                  },
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
-                ),
-              ],
-            ),
-          )
         ],
       ),
     );

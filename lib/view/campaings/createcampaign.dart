@@ -30,7 +30,7 @@ class CreateCampaignsPage extends HookConsumerWidget {
     void init() async {
       final req3 = {};
       List category =
-          await apiReq.postApi(jsonEncode(req3), path: "api/getcategory");
+          await apiReq.postApi(jsonEncode(req3), path: "api/get-campaign-type");
 
       if (category[0]["status"]) {
         createCmpSW.setCategory(category[0]["data"]);
@@ -113,7 +113,7 @@ class CreateCampaignsPage extends HookConsumerWidget {
                             crossAxisCount: 2,
                             crossAxisSpacing: 8,
                             mainAxisSpacing: 10,
-                            mainAxisExtent: 270,
+                            mainAxisExtent: 300,
                           ),
                           itemCount: createCmpSW.categoryList.length,
                           physics: const NeverScrollableScrollPhysics(),
@@ -258,7 +258,7 @@ class CreateCampaings extends HookConsumerWidget {
           city[0]["status"]) {
         createCmpSW.setPlatforms(platforms[0]["data"]);
         createCmpSW.setCurrecny(currency[0]["data"]);
-        createCmpSW.setCategory(category[0]["data"]);
+        createCmpSW.setCmp(category[0]["data"]);
         createCmpSW.setCity(city[0]["data"]);
       } else {
         erroralert(context, "error", "No Record Fount");
@@ -277,9 +277,7 @@ class CreateCampaings extends HookConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const Header(
-  
-            ),
+            const Header(),
             const Padding(
               padding: EdgeInsets.only(left: 25, top: 20),
               child: Text(
@@ -607,7 +605,6 @@ class CreateCampaings extends HookConsumerWidget {
                     ),
                   ),
                   cusTitle("Campaign Eligible Rating"),
-
                   RatingBar.builder(
                     initialRating: createCmpSW.rating,
                     minRating: 1,
@@ -623,92 +620,91 @@ class CreateCampaings extends HookConsumerWidget {
                       createCmpSW.setRating(rating);
                     },
                   ),
-
-                  // cusTitle("Campaign Category type"),
-                  // if (createCmpSW.categoryList.isEmpty) ...[
-                  //   const CircularProgressIndicator(),
-                  // ] else ...[
-                  //   SizedBox(
-                  //     width: width,
-                  //     child: DropdownButtonHideUnderline(
-                  //       child: DropdownButton2<String>(
-                  //         hint: const Text(
-                  //           "Category",
-                  //           textScaleFactor: 1,
-                  //           style: TextStyle(
-                  //               fontSize: 16,
-                  //               color: blackC,
-                  //               fontWeight: FontWeight.w400),
-                  //         ),
-                  //         buttonDecoration: BoxDecoration(
-                  //           boxShadow: const [],
-                  //           borderRadius: BorderRadius.circular(10),
-                  //           color: backgroundC,
-                  //         ),
-                  //         itemPadding:
-                  //             const EdgeInsets.only(left: 20, right: 5),
-                  //         buttonPadding:
-                  //             const EdgeInsets.only(left: 20, right: 5),
-                  //         style: const TextStyle(
-                  //             fontSize: 18, fontWeight: FontWeight.w400),
-                  //         value: createCmpSW.categoryValue,
-                  //         icon: const Icon(
-                  //           Icons.arrow_drop_down,
-                  //           color: Colors.black,
-                  //         ),
-                  //         items: [
-                  //           for (int i = 0;
-                  //               i < createCmpSW.categoryList.length;
-                  //               i++) ...[
-                  //             DropdownMenuItem(
-                  //               onTap: () {
-                  //                 createCmpSW.setCategoryId(i);
-                  //                 log(createCmpSW.categoryId!);
-                  //               },
-                  //               value: createCmpSW.categoryList[i]
-                  //                   ["categoryName"],
-                  //               child: Container(
-                  //                 decoration: BoxDecoration(
-                  //                   border: Border(
-                  //                     bottom: BorderSide(
-                  //                       color: blackC.withOpacity(0.25),
-                  //                     ),
-                  //                   ),
-                  //                 ),
-                  //                 width: 220,
-                  //                 padding:
-                  //                     const EdgeInsets.symmetric(vertical: 8),
-                  //                 child: Text(
-                  //                   "[${createCmpSW.categoryList[i]["categoryCode"]}] ${createCmpSW.categoryList[i]["categoryName"]}",
-                  //                   textScaleFactor: 1,
-                  //                   style: const TextStyle(
-                  //                       color: Colors.black, fontSize: 16),
-                  //                 ),
-                  //               ),
-                  //             ),
-                  //           ]
-                  //         ],
-                  //         onChanged: (newval) {
-                  //           createCmpSW.setCatValue(newval!);
-                  //         },
-                  //         buttonElevation: 2,
-                  //         itemHeight: 40,
-                  //         dropdownMaxHeight: 250,
-                  //         dropdownPadding: null,
-                  //         isDense: false,
-                  //         dropdownElevation: 8,
-                  //         scrollbarRadius: const Radius.circular(40),
-                  //         scrollbarThickness: 6,
-                  //         scrollbarAlwaysShow: true,
-                  //         offset: const Offset(0, 0),
-                  //         dropdownDecoration: BoxDecoration(
-                  //             color: const Color(0xfffbfbfb),
-                  //             borderRadius: BorderRadius.circular(5),
-                  //             boxShadow: const []),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ],
+                  cusTitle("Category"),
+                  if (createCmpSW.cmpList.isEmpty) ...[
+                    const CircularProgressIndicator(),
+                  ] else ...[
+                    SizedBox(
+                      width: width,
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton2<String>(
+                          hint: const Text(
+                            "Category",
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: blackC,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          buttonDecoration: BoxDecoration(
+                            boxShadow: const [],
+                            borderRadius: BorderRadius.circular(10),
+                            color: backgroundC,
+                          ),
+                          itemPadding:
+                              const EdgeInsets.only(left: 20, right: 5),
+                          buttonPadding:
+                              const EdgeInsets.only(left: 20, right: 5),
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w400),
+                          value: createCmpSW.cmpValue,
+                          icon: const Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.black,
+                          ),
+                          items: [
+                            for (int i = 0;
+                                i < createCmpSW.cmpList.length;
+                                i++) ...[
+                              DropdownMenuItem(
+                                onTap: () {
+                                  createCmpSW.setCmpId(i);
+                   
+                                },
+                                value: createCmpSW.cmpList[i]
+                                    ["categoryName"],
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                      bottom: BorderSide(
+                                        color: blackC.withOpacity(0.25),
+                                      ),
+                                    ),
+                                  ),
+                                  width: 220,
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 8),
+                                  child: Text(
+                                    "[${createCmpSW.cmpList[i]["categoryCode"]}] ${createCmpSW.cmpList[i]["categoryName"]}",
+                                    textScaleFactor: 1,
+                                    style: const TextStyle(
+                                        color: Colors.black, fontSize: 16),
+                                  ),
+                                ),
+                              ),
+                            ]
+                          ],
+                          onChanged: (newval) {
+                            createCmpSW.setCmpValue(newval!);
+                          },
+                          buttonElevation: 2,
+                          itemHeight: 40,
+                          dropdownMaxHeight: 250,
+                          dropdownPadding: null,
+                          isDense: false,
+                          dropdownElevation: 8,
+                          scrollbarRadius: const Radius.circular(40),
+                          scrollbarThickness: 6,
+                          scrollbarAlwaysShow: true,
+                          offset: const Offset(0, 0),
+                          dropdownDecoration: BoxDecoration(
+                              color: const Color(0xfffbfbfb),
+                              borderRadius: BorderRadius.circular(5),
+                              boxShadow: const []),
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(
                     height: 20,
                   ),
@@ -847,7 +843,6 @@ class CreateCampaings extends HookConsumerWidget {
                     ),
                   ],
                   cusTitle("Select City"),
-
                   if (createCmpSW.cityList.isEmpty) ...[
                     const CircularProgressIndicator(),
                   ] else ...[
@@ -938,7 +933,6 @@ class CreateCampaings extends HookConsumerWidget {
                       btnText: "Create",
                       textSize: 18,
                       btnFunction: () async {
-
                         // createCmpSW.setCampData([
                         //   name.text,
                         //   info.text,

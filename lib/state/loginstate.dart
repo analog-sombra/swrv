@@ -186,6 +186,7 @@ class LoginState extends ChangeNotifier {
       erroralert(context, "Empty User", "There is no user data");
     } else {
       setUserData(jsonEncode(userdata[0]["data"]));
+    
       notifyListeners();
       return true;
     }

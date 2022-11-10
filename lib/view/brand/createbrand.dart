@@ -10,10 +10,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:swrv/state/navstate.dart';
 
 import '../../components/header.dart';
 import '../../services/apirequest.dart';
 import '../../state/brand/createbrandstate.dart';
+import '../../state/userstate.dart';
 import '../../utils/alerts.dart';
 import '../../utils/utilthemes.dart';
 import '../../widgets/cuswidgets.dart';
@@ -33,8 +35,10 @@ class CreateBrandPage extends HookConsumerWidget {
     TextEditingController info = useTextEditingController();
 
     ValueNotifier<File?> imageFile = useState(null);
+    ValueNotifier<String> userId = useState("0");
 
     final createBrandSW = ref.watch(createBrandState);
+    final userStateW = ref.watch(userState);
 
     CusApiReq apiReq = CusApiReq();
 
@@ -52,6 +56,7 @@ class CreateBrandPage extends HookConsumerWidget {
     }
 
     void init() async {
+      userId.value = await userStateW.getUserId();
       final req4 = {};
       List city = await apiReq.postApi(jsonEncode(req4), path: "api/getcity");
 
@@ -187,93 +192,104 @@ class CreateBrandPage extends HookConsumerWidget {
                         ),
                       ),
                     ),
-                    cusTitle("Brand logo"),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 10),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: const Color(0xffe5e7eb),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            flex: 1,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: SizedBox(
-                                width: 80,
-                                height: 80,
-                                child: (imageFile.value == null)
-                                    ? Image.asset("assets/images/user.png")
-                                    : Image.file(
-                                        imageFile.value!,
-                                        fit: BoxFit.cover,
-                                      ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 3,
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      minimumSize: const Size.fromHeight(40),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      elevation: 0,
-                                      backgroundColor: const Color(0xff9ca3af),
-                                    ),
-                                    onPressed: () async {
-                                      pickImage();
-                                    },
-                                    child: const Text(
-                                      "Upload",
-                                      textAlign: TextAlign.center,
-                                      textScaleFactor: 1,
-                                      style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 5),
-                                    child: Text(
-                                      "Upload brand photo here.",
-                                      textScaleFactor: 1,
-                                      style: TextStyle(
-                                        color: Colors.black.withOpacity(0.5),
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 2),
-                                    child: Text(
-                                      "The image should either be jpg or jpeg or png format and be a maximum seixe of 10 MB.",
-                                      textScaleFactor: 1,
-                                      style: TextStyle(
-                                        color: Colors.black.withOpacity(0.5),
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // cusTitle("Brand logo"),
+                    // Container(
+                    //   margin: const EdgeInsets.symmetric(vertical: 10),
+                    //   padding: const EdgeInsets.all(10),
+                    //   decoration: BoxDecoration(
+                    //     color: const Color(0xffe5e7eb),
+                    //     borderRadius: BorderRadius.circular(10),
+                    //   ),
+                    //   child: Row(
+                    //     children: [
+                    //       Expanded(
+                    //         flex: 1,
+                    //         child: ClipRRect(
+                    //           borderRadius: BorderRadius.circular(10),
+                    //           child: SizedBox(
+                    //             width: 80,
+                    //             height: 80,
+                    //             child: (imageFile.value == null)
+                    //                 ? Image.asset("assets/images/user.png")
+                    //                 : Image.file(
+                    //                     imageFile.value!,
+                    //                     fit: BoxFit.cover,
+                    //                   ),
+                    //           ),
+                    //         ),
+                    //       ),
+                    //       Expanded(
+                    //         flex: 3,
+                    //         child: Container(
+                    //           padding: const EdgeInsets.all(10),
+                    //           child: Column(
+                    //             mainAxisAlignment: MainAxisAlignment.start,
+                    //             crossAxisAlignment: CrossAxisAlignment.start,
+                    //             children: [
+                    //               ElevatedButton(
+                    //                 style: ElevatedButton.styleFrom(
+                    //                   minimumSize: const Size.fromHeight(40),
+                    //                   shape: RoundedRectangleBorder(
+                    //                     borderRadius: BorderRadius.circular(10),
+                    //                   ),
+                    //                   elevation: 0,
+                    //                   backgroundColor: const Color(0xff9ca3af),
+                    //                 ),
+                    //                 onPressed: () async {
+                    //                   // pickImage();
+
+                    //                   await pickImage();
+                    //                   if (imageFile.value == null) {
+                    //                     erroralert(context, "Logo",
+                    //                         "Please Upload Logo");
+                    //                   } else {
+                    //                     await createBrandSW.uploadLogo(
+                    //                       context,
+                    //                       imageFile.value!.path,
+                    //                     );
+                    //                   }
+                    //                 },
+                    //                 child: const Text(
+                    //                   "Upload",
+                    //                   textAlign: TextAlign.center,
+                    //                   textScaleFactor: 1,
+                    //                   style: TextStyle(
+                    //                       color: Colors.white,
+                    //                       fontSize: 16,
+                    //                       fontWeight: FontWeight.w500),
+                    //                 ),
+                    //               ),
+                    //               Padding(
+                    //                 padding: const EdgeInsets.only(top: 5),
+                    //                 child: Text(
+                    //                   "Upload brand photo here.",
+                    //                   textScaleFactor: 1,
+                    //                   style: TextStyle(
+                    //                     color: Colors.black.withOpacity(0.5),
+                    //                     fontSize: 14,
+                    //                     fontWeight: FontWeight.w500,
+                    //                   ),
+                    //                 ),
+                    //               ),
+                    //               Padding(
+                    //                 padding: const EdgeInsets.only(top: 2),
+                    //                 child: Text(
+                    //                   "The image should either be jpg or jpeg or png format and be a maximum seixe of 10 MB.",
+                    //                   textScaleFactor: 1,
+                    //                   style: TextStyle(
+                    //                     color: Colors.black.withOpacity(0.5),
+                    //                     fontSize: 10,
+                    //                     fontWeight: FontWeight.w400,
+                    //                   ),
+                    //                 ),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                     cusTitle("Brand Contact"),
                     Padding(
                       padding: const EdgeInsets.only(top: 5),
@@ -281,6 +297,7 @@ class CreateBrandPage extends HookConsumerWidget {
                         borderRadius: BorderRadius.circular(10),
                         child: TextField(
                           controller: contact,
+                          keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
                             filled: true,
                             fillColor: Color(0xfff3f4f6),
@@ -404,7 +421,26 @@ class CreateBrandPage extends HookConsumerWidget {
                         btnColor: primaryC,
                         btnText: "Create Brand",
                         textSize: 18,
-                        btnFunction: () async {})
+                        btnFunction: () async {
+                          final response = await createBrandSW.createBrand(
+                            context,
+                            [
+                              name.text,
+                              code.text,
+                              address.text,
+                              email.text,
+                              contact.text,
+                              info.text,
+                            ],
+                            userId.value,
+                          );
+
+                          if (response) {
+                            ref.watch(pageIndex.state).state = 0;
+                          } else {
+                            erroralert(context, "Error", "Unable to add brand");
+                          }
+                        }),
                   ]),
             )
           ],

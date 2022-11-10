@@ -672,41 +672,56 @@ class CampaingList extends HookConsumerWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "Learn more & apply",
-                  btnFunction: () {
-                    ref.read(pageIndex.state).state = 21;
-                  },
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
-                ),
+                    imgUrl: "assets/images/post1.jpg",
+                    title: "Adidas Cases",
+                    btnColor: const Color(0xfffbc98e),
+                    btnText: "Learn more & apply",
+                    btnFunction: () {
+                      ref.read(pageIndex.state).state = 21;
+                    },
+                    website: "www.adidas.co.in",
+                    category: "Category: Consumer Electronics",
+                    isHeart: false,
+                    amount: "3500",
+                    currency: "USD",
+                    platforms: const [
+                      "assets/images/instagram.png",
+                      "assets/images/facebook.png"
+                    ]),
                 HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "Learn more & apply",
-                  btnFunction: () {
-                    ref.read(pageIndex.state).state = 21;
-                  },
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
-                ),
+                    imgUrl: "assets/images/post1.jpg",
+                    title: "Adidas Cases",
+                    btnColor: const Color(0xfffbc98e),
+                    btnText: "Learn more & apply",
+                    btnFunction: () {
+                      ref.read(pageIndex.state).state = 21;
+                    },
+                    website: "www.adidas.co.in",
+                    category: "Category: Consumer Electronics",
+                    isHeart: false,
+                    amount: "3500",
+                    currency: "USD",
+                    platforms: const [
+                      "assets/images/instagram.png",
+                      "assets/images/facebook.png"
+                    ]),
                 HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "Learn more & apply",
-                  btnFunction: () {
-                    ref.read(pageIndex.state).state = 21;
-                  },
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
-                ),
+                    imgUrl: "assets/images/post1.jpg",
+                    title: "Adidas Cases",
+                    btnColor: const Color(0xfffbc98e),
+                    btnText: "Learn more & apply",
+                    btnFunction: () {
+                      ref.read(pageIndex.state).state = 21;
+                    },
+                    website: "www.adidas.co.in",
+                    category: "Category: Consumer Electronics",
+                    isHeart: false,
+                    amount: "3500",
+                    currency: "USD",
+                    platforms: const [
+                      "assets/images/instagram.png",
+                      "assets/images/facebook.png"
+                    ]),
               ],
             ),
           )

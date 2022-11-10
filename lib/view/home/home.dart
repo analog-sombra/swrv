@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +37,8 @@ class HomePage extends HookConsumerWidget {
     ValueNotifier<String> userName = useState("loading..");
 
     void init() async {
+      final userdata = await userStateW.getUserData(context);
+      log(userdata);
       // userStateW.setProfileComp(false);
       final username = await userStateW.getUserName();
       userName.value = username;
@@ -306,35 +310,50 @@ class CampaingList extends HookConsumerWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "Learn more & apply",
-                  btnFunction: () {},
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
-                ),
+                    imgUrl: "assets/images/post1.jpg",
+                    title: "Adidas Cases",
+                    btnColor: const Color(0xfffbc98e),
+                    btnText: "Learn more & apply",
+                    btnFunction: () {},
+                    website: "www.adidas.co.in",
+                    category: "Category: Consumer Electronics",
+                    isHeart: false,
+                    amount: "3500",
+                    currency: "USD",
+                    platforms: const [
+                      "assets/images/instagram.png",
+                      "assets/images/facebook.png"
+                    ]),
                 HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "Learn more & apply",
-                  btnFunction: () {},
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
-                ),
+                    imgUrl: "assets/images/post1.jpg",
+                    title: "Adidas Cases",
+                    btnColor: const Color(0xfffbc98e),
+                    btnText: "Learn more & apply",
+                    btnFunction: () {},
+                    website: "www.adidas.co.in",
+                    category: "Category: Consumer Electronics",
+                    isHeart: false,
+                    amount: "3500",
+                    currency: "USD",
+                    platforms: const [
+                      "assets/images/instagram.png",
+                      "assets/images/facebook.png"
+                    ]),
                 HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xfffbc98e),
-                  btnText: "Learn more & apply",
-                  btnFunction: () {},
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isHeart: false,
-                ),
+                    imgUrl: "assets/images/post1.jpg",
+                    title: "Adidas Cases",
+                    btnColor: const Color(0xfffbc98e),
+                    btnText: "Learn more & apply",
+                    btnFunction: () {},
+                    website: "www.adidas.co.in",
+                    category: "Category: Consumer Electronics",
+                    isHeart: false,
+                    amount: "3500",
+                    currency: "USD",
+                    platforms: const [
+                      "assets/images/instagram.png",
+                      "assets/images/facebook.png"
+                    ]),
               ],
             ),
           )
@@ -395,37 +414,52 @@ class TopBrandsList extends HookConsumerWidget {
               mainAxisSize: MainAxisSize.max,
               children: [
                 HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xff80fff9),
-                  btnText: "View",
-                  btnFunction: () {
-                    Scaffold.of(context).openDrawer();
-                  },
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isSocial: false,
-                ),
+                    imgUrl: "assets/images/post1.jpg",
+                    title: "Adidas Cases",
+                    btnColor: const Color(0xff80fff9),
+                    btnText: "View",
+                    btnFunction: () {
+                      Scaffold.of(context).openDrawer();
+                    },
+                    website: "www.adidas.co.in",
+                    category: "Category: Consumer Electronics",
+                    isSocial: false,
+                    amount: "3500",
+                    currency: "USD",
+                    platforms: const [
+                      "assets/images/instagram.png",
+                      "assets/images/facebook.png"
+                    ]),
                 HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "Adidas Cases",
-                  btnColor: const Color(0xff80fff9),
-                  btnText: "View",
-                  btnFunction: () {},
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isSocial: false,
-                ),
+                    imgUrl: "assets/images/post1.jpg",
+                    title: "Adidas Cases",
+                    btnColor: const Color(0xff80fff9),
+                    btnText: "View",
+                    btnFunction: () {},
+                    website: "www.adidas.co.in",
+                    category: "Category: Consumer Electronics",
+                    isSocial: false,
+                    amount: "3500",
+                    currency: "USD",
+                    platforms: const [
+                      "assets/images/instagram.png",
+                      "assets/images/facebook.png"
+                    ]),
                 HomeCard(
-                  imgUrl: "assets/images/post1.jpg",
-                  title: "View",
-                  btnColor: const Color(0xff80fff9),
-                  btnText: "Adidas Cases",
-                  btnFunction: () {},
-                  website: "www.adidas.co.in",
-                  category: "Category: Consumer Electronics",
-                  isSocial: false,
-                ),
+                    imgUrl: "assets/images/post1.jpg",
+                    title: "View",
+                    btnColor: const Color(0xff80fff9),
+                    btnText: "Adidas Cases",
+                    btnFunction: () {},
+                    website: "www.adidas.co.in",
+                    category: "Category: Consumer Electronics",
+                    isSocial: false,
+                    amount: "3500",
+                    currency: "USD",
+                    platforms: const [
+                      "assets/images/instagram.png",
+                      "assets/images/facebook.png"
+                    ]),
               ],
             ),
           )

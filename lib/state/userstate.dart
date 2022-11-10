@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -82,7 +83,8 @@ class UserState extends ChangeNotifier {
     bool isBrand = false;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userdata = prefs.getString("user");
-    if (jsonDecode(userdata!)[0]["role.code"].toString() == "50") {
+    log(userdata.toString());
+    if (jsonDecode(userdata!)[0]["role"]["code"].toString() == "50") {
       isBrand = true;
     }
     notifyListeners();
@@ -121,6 +123,15 @@ class UserState extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final userdata = prefs.getString("user");
     userId = jsonDecode(userdata!)[0]["knownAs"].toString();
+    notifyListeners();
+    return userId;
+  }
+
+  Future<String> getBrandId() async {
+    String userId = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    userId = jsonDecode(userdata!)[0]["brandId"].toString();
     notifyListeners();
     return userId;
   }

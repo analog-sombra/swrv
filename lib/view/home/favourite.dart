@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -20,6 +22,7 @@ class FavouritePage extends HookConsumerWidget {
 
     void init() async {
       isBrand.value = await userStateW.isBrand();
+      log(isBrand.value.toString());
     }
 
     useEffect(() {
@@ -263,7 +266,7 @@ class FavouritePage extends HookConsumerWidget {
                   ),
                   CusBtn(
                     btnColor: const Color(0xFF10BCE2),
-                    btnText: "Invite to a compaign",
+                    btnText: "Create a brand",
                     textSize: 18,
                     btnFunction: () {
                       ref.read(pageIndex.state).state = 32;

@@ -14,8 +14,6 @@ final createCampState =
     ChangeNotifierProvider<CreateCampState>((ref) => CreateCampState());
 
 class CreateCampState extends ChangeNotifier {
-
-
   double rating = 3;
 
   void setRating(double val) {
@@ -25,7 +23,7 @@ class CreateCampState extends ChangeNotifier {
 
   List campData = [];
 
-  void setCampData(List data){
+  void setCampData(List data) {
     campData = data;
     notifyListeners();
   }
@@ -60,6 +58,25 @@ class CreateCampState extends ChangeNotifier {
 
   void setCurrencyValue(String val) {
     currencyValue = val;
+    notifyListeners();
+  }
+
+  String? cmpValue;
+  String? cmpId;
+  List cmpList = [];
+
+  void setCmp(List data) {
+    cmpList = data;
+    notifyListeners();
+  }
+
+  void setCmpId(int id) {
+    cmpId = cmpList[id]["id"];
+    notifyListeners();
+  }
+
+  void setCmpValue(String val) {
+    cmpValue = val;
     notifyListeners();
   }
 
@@ -134,7 +151,14 @@ class CreateCampState extends ChangeNotifier {
         "Error",
         "Min reach should be lower then max reach",
       );
-    } else if (categoryId == null) {
+    }
+     else if (cmpId == null) {
+      erroralert(
+        context,
+        "Empty Field",
+        "Please select the category",
+      );
+    }  else if (categoryId == null) {
       erroralert(
         context,
         "Empty Field",
@@ -162,8 +186,8 @@ class CreateCampState extends ChangeNotifier {
       final userdata = await getUser();
 
       final req = {
-        "brandId": jsonDecode(userdata)["id"].toString(),
-        "brandUserId": jsonDecode(userdata)["brand"]["id"].toString(),
+        "brandUserId": jsonDecode(userdata)[0]["id"].toString(),
+        "brandId": jsonDecode(userdata)[0]["brand"]["id"].toString(),
         "cityId": cityId,
         "campaignTypeId": categoryId,
         "campaignName": fields[0],
@@ -184,7 +208,7 @@ class CreateCampState extends ChangeNotifier {
         "totalBudget": fields[7],
         "minEligibleRating": rating.toString(),
         "currencyId": currencyId,
-        "categories": categoryValue.toString(),
+        "categories": cmpId.toString(),
         "platforms": selectedPlatformList()
       };
 
@@ -211,6 +235,15 @@ class CreateCampState extends ChangeNotifier {
     }
     notifyListeners();
     return false;
+  }
+
+  Future<String> getBrandId() async {
+    String userId = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    userId = jsonDecode(userdata!)[0]["brandId"].toString();
+    notifyListeners();
+    return userId;
   }
 
   String selectedPlatformList() {
@@ -242,6 +275,4 @@ class CreateCampState extends ChangeNotifier {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.get("user");
   }
-
-  
 }
