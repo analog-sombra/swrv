@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:swrv/components/header.dart';
 import 'package:swrv/state/navstate.dart';
 import 'package:swrv/view/login.dart';
 
 import '../../state/userstate.dart';
 import '../../utils/alerts.dart';
+import '../../widgets/componets.dart';
 
 class Profile extends HookConsumerWidget {
   const Profile({super.key});
@@ -97,13 +97,17 @@ class Profile extends HookConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(
-                            userName.value.toString().split("@")[0],
-                            textScaleFactor: 1,
-                            style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black),
+                          SizedBox(
+                            width: 130,
+                            child: Text(
+                              userName.value,
+                              overflow: TextOverflow.ellipsis,
+                              textScaleFactor: 1,
+                              style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black),
+                            ),
                           ),
                           const SizedBox(
                             height: 5,

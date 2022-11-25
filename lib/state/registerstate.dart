@@ -10,7 +10,7 @@ import '../services/apirequest.dart';
 import '../utils/alerts.dart';
 
 final registerState =
-    ChangeNotifierProvider<RegisterStatus>((ref) => RegisterStatus());
+    ChangeNotifierProvider.autoDispose<RegisterStatus>((ref) => RegisterStatus());
 
 class RegisterStatus extends ChangeNotifier {
   bool isBrand = false;
@@ -19,10 +19,6 @@ class RegisterStatus extends ChangeNotifier {
 
   bool isCheck1 = false;
   bool isCheck2 = false;
-
-  // TextEditingController email = TextEditingController();
-  // TextEditingController pass = TextEditingController();
-  // TextEditingController coPass = TextEditingController();
 
   CusApiReq apiReq = CusApiReq();
 
@@ -174,12 +170,5 @@ class RegisterStatus extends ChangeNotifier {
     return false;
   }
 
-  void clear() {
-    isCheck1 = false;
-    isCheck2 = false;
 
-    isBrand = false;
-    isShowPass1 = false;
-    isShowPass2 = false;
-  }
 }

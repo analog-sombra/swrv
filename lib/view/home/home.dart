@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:swrv/components/header.dart';
 import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/componets.dart';
@@ -98,7 +97,7 @@ class HomePage extends HookConsumerWidget {
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 8),
                       child: Text(
-                        "Your linded social media accounts are under\nverification, you'll be not notified withen 14 hours.",
+                        "Your linked social media accounts are under\nverification, you'll be not notified withen 14 hours.",
                         textScaleFactor: 1,
                         textAlign: TextAlign.left,
                         style: TextStyle(
@@ -343,6 +342,10 @@ class CampaingList extends HookConsumerWidget {
                     amount: "3500",
                     currency: "USD",
                     platforms: const [
+                      "assets/images/instagram.png",
+                      "assets/images/instagram.png",
+                      "assets/images/instagram.png",
+                      "assets/images/instagram.png",
                       "assets/images/instagram.png",
                     ]),
                 HomeCard(

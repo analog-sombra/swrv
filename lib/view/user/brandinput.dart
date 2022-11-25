@@ -10,10 +10,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:swrv/components/header.dart';
 import 'package:swrv/utils/utilthemes.dart';
 
 import '../../state/userinputstate.dart';
+import '../../widgets/componets.dart';
 import '../../widgets/cuswidgets.dart';
 
 class BrandInput extends HookConsumerWidget {

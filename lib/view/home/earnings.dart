@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:swrv/components/header.dart';
+import 'package:swrv/state/navstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 
-import '../../utils/alerts.dart';
+import '../../widgets/componets.dart';
 
 class EarningsPage extends HookConsumerWidget {
   const EarningsPage({super.key});
@@ -44,7 +44,7 @@ class EarningsPage extends HookConsumerWidget {
           ),
           GestureDetector(
             onTap: () {
-              comingalert(context);
+              ref.watch(pageIndex.state).state = 6;
             },
             child: Container(
               width: 220,

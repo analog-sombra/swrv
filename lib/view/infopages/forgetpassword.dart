@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:swrv/components/header.dart';
 import 'package:swrv/utils/utilthemes.dart';
+
+import '../../widgets/componets.dart';
 
 class ForgetPassInfo extends HookConsumerWidget {
   const ForgetPassInfo({super.key});

@@ -12,12 +12,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:swrv/state/navstate.dart';
 
-import '../../components/header.dart';
 import '../../services/apirequest.dart';
 import '../../state/brand/createbrandstate.dart';
 import '../../state/userstate.dart';
 import '../../utils/alerts.dart';
 import '../../utils/utilthemes.dart';
+import '../../widgets/componets.dart';
 import '../../widgets/cuswidgets.dart';
 
 class CreateBrandPage extends HookConsumerWidget {

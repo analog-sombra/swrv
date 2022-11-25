@@ -5,12 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-import 'package:swrv/components/header.dart';
 import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 
 import '../../utils/alerts.dart';
+import '../../widgets/componets.dart';
 
 class EditProfile extends HookConsumerWidget {
   const EditProfile({super.key});
@@ -35,9 +34,6 @@ class EditProfile extends HookConsumerWidget {
       email.text = await userStateW.getUserEmail();
       userName.text = await userStateW.getUserName();
       knowAs.text = await userStateW.getNickname();
-      // dob.text = await userStateW.g
-      // final userdata  = await userStateW.get
-      // log()
     }
 
     useEffect(() {
@@ -75,21 +71,21 @@ class EditProfile extends HookConsumerWidget {
                     fit: StackFit.loose,
                     children: [
                       Align(
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                          ),
+                        child: SizedBox(
                           width: 100,
                           height: 100,
-                          child: CachedNetworkImage(
-                            imageUrl: userAvatar.value,
-                            progressIndicatorBuilder:
-                                (context, url, downloadProgress) =>
-                                    CircularProgressIndicator(
-                                        value: downloadProgress.progress),
-                            errorWidget: (context, url, error) =>
-                                Image.asset("assets/images/user.png"),
-                            fit: BoxFit.cover,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: CachedNetworkImage(
+                              imageUrl: userAvatar.value,
+                              progressIndicatorBuilder:
+                                  (context, url, downloadProgress) =>
+                                      CircularProgressIndicator(
+                                          value: downloadProgress.progress),
+                              errorWidget: (context, url, error) =>
+                                  Image.asset("assets/images/user.png"),
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
                       ),

@@ -11,13 +11,13 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:swrv/components/header.dart';
 import 'package:swrv/services/apirequest.dart';
 import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
 
 import '../../state/userinputstate.dart';
+import '../../widgets/componets.dart';
 import '../../widgets/cuswidgets.dart';
 import '../navigation/bottomnavbar.dart';
 

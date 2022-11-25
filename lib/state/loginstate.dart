@@ -12,6 +12,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:swrv/services/apirequest.dart';
+import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/alerts.dart';
 
 //apple login start here
@@ -90,13 +91,16 @@ Future<UserCredential> signInWithFacebook() async {
 }
 
 //login state start here
-final loginStatus = ChangeNotifierProvider<LoginState>((ref) => LoginState());
+final loginStatus =
+    ChangeNotifierProvider.autoDispose<LoginState>((ref) => LoginState());
 
 class LoginState extends ChangeNotifier {
   bool isChecked = false;
   bool isPassword = false;
 
   CusApiReq apiReq = CusApiReq();
+
+  UserState userState = UserState();
 
   void toggleCheck() {
     isChecked = !isChecked;
@@ -136,7 +140,8 @@ class LoginState extends ChangeNotifier {
           data[0]["message"],
         );
       } else {
-        final isuserset = await setNewUserData(context, data[0]["data"]["id"]);
+        final isuserset =
+            await userState.setNewUserData(context, data[0]["data"]["id"]);
 
         if (isuserset) {
           if (isChecked) {
@@ -166,29 +171,6 @@ class LoginState extends ChangeNotifier {
         notifyListeners();
         return true;
       }
-    }
-    notifyListeners();
-    return false;
-  }
-
-  void setUserData(String user) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user', user);
-  }
-
-  Future<bool> setNewUserData(BuildContext context, String userid) async {
-    final req = {"id": userid};
-
-    final userdata =
-        await apiReq.postApi(jsonEncode(req), path: "/api/getuser");
-
-    if (userdata[0]["status"] == false) {
-      erroralert(context, "Empty User", "There is no user data");
-    } else {
-      setUserData(jsonEncode(userdata[0]["data"]));
-    
-      notifyListeners();
-      return true;
     }
     notifyListeners();
     return false;

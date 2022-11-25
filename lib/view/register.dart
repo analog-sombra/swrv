@@ -333,7 +333,6 @@ class Register extends HookConsumerWidget {
                                       final res = await registerStateW.register(
                                           context, email, pass, coPass);
                                       if (res) {
-                                        registerStateW.clear();
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
@@ -423,7 +422,6 @@ class Register extends HookConsumerWidget {
                                     ),
                                     GestureDetector(
                                       onTap: () {
-                                        registerStateW.clear();
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:swrv/components/header.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
 
 import '../../utils/alerts.dart';
+import '../../widgets/componets.dart';
 
 class InvitePage extends HookConsumerWidget {
   const InvitePage({super.key});
@@ -12,6 +13,38 @@ class InvitePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.of(context).size.width;
+    ValueNotifier<List> userdata = useState([
+      {
+        "img": "assets/images/1.jpg",
+        "name": "Rajesh",
+        "email": "rajesh@gmail.com",
+      },
+      {
+        "img": "assets/images/2.jpg",
+        "name": "Rakesh",
+        "email": "rakesh@gmail.com",
+      },
+      {
+        "img": "assets/images/3.jpg",
+        "name": "Rohit",
+        "email": "rohit@gmail.com",
+      },
+      {
+        "img": "assets/images/4.jpg",
+        "name": "Soniya",
+        "email": "soniya@gmail.com",
+      },
+      {
+        "img": "assets/images/5.jpg",
+        "name": "Sujal",
+        "email": "sujal@gmail.com",
+      },
+      {
+        "img": "assets/images/6.jpg",
+        "name": "Sonali",
+        "email": "sonali@gmail.com",
+      },
+    ]);
 
     return SingleChildScrollView(
       child: Column(
@@ -246,7 +279,7 @@ class InvitePage extends HookConsumerWidget {
                           ],
                         ),
                       ),
-                      for (int i = 0; i < 5; i++) ...[
+                      for (int i = 0; i < userdata.value.length; i++) ...[
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           child: Row(
@@ -260,7 +293,7 @@ class InvitePage extends HookConsumerWidget {
                                   width: 40,
                                   height: 40,
                                   child: Image.asset(
-                                    "assets/images/post1.jpg",
+                                    userdata.value[i]["img"],
                                     fit: BoxFit.cover,
                                   ),
                                 ),
@@ -268,13 +301,13 @@ class InvitePage extends HookConsumerWidget {
                               const SizedBox(
                                 width: 15,
                               ),
-                              const SizedBox(
+                              SizedBox(
                                 width: 140,
                                 child: Text(
-                                  "Sanjay Thomas",
+                                  userdata.value[i]["name"],
                                   textScaleFactor: 1,
                                   textAlign: TextAlign.start,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w400,
                                     color: blackC,
@@ -284,13 +317,13 @@ class InvitePage extends HookConsumerWidget {
                               const SizedBox(
                                 width: 10,
                               ),
-                              const SizedBox(
+                              SizedBox(
                                 width: 240,
                                 child: Text(
-                                  "sanjaythomas@gmail.com",
+                                  userdata.value[i]["email"],
                                   textScaleFactor: 1,
                                   textAlign: TextAlign.start,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w400,
                                     color: blackC,
