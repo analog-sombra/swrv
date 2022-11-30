@@ -6,6 +6,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/state/navstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
+import 'package:swrv/view/campaings/campaigninfopage.dart';
 import 'package:swrv/widgets/componets.dart';
 
 import '../../services/apirequest.dart';
@@ -27,14 +28,10 @@ class MyCampaings extends HookConsumerWidget {
       final userid = await userStateW.getUserId();
       final req = {"id": userid};
       try {
-        log(userid.toString());
         dynamic data = await apiReq.postApi(jsonEncode(req),
             path: "/api/get-my-campaigns");
 
         champ.value = data[0]["data"]["campaigns"];
-
-        // log(data[0]["data"].toString());
-        log(data[0]["data"]["campaigns"].toString());
       } catch (e) {
         log(e.toString());
       }
@@ -209,6 +206,14 @@ class MyCampaings extends HookConsumerWidget {
                             btnColor: const Color(0xfffbc98e),
                             btnText: "View",
                             btnFunction: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChampignInfopage(
+                                    id: champ.value[i]["id"],
+                                  ),
+                                ),
+                              );
                               ref.read(pageIndex.state).state = 21;
                             },
                             website:

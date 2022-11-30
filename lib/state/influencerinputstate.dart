@@ -1,20 +1,38 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../services/apirequest.dart';
 import '../utils/alerts.dart';
 
-final userInputState =
-    ChangeNotifierProvider<UserInputState>((ref) => UserInputState());
+final influencerInputState =
+    ChangeNotifierProvider.autoDispose<InfluencerInputState>(
+  (ref) => InfluencerInputState(),
+);
 
-class UserInputState extends ChangeNotifier {
+class InfluencerInputState extends ChangeNotifier {
   CusApiReq apiReq = CusApiReq();
   int curInput = 0;
+
+  File? imageFile;
+  Future pickImage(BuildContext context) async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (image == null) return;
+      final imageTemp = File(image.path);
+
+      imageFile = imageTemp;
+    } on PlatformException catch (e) {
+      erroralert(context, "Error", 'Failed to pick image: $e');
+    }
+    notifyListeners();
+  }
 
   List platforms = [];
   List imgUrls = [];
@@ -86,7 +104,6 @@ class UserInputState extends ChangeNotifier {
     } else {
       currencyVal = [];
     }
-    log(currencyList.toString());
 
     notifyListeners();
   }
@@ -354,7 +371,7 @@ class UserInputState extends ChangeNotifier {
     for (int i = 0; i < languageVal.length; i++) {
       res += "${languageVal[i]["id"]},";
     }
- 
+
     return res;
   }
 
@@ -461,34 +478,34 @@ class UserInputState extends ChangeNotifier {
     return false;
   }
 
-  void clear() {
-    currencyList = [];
-    selectedCurrency = [];
-    currencyVal = [];
+  // void clear() {
+  //   currencyList = [];
+  //   selectedCurrency = [];
+  //   currencyVal = [];
 
-    categoryList = [];
-    selectedCategory = [];
-    categoryVal = [];
+  //   categoryList = [];
+  //   selectedCategory = [];
+  //   categoryVal = [];
 
-    languageList = [];
-    selectedLanguage = [];
-    languageVal = [];
+  //   languageList = [];
+  //   selectedLanguage = [];
+  //   languageVal = [];
 
-    selectedGender = [false, false, false];
-    genderVal = [];
+  //   selectedGender = [false, false, false];
+  //   genderVal = [];
 
-    countryList = [];
-    selectedCountry = [];
-    countryVal = [];
+  //   countryList = [];
+  //   selectedCountry = [];
+  //   countryVal = [];
 
-    cityList = [];
-    selectedCity = [];
-    cityVal = [];
+  //   cityList = [];
+  //   selectedCity = [];
+  //   cityVal = [];
 
-    platforms = [];
-    imgUrls = [];
-    isCompleted = [];
-    selectedPlatform = null;
-    cont = [];
-  }
+  //   platforms = [];
+  //   imgUrls = [];
+  //   isCompleted = [];
+  //   selectedPlatform = null;
+  //   cont = [];
+  // }
 }

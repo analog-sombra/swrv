@@ -276,10 +276,10 @@ class FavouritePage extends HookConsumerWidget {
                   ),
                   CusBtn(
                     btnColor: const Color(0xFF10BCE2),
-                    btnText: "Create a brand",
+                    btnText: "Invite to a campaign",
                     textSize: 18,
                     btnFunction: () {
-                      ref.read(pageIndex.state).state = 32;
+                      // ref.read(pageIndex.state).state = 32;
                     },
                     elevation: 1,
                   ),

@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -17,6 +16,7 @@ import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
 
 import '../../services/apirequest.dart';
+import '../../widgets/alerts.dart';
 import '../../widgets/componets.dart';
 
 class CreateCampaignsPage extends HookConsumerWidget {
@@ -235,6 +235,11 @@ class CreateCampaings extends HookConsumerWidget {
     TextEditingController minReach = useTextEditingController();
     TextEditingController costPerPage = useTextEditingController();
     TextEditingController totalBaudget = useTextEditingController();
+
+    TextEditingController mention = useTextEditingController();
+    TextEditingController hashtag = useTextEditingController();
+    TextEditingController dos = useTextEditingController();
+    TextEditingController dont = useTextEditingController();
 
     void init() async {
       final req1 = {};
@@ -604,6 +609,148 @@ class CreateCampaings extends HookConsumerWidget {
                       ),
                     ),
                   ),
+                  cusTitle("Mentions"),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: backgroundC,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(children: [
+                              for (int i = 0;
+                                  i < createCmpSW.mention.length;
+                                  i++) ...[
+                                Container(
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: whiteC,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "@${createCmpSW.mention[i]}",
+                                        textScaleFactor: 1,
+                                        style: const TextStyle(
+                                          color: blackC,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 8,
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          createCmpSW.removeMention(
+                                            createCmpSW.mention[i],
+                                          );
+                                        },
+                                        child: const Icon(
+                                          Icons.close,
+                                          color: Colors.red,
+                                          size: 20,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ]),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          child: InkWell(
+                            onTap: () {
+                              addMentionsAlert(context, mention, ref);
+                            },
+                            child: const Icon(
+                              Icons.add,
+                              color: blackC,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  cusTitle("HashTag"),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: backgroundC,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(children: [
+                              for (int i = 0;
+                                  i < createCmpSW.hashtag.length;
+                                  i++) ...[
+                                Container(
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: whiteC,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        "#${createCmpSW.hashtag[i]}",
+                                        textScaleFactor: 1,
+                                        style: const TextStyle(
+                                          color: blackC,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 8,
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          createCmpSW.removeHashTag(
+                                            createCmpSW.hashtag[i],
+                                          );
+                                        },
+                                        child: const Icon(
+                                          Icons.close,
+                                          color: Colors.red,
+                                          size: 20,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )
+                              ],
+                            ]),
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          child: InkWell(
+                            onTap: () {
+                              addHashTagAlert(context, hashtag, ref);
+                            },
+                            child: const Icon(
+                              Icons.add,
+                              color: blackC,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
                   cusTitle("Campaign Eligible Rating"),
                   RatingBar.builder(
                     initialRating: createCmpSW.rating,
@@ -923,31 +1070,393 @@ class CreateCampaings extends HookConsumerWidget {
                       ),
                     ),
                   ],
+                  cusTitle("You should"),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: backgroundC,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        const Icon(Icons.done, color: Colors.green),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        const Text(
+                          "Do",
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                              color: blackC,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                        ),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          child: InkWell(
+                            onTap: () {
+                              addDosAlert(context, dos, ref);
+                            },
+                            child: const Icon(
+                              Icons.add,
+                              color: blackC,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  //do container
+                  Wrap(
+                    runSpacing: 10,
+                    spacing: 10,
+                    alignment: WrapAlignment.start,
+                    runAlignment: WrapAlignment.start,
+                    children: [
+                      for (int i = 0; i < createCmpSW.dos.length; i++) ...[
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: blackC.withOpacity(0.15),
+                                      blurRadius: 10),
+                                ],
+                                color: whiteC,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    createCmpSW.dos[i],
+                                    textScaleFactor: 1,
+                                    style: const TextStyle(
+                                      color: blackC,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      createCmpSW.removeDos(
+                                        createCmpSW.dos[i],
+                                      );
+                                    },
+                                    child: const Icon(
+                                      Icons.close,
+                                      color: Colors.red,
+                                      size: 20,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                        // Container(
+                        //   margin: const EdgeInsets.only(top: 8),
+                        //   child: Row(
+                        //     children: [
+                        //       const SizedBox(
+                        //         width: 5,
+                        //       ),
+                        //       const Icon(Icons.done, color: Colors.green),
+                        //       const SizedBox(
+                        //         width: 8,
+                        //       ),
+                        //       Container(
+                        //         margin:
+                        //             const EdgeInsets.symmetric(horizontal: 6),
+                        //         padding: const EdgeInsets.symmetric(
+                        //             horizontal: 8, vertical: 4),
+                        //         decoration: BoxDecoration(
+                        //           boxShadow: [
+                        //             BoxShadow(
+                        //                 color: blackC.withOpacity(0.15),
+                        //                 blurRadius: 10),
+                        //           ],
+                        //           color: whiteC,
+                        //           borderRadius: BorderRadius.circular(5),
+                        //         ),
+                        //         child: Row(
+                        //           children: [
+                        //             Text(
+                        //               createCmpSW.dos[i],
+                        //               textScaleFactor: 1,
+                        //               style: const TextStyle(
+                        //                 color: blackC,
+                        //                 fontSize: 16,
+                        //                 fontWeight: FontWeight.w400,
+                        //               ),
+                        //             ),
+                        //             const SizedBox(
+                        //               width: 8,
+                        //             ),
+                        //             InkWell(
+                        //               onTap: () {
+                        //                 createCmpSW.removeDos(
+                        //                   createCmpSW.dos[i],
+                        //                 );
+                        //               },
+                        //               child: const Icon(
+                        //                 Icons.close,
+                        //                 color: Colors.red,
+                        //                 size: 20,
+                        //               ),
+                        //             )
+                        //           ],
+                        //         ),
+                        //       )
+                        //     ],
+                        //   ),
+                        // ),
+                      ]
+                    ],
+                  ),
+
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                        color: backgroundC,
+                        borderRadius: BorderRadius.circular(10)),
+                    child: Row(
+                      children: [
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        const Icon(Icons.close, color: Colors.red),
+                        const SizedBox(
+                          width: 8,
+                        ),
+                        const Text(
+                          "Don't",
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                              color: blackC,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500),
+                        ),
+                        const Spacer(),
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          child: InkWell(
+                            onTap: () {
+                              addDontAlert(context, dont, ref);
+                            },
+                            child: const Icon(
+                              Icons.add,
+                              color: blackC,
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    runSpacing: 8,
+                    spacing: 10,
+                    alignment: WrapAlignment.start,
+                    runAlignment: WrapAlignment.start,
+                    children: [
+                      for (int i = 0; i < createCmpSW.dont.length; i++) ...[
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: blackC.withOpacity(0.15),
+                                      blurRadius: 10),
+                                ],
+                                color: whiteC,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    createCmpSW.dont[i],
+                                    textScaleFactor: 1,
+                                    style: const TextStyle(
+                                      color: blackC,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      createCmpSW.removedont(
+                                        createCmpSW.dont[i],
+                                      );
+                                    },
+                                    child: const Icon(
+                                      Icons.close,
+                                      color: Colors.red,
+                                      size: 20,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ]
+                    ],
+                  ),
+                  cusTitle("Mood boards"),
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                        color: backgroundC,
+                        borderRadius: BorderRadius.circular(10)),
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          for (int i = 0;
+                              i < createCmpSW.images.length;
+                              i++) ...[
+                            Stack(
+                              children: [
+                                Align(
+                                  alignment: Alignment.topLeft,
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 6, vertical: 8),
+                                    decoration: BoxDecoration(boxShadow: [
+                                      BoxShadow(
+                                          color: blackC.withOpacity(0.15),
+                                          blurRadius: 5)
+                                    ]),
+                                    width: 80,
+                                    height: 80,
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(10),
+                                      child: Image.file(
+                                        createCmpSW.images[i],
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: InkWell(
+                                    onTap: () {
+                                      createCmpSW
+                                          .removeImage(createCmpSW.images[i]);
+                                    },
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        color: Colors.red,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Icon(
+                                        Icons.close,
+                                        color: whiteC,
+                                        size: 20,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: InkWell(
+                              onTap: () {
+                                createCmpSW.addImage();
+                              },
+                              child: Container(
+                                margin:
+                                    const EdgeInsets.symmetric(horizontal: 6),
+                                decoration:
+                                    BoxDecoration(color: whiteC, boxShadow: [
+                                  BoxShadow(
+                                    color: blackC.withOpacity(0.15),
+                                  )
+                                ]),
+                                width: 80,
+                                height: 80,
+                                child: const Center(
+                                  child: Icon(Icons.add),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(
                     height: 20,
                   ),
+
                   CusBtn(
                       btnColor: primaryC,
-                      btnText: "Create",
+                      btnText: "Preview",
                       textSize: 18,
                       btnFunction: () async {
-                        try {
-                          final res = await createCmpSW.createCamp(context, [
-                            name.text,
-                            info.text,
-                            startDate.text,
-                            endDate.text,
-                            minReach.text,
-                            maxReach.text,
-                            costPerPage.text,
-                            totalBaudget.text,
-                          ]);
-                          if (res) {
-                            ref.watch(pageIndex.state).state = 0;
-                          }
-                        } catch (e) {
-                          log(e.toString());
+                        createCmpSW.setdata([
+                          name.text,
+                          info.text,
+                          startDate.text,
+                          endDate.text,
+                          minReach.text,
+                          maxReach.text,
+                          costPerPage.text,
+                          totalBaudget.text,
+                        ]);
+                        bool res = createCmpSW.nextPage(context, [
+                          name.text,
+                          info.text,
+                          startDate.text,
+                          endDate.text,
+                          minReach.text,
+                          maxReach.text,
+                          costPerPage.text,
+                          totalBaudget.text,
+                        ]);
+                        if (res) {
+                          ref.watch(pageIndex.state).state = 25;
                         }
+
+                        // final res = await createCmpSW.createCamp(context, [
+                        //   name.text,
+                        //   info.text,
+                        //   startDate.text,
+                        //   endDate.text,
+                        //   minReach.text,
+                        //   maxReach.text,
+                        //   costPerPage.text,
+                        //   totalBaudget.text,
+                        // ]);
+                        // if (res) {
+                        //   ref.watch(pageIndex.state).state = 0;
+                        // }
                       }),
                 ],
               ),

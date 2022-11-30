@@ -1,13 +1,18 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:swrv/state/userstate.dart';
 import 'package:swrv/view/home/drafts.dart';
 import 'package:swrv/view/home/earnings.dart';
 import 'package:swrv/view/home/favourite.dart';
 import 'package:swrv/view/home/help.dart';
 import 'package:swrv/view/home/inbox.dart';
 import 'package:swrv/view/home/invite.dart';
+import 'package:swrv/view/infopages/forgetpassword.dart';
 import 'package:swrv/view/navigation/drawer.dart';
 import 'package:swrv/state/navstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
@@ -25,7 +30,8 @@ import '../campaings/createcampaign.dart';
 import '../campaings/mycompaign.dart';
 
 class Bottomnav extends HookConsumerWidget {
-  Bottomnav({super.key});
+  final bool isWelcomeAlert;
+  Bottomnav({Key? key, this.isWelcomeAlert = false}) : super(key: key);
 
   static const List pages = [
     //bottom nav pages 0 t0 5
@@ -67,7 +73,12 @@ class Bottomnav extends HookConsumerWidget {
     //user profile
     EditProfile(),
     //band 32 - 35
-    CreateBrandPage()
+    CreateBrandPage(),
+    CreateBrandPage(),
+    CreateBrandPage(),
+    CreateBrandPage(),
+    //info pages 35 
+    ForgetPassInfo(),
   ];
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -77,6 +88,18 @@ class Bottomnav extends HookConsumerWidget {
     final width = MediaQuery.of(context).size.width;
 
     final indexPage = ref.watch(pageIndex);
+    final userStateW = ref.watch(userState);
+    void init() async {
+      if (isWelcomeAlert) {
+        await Future.delayed(const Duration(milliseconds: 400));
+        welcomeAlert(context, await userStateW.getUserEmail());
+      }
+    }
+
+    useEffect(() {
+      init();
+      return null;
+    }, []);
 
     return WillPopScope(
       onWillPop: () async {
@@ -147,7 +170,8 @@ class Bottomnav extends HookConsumerWidget {
                 offset: const Offset(0, -25),
                 child: GestureDetector(
                   onTap: () {
-                    connectAlert(context);
+                    // welcomeAlert(context);
+                    // connectAlert(context);
                   },
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 5),

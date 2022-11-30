@@ -5,15 +5,19 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swrv/state/userstate.dart';
 
 import '../../services/apirequest.dart';
 import '../../utils/alerts.dart';
+import '../brandinputstate.dart';
 
-final createBrandState =
-    ChangeNotifierProvider<CreateBrandState>((ref) => CreateBrandState());
+final createBrandState = ChangeNotifierProvider.autoDispose<CreateBrandState>(
+    (ref) => CreateBrandState());
 
 class CreateBrandState extends ChangeNotifier {
+  BrandInputState brandInput = BrandInputState();
+  UserState userState = UserState();
+
   CusApiReq apiReq = CusApiReq();
   String? cityValue;
   String? cityId;
@@ -89,12 +93,11 @@ class CreateBrandState extends ChangeNotifier {
           data[0]["message"],
         );
       } else {
-        // clearUserData();
-        log(data[0]["data"]["id"]);
-        setNewUserData(context, data[0]["data"]["id"]);
-
-        final userdata = await getUserData(context);
-
+        await userState.setNewUserData(context, data[0]["data"]["id"]);
+        brandInput.setBrandValue(
+            "${data[0]["data"]["brand"]["name"]} [${data[0]["data"]["brand"]["code"]}]");
+        log("${data[0]["data"]["brand"]["name"]} [${data[0]["data"]["brand"]["code"]}]");
+        log(brandInput.brandValue.toString());
         notifyListeners();
         return true;
       }
@@ -104,67 +107,22 @@ class CreateBrandState extends ChangeNotifier {
     return false;
   }
 
-  Future<bool> uploadLogo(BuildContext context, String imagepath) async {
-    dynamic data = await apiReq.uploadFile(imagepath, path: "brand/logo/");
-    log(data.toString());
-    log(imagepath.toString());
+  // Future<bool> uploadLogo(BuildContext context, String imagepath) async {
+  //   dynamic data = await apiReq.uploadFile(imagepath, path: "brand/logo/");
 
-    if (data['status'] == false) {
-      erroralert(
-        context,
-        "Error",
-        data['message'],
-      );
-    } else {
-      brandlogo = data['data']['filePath'];
-      notifyListeners();
-      return true;
-    }
+  //   if (data['status'] == false) {
+  //     erroralert(
+  //       context,
+  //       "Error",
+  //       data['message'],
+  //     );
+  //   } else {
+  //     brandlogo = data['data']['filePath'];
+  //     notifyListeners();
+  //     return true;
+  //   }
 
-    notifyListeners();
-    return false;
-  }
-
-  void setProfileComp(bool val) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool("isProfileCompleted", val);
-  }
-
-  void setUserData(String user) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user', user);
-  }
-
-  Future<String> getUserData(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? response = prefs.getString("user");
-    if (response == null) {
-      erroralert(context, "Empty User", "There is no user data");
-    }
-    notifyListeners();
-    return response!;
-  }
-
-  void clearUserData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('user');
-    notifyListeners();
-  }
-
-  Future<bool> setNewUserData(BuildContext context, String userid) async {
-    final req = {"id": userid};
-
-    final userdata =
-        await apiReq.postApi(jsonEncode(req), path: "/api/getuser");
-
-    if (userdata[0]["status"] == false) {
-      erroralert(context, "Empty User", "There is no user data");
-    } else {
-      setUserData(jsonEncode(userdata[0]["data"]));
-      notifyListeners();
-      return true;
-    }
-    notifyListeners();
-    return false;
-  }
+  //   notifyListeners();
+  //   return false;
+  // }
 }

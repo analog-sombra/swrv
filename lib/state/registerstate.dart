@@ -1,16 +1,18 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:swrv/state/userstate.dart';
 
 import '../services/apirequest.dart';
 import '../utils/alerts.dart';
 
-final registerState =
-    ChangeNotifierProvider.autoDispose<RegisterStatus>((ref) => RegisterStatus());
+final registerState = ChangeNotifierProvider.autoDispose<RegisterStatus>(
+    (ref) => RegisterStatus());
 
 class RegisterStatus extends ChangeNotifier {
   bool isBrand = false;
@@ -21,6 +23,7 @@ class RegisterStatus extends ChangeNotifier {
   bool isCheck2 = false;
 
   CusApiReq apiReq = CusApiReq();
+  UserState userState = UserState();
 
   void setBrand(bool val) {
     isBrand = val;
@@ -77,14 +80,14 @@ class RegisterStatus extends ChangeNotifier {
         'Empty Field',
         'Please fill the Re-Password!',
       );
-    } 
+    }
     // else if (!validatePassword(pass.text)) {
     //   erroralert(
     //     context,
     //     'Password Error',
     //     'Your Password is weak try a different password',
     //   );
-    // } 
+    // }
     else if (pass.text != coPass.text) {
       erroralert(
         context,
@@ -132,6 +135,8 @@ class RegisterStatus extends ChangeNotifier {
               data[0]["message"].toString(),
             );
           } else {
+            log("great");
+            log(data[0]["data"].toString());
             notifyListeners();
             return true;
           }
@@ -161,6 +166,7 @@ class RegisterStatus extends ChangeNotifier {
             data[0]["message"].toString(),
           );
         } else {
+          userState.setNewUserData(context, data[0]["data"]["id"].toString());
           notifyListeners();
           return true;
         }
@@ -169,6 +175,4 @@ class RegisterStatus extends ChangeNotifier {
     notifyListeners();
     return false;
   }
-
-
 }

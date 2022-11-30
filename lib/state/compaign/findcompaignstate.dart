@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -16,10 +15,16 @@ class FindCampState extends ChangeNotifier {
   CusApiReq apiReq = CusApiReq();
   bool isActiveChamp = false;
   bool isSearch = false;
+  bool isAdvance = false;
   List searchData = [];
 
   void setIsSearch(bool val) {
     isSearch = val;
+    notifyListeners();
+  }
+
+  void setIsAdvance(bool val) {
+    isAdvance = val;
     notifyListeners();
   }
 
@@ -112,24 +117,22 @@ class FindCampState extends ChangeNotifier {
         "city": cityId,
         "platform": selectedPlatformList(),
         "category": cmpId,
+        "active": isActiveChamp ? "1" : "0"
       };
-      log(req.toString());
 
       List data =
           await apiReq.postApi(jsonEncode(req), path: "/api/campaign-search");
 
-      log(data.toString());
-
       if (data[0] == false) {
         erroralert(
           context,
-          "Error1",
+          "Error",
           data[1].toString(),
         );
       } else if (data[0]["status"] == false) {
         erroralert(
           context,
-          "Error2",
+          "Error",
           data[0]["message"],
         );
       } else {
@@ -138,17 +141,49 @@ class FindCampState extends ChangeNotifier {
       }
     }
 
-//     {
-//   "id":"",
-//   "platform": "1,2",
-//   "category":"",
-//   "city": "",
-//   "brand":"",
-//   "type":"",
-//   "user":"",
-//   "currency":""
-// }
+// request.body = json.encode({
+//   "id": "8",
+//   "platform": "4,5",
+//   "name": "name",
+//   "category": "2",
+//   "city": "1,2",
+//   "brand": "3",
+//   "type": "1,2",
+//   "user": "",
+//   "currency": "2",
+//   "active": "1"
+// });
 
+    notifyListeners();
+    return [false];
+  }
+
+  Future<List> textSearch(BuildContext context, String text) async {
+    if (text == "") {
+      erroralert(context, "Error", "In order to search fell the field...");
+    } else {
+      final req = {"name": text};
+
+      List data =
+          await apiReq.postApi(jsonEncode(req), path: "/api/campaign-search");
+
+      if (data[0] == false) {
+        erroralert(
+          context,
+          "Error",
+          data[1].toString(),
+        );
+      } else if (data[0]["status"] == false) {
+        erroralert(
+          context,
+          "Error",
+          data[0]["message"],
+        );
+      } else {
+        notifyListeners();
+        return [jsonEncode(data[0]["data"])];
+      }
+    }
     notifyListeners();
     return [false];
   }
@@ -171,15 +206,14 @@ class FindCampState extends ChangeNotifier {
     for (int i = 0; i < selectedPlatfomrs.length; i++) {
       selectedPlatfomrs[i] = false;
     }
-    
-    // selectedPlatfomrs = [];
-    // selectedPlatfomrsList = [];
 
+    selectedPlatfomrsList = [];
     cmpValue = null;
     cmpId = null;
 
     cityValue = null;
     cityId = null;
+
     isSearch = false;
     searchData = [];
 

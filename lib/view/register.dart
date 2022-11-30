@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -8,6 +9,7 @@ import 'package:swrv/view/login.dart';
 import '../state/registerstate.dart';
 import '../utils/alerts.dart';
 import '../widgets/alerts.dart';
+import 'navigation/bottomnavbar.dart';
 
 class Register extends HookConsumerWidget {
   const Register({super.key});
@@ -336,7 +338,9 @@ class Register extends HookConsumerWidget {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => const Login(),
+                                            builder: (context) => Bottomnav(
+                                              isWelcomeAlert: true,
+                                            ),
                                           ),
                                         );
                                       }

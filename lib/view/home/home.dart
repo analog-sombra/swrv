@@ -1,3 +1,4 @@
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,8 @@ import 'package:swrv/widgets/componets.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
 
 import '../../utils/alerts.dart';
-import '../user/userinput.dart';
+import '../user/brandinput.dart';
+import '../user/influencerinput.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -37,7 +39,7 @@ class HomePage extends HookConsumerWidget {
       final username = await userStateW.getUserName();
       userName.value = username;
       isBrand.value = await userStateW.isBrand();
-      isCompleted.value = await userStateW.isProfileComp();
+      isCompleted.value = await userStateW.isProfileCompleted();
     }
 
     useEffect(() {
@@ -112,24 +114,24 @@ class HomePage extends HookConsumerWidget {
                       btnText: "Click here to complete",
                       textSize: 16,
                       btnFunction: () {
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder: ((context) => const BrandInput()),
+                        //   ),
+                        // );
                         if (isBrand.value) {
-                          // Navigator.push(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: ((context) => const BrandInput()),
-                          //   ),
-                          // );
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: ((context) => const UserInput()),
+                              builder: ((context) => const BrandInput()),
                             ),
                           );
                         } else {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: ((context) => const UserInput()),
+                              builder: ((context) => const InfluencerInput()),
                             ),
                           );
                         }

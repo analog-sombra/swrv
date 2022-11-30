@@ -1,9 +1,14 @@
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/state/navstate.dart';
+import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
-import 'package:swrv/widgets/cuswidgets.dart';
 
+import '../../state/compaign/createcampaignstate.dart';
+import '../../state/userstate.dart';
 import '../../widgets/componets.dart';
 
 class CampaignsPreview extends HookConsumerWidget {
@@ -12,6 +17,23 @@ class CampaignsPreview extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.of(context).size.width;
+
+    ValueNotifier<String> userAvatar = useState("");
+    ValueNotifier<String> brandInfo = useState("");
+    ValueNotifier<String> website = useState("");
+    final userStateW = ref.watch(userState);
+    final createCmpSW = ref.watch(createCampState);
+
+    void init() async {
+      brandInfo.value = await userStateW.getBrandInfo();
+      userAvatar.value = await userStateW.getUserAvatar();
+      website.value = await userStateW.getWebsite();
+    }
+
+    useEffect(() {
+      init();
+      return null;
+    }, []);
 
     return SingleChildScrollView(
       child: Column(
@@ -42,14 +64,25 @@ class CampaignsPreview extends HookConsumerWidget {
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(15),
                       child: SizedBox(
                         width: 60,
                         height: 60,
-                        child: Image.asset(
-                          "assets/images/post3.jpg",
-                          fit: BoxFit.cover,
-                        ),
+                        child: userAvatar.value == "" || userAvatar.value == "0"
+                            ? Image.asset(
+                                "assets/images/user.png",
+                                fit: BoxFit.cover,
+                              )
+                            : CachedNetworkImage(
+                                imageUrl: userAvatar.value,
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                     const SizedBox(
@@ -60,11 +93,11 @@ class CampaignsPreview extends HookConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Adidas Cases",
+                          Text(
+                            createCmpSW.data[0],
                             textAlign: TextAlign.left,
                             textScaleFactor: 1,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 color: blackC,
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600),
@@ -73,7 +106,7 @@ class CampaignsPreview extends HookConsumerWidget {
                             height: 5,
                           ),
                           Text(
-                            "Category: Consumer Electroinics",
+                            "Category: ${createCmpSW.categoryValue}",
                             textAlign: TextAlign.left,
                             textScaleFactor: 1,
                             style: TextStyle(
@@ -82,7 +115,7 @@ class CampaignsPreview extends HookConsumerWidget {
                                 fontWeight: FontWeight.w400),
                           ),
                           Text(
-                            "www.adidas.co.in",
+                            website.value,
                             textAlign: TextAlign.left,
                             textScaleFactor: 1,
                             style: TextStyle(
@@ -98,174 +131,94 @@ class CampaignsPreview extends HookConsumerWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                Container(
-                  width: width,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-                  child: Wrap(
-                    runSpacing: 10,
-                    spacing: 10,
-                    direction: Axis.horizontal,
-                    children: [
-                      Container(
-                        width: 120,
-                        decoration: BoxDecoration(
-                            color: whiteC,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 5)
-                            ]),
-                        child: Row(children: [
-                          Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: backgroundC,
-                              borderRadius: BorderRadius.circular(10),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          children: [
+                            const Text(
+                              "Mentions",
+                              textScaleFactor: 1,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: blackC),
                             ),
-                            child:
-                                const Icon(Icons.star, color: blackC, size: 45),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "4.2",
-                                  textAlign: TextAlign.left,
-                                  textScaleFactor: 1,
-                                  style: TextStyle(
-                                      color: blackC,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500),
+                            for (int i = 0;
+                                i < createCmpSW.mention.length;
+                                i++) ...[
+                              Container(
+                                width: 120,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                margin: const EdgeInsets.only(top: 10),
+                                decoration: BoxDecoration(
+                                  color: backgroundC,
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                Text(
-                                  "Rating",
-                                  textAlign: TextAlign.left,
+                                child: Text(
+                                  "@${createCmpSW.mention[i]}",
                                   textScaleFactor: 1,
-                                  style: TextStyle(
-                                      color: blackC.withOpacity(0.65),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400),
+                                  textAlign: TextAlign.start,
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      color: secondaryC),
                                 ),
-                              ],
-                            ),
-                          )
-                        ]),
+                              ),
+                            ],
+                          ],
+                        ),
                       ),
-                      Container(
-                        width: 150,
-                        decoration: BoxDecoration(
-                            color: whiteC,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 5)
-                            ]),
-                        child: Row(children: [
-                          Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: backgroundC,
-                              borderRadius: BorderRadius.circular(10),
+                    ),
+                    Expanded(
+                      child: Center(
+                        child: Column(
+                          children: [
+                            const Text(
+                              "Hashtags",
+                              textScaleFactor: 1,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w700,
+                                  color: blackC),
                             ),
-                            child: const Icon(Icons.handshake,
-                                color: blackC, size: 45),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "21",
-                                  textAlign: TextAlign.left,
-                                  textScaleFactor: 1,
-                                  style: TextStyle(
-                                      color: blackC,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500),
+                            for (int i = 0;
+                                i < createCmpSW.hashtag.length;
+                                i++) ...[
+                              Container(
+                                width: 120,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 10, vertical: 5),
+                                margin: const EdgeInsets.only(top: 10),
+                                decoration: BoxDecoration(
+                                  color: backgroundC,
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
-                                Text(
-                                  "Connections",
-                                  textAlign: TextAlign.left,
+                                child: Text(
+                                  "#${createCmpSW.hashtag[i]}",
                                   textScaleFactor: 1,
-                                  style: TextStyle(
-                                      color: blackC.withOpacity(0.65),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400),
+                                  textAlign: TextAlign.start,
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                      color: secondaryC),
                                 ),
-                              ],
-                            ),
-                          )
-                        ]),
+                              ),
+                            ],
+                          ],
+                        ),
                       ),
-                      Container(
-                        width: 200,
-                        decoration: BoxDecoration(
-                            color: whiteC,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 5)
-                            ]),
-                        child: Row(children: [
-                          Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: backgroundC,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: const Icon(Icons.people_alt,
-                                color: blackC, size: 45),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "48",
-                                  textAlign: TextAlign.left,
-                                  textScaleFactor: 1,
-                                  style: TextStyle(
-                                      color: blackC,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w500),
-                                ),
-                                Text(
-                                  "Completed Campaigns",
-                                  textAlign: TextAlign.left,
-                                  textScaleFactor: 1,
-                                  style: TextStyle(
-                                      color: blackC.withOpacity(0.65),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                              ],
-                            ),
-                          )
-                        ]),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  width: 200,
-                  child: CusBtn(
-                      btnColor: primaryC,
-                      btnText: "Connect",
-                      textSize: 18,
-                      btnFunction: () {
-                        ref.read(pageIndex.state).state = 22;
-                      }),
+                const SizedBox(
+                  height: 20,
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 10),
@@ -279,12 +232,400 @@ class CampaignsPreview extends HookConsumerWidget {
                         color: secondaryC),
                   ),
                 ),
+                Text(
+                  brandInfo.value,
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.start,
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w400, color: blackC),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    "Champign info",
+                    textScaleFactor: 1,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: secondaryC),
+                  ),
+                ),
+                Text(
+                  createCmpSW.data[1],
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.start,
+                  style: const TextStyle(
+                      fontSize: 14, fontWeight: FontWeight.w400, color: blackC),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    "Mooodboard",
+                    textScaleFactor: 1,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: secondaryC),
+                  ),
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      for (int i = 0; i < createCmpSW.images.length; i++) ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: SizedBox(
+                              width: 60,
+                              height: 60,
+                              child: Image.file(
+                                createCmpSW.images[i],
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    "Platforms",
+                    textScaleFactor: 1,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: secondaryC),
+                  ),
+                ),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      for (int i = 0;
+                          i < createCmpSW.selectedPlatfomrsList.length;
+                          i++) ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(6),
+                            child: SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: CachedNetworkImage(
+                                imageUrl: createCmpSW.platforms[int.parse(
+                                        createCmpSW.selectedPlatfomrsList[i])]
+                                    ["platformLogoUrl"],
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                errorWidget: (context, url, error) =>
+                                    const Icon(Icons.error),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                      color: backgroundC,
+                      borderRadius: BorderRadius.circular(10)),
+                  child: Row(
+                    children: const [
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Icon(Icons.done, color: Colors.green),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        "Do",
+                        textScaleFactor: 1,
+                        style: TextStyle(
+                            color: blackC,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    for (int i = 0; i < createCmpSW.dos.length; i++) ...[
+                      Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            const Icon(Icons.done, color: Colors.green),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: blackC.withOpacity(0.15),
+                                      blurRadius: 10),
+                                ],
+                                color: whiteC,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    createCmpSW.dos[i],
+                                    textScaleFactor: 1,
+                                    style: const TextStyle(
+                                      color: blackC,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ]
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: BoxDecoration(
+                    color: backgroundC,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: const [
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Icon(Icons.close, color: Colors.red),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        "Don't",
+                        textScaleFactor: 1,
+                        style: TextStyle(
+                            color: blackC,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    for (int i = 0; i < createCmpSW.dont.length; i++) ...[
+                      Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            const Icon(Icons.done, color: Colors.green),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(horizontal: 6),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: blackC.withOpacity(0.15),
+                                      blurRadius: 10),
+                                ],
+                                color: whiteC,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    createCmpSW.dont[i],
+                                    textScaleFactor: 1,
+                                    style: const TextStyle(
+                                      color: blackC,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ]
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(20),
+            width: width,
+            margin: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              color: whiteC,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: const [
+                BoxShadow(color: shadowC, blurRadius: 5, offset: Offset(0, 6))
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
                 const Text(
-                  "Don't miss out on Early Access sale of EOSS for members only. Become a Adi club member and get Early access to EOSS from 21st to 23rd June. adidas® Official Shop. Free Shipping. Types: Running Shoes, Running Shorts & Tights, Running Jackets, Tracksuits & Track Pants Don't miss out on Early Access sale of EOSS for members only. Become a Adi club member and get Early access to EOSS from 21st to 23rd June. adidas® Official Shop. Free Shipping. Types: Running Shoes, Running Shorts & Tights, Running Jackets, Tracksuits & Track Pants.Don't miss out on Early Access sale of EOSS for members only. Become a Adi club member and get Early access to EOSS from 21st to 23rd June. adidas® Official Shop. Free Shipping. Types: Running Shoes, Running Shorts & Tights, Running Jackets, Tracksuits & Track Pants.Don't miss out on Early Access sale of EOSS for members only. Become a Adi club member and get Early access to EOSS from 21st to 23rd June. adidas® Official Shop. Free Shipping. Types: Running Shoes, Running Shorts & Tights, Running Jackets, Tracksuits & Track Pants.Don't miss out on Early Access sale of EOSS for members only. Become a Adi club member and get Early access to EOSS from 21st to 23rd June. adidas® Official Shop. Free Shipping. Types: Running Shoes, Running Shorts & Tights, Running Jackets, Tracksuits & Track Pants..",
+                  "Campaign Preview",
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                      color: secondaryC),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Text(
+                    "Congratulations",
+                    textScaleFactor: 1,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: blackC),
+                  ),
+                ),
+                const Text(
+                  "The Jaquar Group, established in 1960, is a growing multi-diversified bathroom and lighting solutions company with 17% CAGR over 10 years in a row, offers faucets, showers, shower enclosures, sanitary ware, flushing systems, wellness products, concealed cisterns, water heaters, and varied lighting products.",
                   textScaleFactor: 1,
                   textAlign: TextAlign.start,
                   style: TextStyle(
                       fontSize: 14, fontWeight: FontWeight.w400, color: blackC),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      SizedBox(
+                        width: 120,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                            backgroundColor: backgroundC,
+                          ),
+                          onPressed: () {
+                            ref.watch(pageIndex.state).state = 24;
+                          },
+                          child: const Text(
+                            "back",
+                            textAlign: TextAlign.center,
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                                color: blackC,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      SizedBox(
+                        width: 120,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            backgroundColor: primaryC,
+                          ),
+                          onPressed: () async {
+                            final res = await createCmpSW.createCamp(
+                                context, createCmpSW.data);
+                            if (res) {
+                              susalert(context, "Created",
+                                  "Successfully Created new Campaign ");
+                              ref.watch(pageIndex.state).state = 0;
+                            }
+                          },
+                          child: const Text(
+                            "Create",
+                            textAlign: TextAlign.center,
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                                color: whiteC,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),

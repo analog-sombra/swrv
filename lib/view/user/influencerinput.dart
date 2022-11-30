@@ -2,27 +2,24 @@
 
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:swrv/services/apirequest.dart';
 import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
 
-import '../../state/userinputstate.dart';
+import '../../state/influencerinputstate.dart';
 import '../../widgets/componets.dart';
 import '../../widgets/cuswidgets.dart';
 import '../navigation/bottomnavbar.dart';
 
-class UserInput extends HookConsumerWidget {
-  const UserInput({Key? key}) : super(key: key);
+class InfluencerInput extends HookConsumerWidget {
+  const InfluencerInput({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +27,7 @@ class UserInput extends HookConsumerWidget {
     double height = MediaQuery.of(context).size.height;
     double statusBarHeight = MediaQuery.of(context).viewPadding.top;
 
-    final userInputStateW = ref.watch(userInputState);
+    final userInputStateW = ref.watch(influencerInputState);
 
     List inputs = [
       const UInput1(),
@@ -267,24 +264,11 @@ class UInput1 extends HookConsumerWidget {
     TextEditingController dob = useTextEditingController();
     TextEditingController bio = useTextEditingController();
 
-    ValueNotifier<File?> imageFile = useState(null);
+    // ValueNotifier<File?> imageFile = useState(null);
 
     ValueNotifier<String> userId = useState("0");
 
-    Future pickImage() async {
-      try {
-        final image =
-            await ImagePicker().pickImage(source: ImageSource.gallery);
-        if (image == null) return;
-        final imageTemp = File(image.path);
-
-        imageFile.value = imageTemp;
-      } on PlatformException catch (e) {
-        log('Failed to pick image: $e');
-      }
-    }
-
-    final userInputStateW = ref.watch(userInputState);
+    final userInputStateW = ref.watch(influencerInputState);
     final userStateW = ref.watch(userState);
 
     void init() async {
@@ -319,10 +303,10 @@ class UInput1 extends HookConsumerWidget {
                   child: SizedBox(
                     width: 80,
                     height: 80,
-                    child: (imageFile.value == null)
+                    child: (userInputStateW.imageFile == null)
                         ? Image.asset("assets/images/user.png")
                         : Image.file(
-                            imageFile.value!,
+                            userInputStateW.imageFile!,
                             fit: BoxFit.cover,
                           ),
                   ),
@@ -346,7 +330,7 @@ class UInput1 extends HookConsumerWidget {
                           backgroundColor: const Color(0xff9ca3af),
                         ),
                         onPressed: () async {
-                          pickImage();
+                          userInputStateW.pickImage(context);
                         },
                         child: const Text(
                           "Upload",
@@ -582,11 +566,11 @@ class UInput1 extends HookConsumerWidget {
             btnText: "Next",
             textSize: 18,
             btnFunction: () async {
-              if (imageFile.value == null) {
+              if (userInputStateW.imageFile == null) {
                 erroralert(context, "Image", "Please select one image");
               } else {
                 final res = await userInputStateW.uloadAvatar(
-                    context, imageFile.value!.path, userId.value);
+                    context, userInputStateW.imageFile!.path, userId.value);
 
                 final result = await userInputStateW.userUpdate1(
                   context,
@@ -601,7 +585,7 @@ class UInput1 extends HookConsumerWidget {
                 );
 
                 if (result && res) {
-                  userInputStateW.clear();
+                  // userInputStateW.clear();
                   userInputStateW.setCurInput(userInputStateW.curInput + 1);
                 }
               }
@@ -616,7 +600,7 @@ class UInput2 extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userInputStateW = ref.watch(userInputState);
+    final userInputStateW = ref.watch(influencerInputState);
     final userStateW = ref.watch(userState);
 
     ValueNotifier<String> userId = useState("0");
@@ -1130,7 +1114,7 @@ class UInput2 extends HookConsumerWidget {
                 btnText: "Back",
                 textSize: 18,
                 btnFunction: () {
-                  userInputStateW.clear();
+                  // userInputStateW.clear();
 
                   userInputStateW.setCurInput(userInputStateW.curInput - 1);
                 },
@@ -1153,7 +1137,7 @@ class UInput2 extends HookConsumerWidget {
                     );
 
                     if (restult) {
-                      userInputStateW.clear();
+                      // userInputStateW.clear();
                       userInputStateW.setCurInput(userInputStateW.curInput + 1);
                     }
                   } catch (e) {
@@ -1174,7 +1158,7 @@ class UInput3 extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userInputStateW = ref.watch(userInputState);
+    final userInputStateW = ref.watch(influencerInputState);
 
     CusApiReq apiReq = CusApiReq();
 
@@ -1336,7 +1320,7 @@ class UInput3 extends HookConsumerWidget {
                 btnText: "Back",
                 textSize: 18,
                 btnFunction: () {
-                  userInputStateW.clear();
+                  // userInputStateW.clear();
                   userInputStateW.setCurInput(userInputStateW.curInput - 1);
                 },
                 textColor: blackC,
@@ -1354,7 +1338,7 @@ class UInput3 extends HookConsumerWidget {
                   if (userInputStateW.imgUrls.isEmpty) {
                     erroralert(context, "Error", "Atleast add one platform");
                   } else {
-                    userInputStateW.clear();
+                    // userInputStateW.clear();
                     userInputStateW.setCurInput(userInputStateW.curInput + 1);
                   }
                 },
@@ -1382,7 +1366,7 @@ class CusFiels extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userInputStateW = ref.watch(userInputState);
+    final userInputStateW = ref.watch(influencerInputState);
     ValueNotifier<String> userId = useState("0");
     final userStateW = ref.watch(userState);
 
@@ -1495,7 +1479,7 @@ class UInput4 extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userInputStateW = ref.watch(userInputState);
+    final userInputStateW = ref.watch(influencerInputState);
     final userStateW = ref.watch(userState);
     ValueNotifier<String> userId = useState("0");
 
@@ -2034,7 +2018,7 @@ class UInput4 extends HookConsumerWidget {
                 btnText: "Back",
                 textSize: 18,
                 btnFunction: () {
-                  userInputStateW.clear();
+                  // userInputStateW.clear();
 
                   userInputStateW.setCurInput(userInputStateW.curInput - 1);
                 },
@@ -2062,10 +2046,10 @@ class UInput4 extends HookConsumerWidget {
                       await userStateW.setNewUserData(context, userId.value);
 
                   if (result && newuser) {
-                    userInputStateW.clear();
+                    // userInputStateW.clear();
                     userInputStateW.setCurInput(0);
 
-                    userStateW.setProfileComp(true);
+                    // userStateW.setProfileComp(true);
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => Bottomnav()));
                   }

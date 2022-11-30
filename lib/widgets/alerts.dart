@@ -3,10 +3,14 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
 
-void cusAlertOne(BuildContext context) {
+import '../state/compaign/createcampaignstate.dart';
+
+void welcomeAlert(BuildContext context, String email) {
   showDialog(
     context: context,
     barrierDismissible: false,
@@ -56,18 +60,18 @@ void cusAlertOne(BuildContext context) {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: RichText(
-                  text: const TextSpan(
+                  text: TextSpan(
                     text:
                         'Your account has been created and confirmation link was sent to an email ',
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: whiteC,
                       fontSize: 10,
                       fontWeight: FontWeight.w400,
                     ),
                     children: [
                       TextSpan(
-                        text: " ivamkbfc@gamail.com",
-                        style: TextStyle(
+                        text: email,
+                        style: const TextStyle(
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -375,6 +379,448 @@ void exitAlert(BuildContext context) async {
                       textSize: 18,
                       btnFunction: () {
                         Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void addMentionsAlert(
+    BuildContext context, TextEditingController mention, WidgetRef ref) {
+  final createCmpSW = ref.watch(createCampState);
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: AlertDialog(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        contentPadding: const EdgeInsets.all(5),
+        backgroundColor: whiteC,
+        content: Container(
+          width: MediaQuery.of(context).size.width - 50,
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Add Mentions",
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: secondaryC,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: mention,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      hintText: "mentions",
+                      hintStyle: TextStyle(
+                        color: Colors.black.withOpacity(0.45),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: redC,
+                      btnText: "Cancel",
+                      textSize: 18,
+                      btnFunction: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: greenC,
+                      btnText: "Add",
+                      textSize: 18,
+                      btnFunction: () {
+                        if (mention.text.isEmpty) {
+                          mention.clear();
+                          Navigator.pop(context);
+                          erroralert(context, "Error", "Please fill the field");
+                        } else if (createCmpSW.mention.contains(mention.text)) {
+                          Navigator.pop(context);
+                          erroralert(context, "Error",
+                              "Alredy exist, Try different one");
+                        } else if (mention.text.contains(" ")) {
+                          mention.clear();
+                          Navigator.pop(context);
+                          erroralert(
+                              context, "Error", "Please don't use space");
+                        } else {
+                          createCmpSW.addMention(mention.text);
+                          mention.clear();
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void addHashTagAlert(
+    BuildContext context, TextEditingController hashtag, WidgetRef ref) {
+  final createCmpSW = ref.watch(createCampState);
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: AlertDialog(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        contentPadding: const EdgeInsets.all(5),
+        backgroundColor: whiteC,
+        content: Container(
+          width: MediaQuery.of(context).size.width - 50,
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Add HashTag",
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: secondaryC,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: hashtag,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      hintText: "hashtag",
+                      hintStyle: TextStyle(
+                        color: Colors.black.withOpacity(0.45),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: redC,
+                      btnText: "Cancel",
+                      textSize: 18,
+                      btnFunction: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: greenC,
+                      btnText: "Add",
+                      textSize: 18,
+                      btnFunction: () {
+                        if (hashtag.text.isEmpty) {
+                          hashtag.clear();
+                          Navigator.pop(context);
+                          erroralert(context, "Error", "Please fill the field");
+                        } else if (createCmpSW.hashtag.contains(hashtag.text)) {
+                          Navigator.pop(context);
+                          erroralert(context, "Error",
+                              "Alredy exist, Try different one");
+                        } else if (hashtag.text.contains(" ")) {
+                          hashtag.clear();
+                          Navigator.pop(context);
+                          erroralert(
+                              context, "Error", "Please don't use space");
+                        } else {
+                          createCmpSW.addHashTag(hashtag.text);
+                          hashtag.clear();
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void addDosAlert(
+    BuildContext context, TextEditingController dos, WidgetRef ref) {
+  final createCmpSW = ref.watch(createCampState);
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: AlertDialog(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        contentPadding: const EdgeInsets.all(5),
+        backgroundColor: whiteC,
+        content: Container(
+          width: MediaQuery.of(context).size.width - 50,
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Add Do's",
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: secondaryC,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: dos,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      hintText: "Do's",
+                      hintStyle: TextStyle(
+                        color: Colors.black.withOpacity(0.45),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: redC,
+                      btnText: "Cancel",
+                      textSize: 18,
+                      btnFunction: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: greenC,
+                      btnText: "Add",
+                      textSize: 18,
+                      btnFunction: () {
+                        if (dos.text.isEmpty) {
+                          dos.clear();
+                          Navigator.pop(context);
+                          erroralert(context, "Error", "Please fill the field");
+                        } else if (createCmpSW.dos.contains(dos.text)) {
+                          Navigator.pop(context);
+                          erroralert(context, "Error",
+                              "Alredy exist, Try different one");
+                        } else {
+                          createCmpSW.addDos(dos.text);
+                          dos.clear();
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void addDontAlert(
+    BuildContext context, TextEditingController dont, WidgetRef ref) {
+  final createCmpSW = ref.watch(createCampState);
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: AlertDialog(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        contentPadding: const EdgeInsets.all(5),
+        backgroundColor: whiteC,
+        content: Container(
+          width: MediaQuery.of(context).size.width - 50,
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Add Don't",
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: secondaryC,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: dont,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      hintText: "Do's",
+                      hintStyle: TextStyle(
+                        color: Colors.black.withOpacity(0.45),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: redC,
+                      btnText: "Cancel",
+                      textSize: 18,
+                      btnFunction: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: greenC,
+                      btnText: "Add",
+                      textSize: 18,
+                      btnFunction: () {
+                        if (dont.text.isEmpty) {
+                          dont.clear();
+                          Navigator.pop(context);
+                          erroralert(context, "Error", "Please fill the field");
+                        } else if (createCmpSW.dont.contains(dont.text)) {
+                          Navigator.pop(context);
+                          erroralert(context, "Error",
+                              "Alredy exist, Try different one");
+                        } else {
+                          createCmpSW.addDont(dont.text);
+                          dont.clear();
+                          Navigator.pop(context);
+                        }
                       },
                     ),
                   ),

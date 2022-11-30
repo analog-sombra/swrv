@@ -14,23 +14,6 @@ final userState = ChangeNotifierProvider<UserState>((ref) => UserState());
 class UserState extends ChangeNotifier {
   CusApiReq apiReq = CusApiReq();
 
-  void setProfileComp(bool val) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setBool("isProfileCompleted", val);
-  }
-
-  Future<bool> isProfileComp() async {
-    bool result = false;
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool? isProfileCompleted = prefs.getBool("isProfileCompleted");
-    if (isProfileCompleted == true) {
-      notifyListeners();
-      return true;
-    }
-    notifyListeners();
-    return result;
-  }
-
   void setUserData(String user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('user', user);
@@ -142,5 +125,53 @@ class UserState extends ChangeNotifier {
     userId = jsonDecode(userdata!)[0]["brandId"].toString();
     notifyListeners();
     return userId;
+  }
+
+  Future<String> getBrandName() async {
+    String brandName = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    brandName = jsonDecode(userdata!)[0]["brand"]["name"].toString();
+    notifyListeners();
+    return brandName;
+  }
+
+  Future<String> getBrandCode() async {
+    String brandCode = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    brandCode = jsonDecode(userdata!)[0]["brand"]["code"].toString();
+    notifyListeners();
+    return brandCode;
+  }
+
+  Future<String> getBrandInfo() async {
+    String brandInfo = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    brandInfo = jsonDecode(userdata!)[0]["brand"]["info"].toString();
+    notifyListeners();
+    return brandInfo;
+  }
+
+  Future<String> getWebsite() async {
+    String website = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    website = jsonDecode(userdata!)[0]["website"].toString();
+    notifyListeners();
+    return website;
+  }
+
+  Future<bool> isProfileCompleted() async {
+    bool res = false;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    final userinfo = jsonDecode(userdata!)[0]["profileCompleteness"].toString();
+    if (userinfo == "1") {
+      res = true;
+    }
+    notifyListeners();
+    return res;
   }
 }

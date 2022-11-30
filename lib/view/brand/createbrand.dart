@@ -1,15 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:swrv/state/navstate.dart';
 
 import '../../services/apirequest.dart';
@@ -19,6 +15,7 @@ import '../../utils/alerts.dart';
 import '../../utils/utilthemes.dart';
 import '../../widgets/componets.dart';
 import '../../widgets/cuswidgets.dart';
+import '../user/brandinput.dart';
 
 class CreateBrandPage extends HookConsumerWidget {
   const CreateBrandPage({super.key});
@@ -34,26 +31,12 @@ class CreateBrandPage extends HookConsumerWidget {
     TextEditingController contact = useTextEditingController();
     TextEditingController info = useTextEditingController();
 
-    ValueNotifier<File?> imageFile = useState(null);
     ValueNotifier<String> userId = useState("0");
 
     final createBrandSW = ref.watch(createBrandState);
     final userStateW = ref.watch(userState);
 
     CusApiReq apiReq = CusApiReq();
-
-    Future pickImage() async {
-      try {
-        final image =
-            await ImagePicker().pickImage(source: ImageSource.gallery);
-        if (image == null) return;
-        final imageTemp = File(image.path);
-
-        imageFile.value = imageTemp;
-      } on PlatformException catch (e) {
-        log('Failed to pick image: $e');
-      }
-    }
 
     void init() async {
       userId.value = await userStateW.getUserId();
@@ -73,6 +56,7 @@ class CreateBrandPage extends HookConsumerWidget {
     }, []);
 
     return Scaffold(
+      backgroundColor: backgroundC,
       body: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -436,6 +420,11 @@ class CreateBrandPage extends HookConsumerWidget {
                           );
 
                           if (response) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const BrandInput(),
+                                ));
                             ref.watch(pageIndex.state).state = 0;
                           } else {
                             erroralert(context, "Error", "Unable to add brand");
