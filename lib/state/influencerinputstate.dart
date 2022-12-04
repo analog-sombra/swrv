@@ -450,7 +450,11 @@ class InfluencerInputState extends ChangeNotifier {
         "id": userid.toString(),
         "cityId": cityVal[0]["id"].toString(),
         "userContact": fields[0].toString(),
-        "userGender": genderVal[0]
+        "userGender": (genderVal[0] == "MALE")
+            ? "1"
+            : (genderVal[0] == "FEMALE")
+                ? "2"
+                : "3"
       };
 
       List data =
