@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:swrv/state/navstate.dart';
+import 'package:swrv/state/navigation/drawer.dart';
 import 'package:swrv/utils/utilthemes.dart';
+import 'package:swrv/view/campaings/findcampaign.dart';
+import 'package:swrv/view/campaings/mycompaign.dart';
+import 'package:swrv/view/home/inbox.dart';
+
+import '../home/drafts.dart';
+import '../home/earnings.dart';
+import '../home/favourite.dart';
+import '../home/help.dart';
+import '../home/invite.dart';
 
 class CusDrawer extends HookConsumerWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -13,7 +22,7 @@ class CusDrawer extends HookConsumerWidget {
     return GestureDetector(
       onHorizontalDragUpdate: (info) => {},
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: const BorderRadius.horizontal(right: Radius.circular(15)),
         child: Drawer(
           backgroundColor: whiteC,
           child: SingleChildScrollView(
@@ -59,11 +68,12 @@ class CusDrawer extends HookConsumerWidget {
                       height: 30,
                     ),
                     DrawerButton(
-                      index: 26,
+                      index: 1,
                       icon: FontAwesomeIcons.folderOpen,
                       title: "My Campaign",
                       isFontAwesome: true,
                       scaffoldKey: scaffoldKey,
+                      page: const MyCampaings(),
                     ),
                     const SizedBox(
                       height: 15,
@@ -74,6 +84,7 @@ class CusDrawer extends HookConsumerWidget {
                       title: "Find Campaign",
                       isFontAwesome: false,
                       scaffoldKey: scaffoldKey,
+                      page: const FindCampaings(),
                     ),
                     const SizedBox(
                       height: 15,
@@ -84,6 +95,7 @@ class CusDrawer extends HookConsumerWidget {
                       title: "Inbox",
                       isFontAwesome: false,
                       scaffoldKey: scaffoldKey,
+                      page: const Inbox(),
                     ),
                     const SizedBox(
                       height: 15,
@@ -94,6 +106,7 @@ class CusDrawer extends HookConsumerWidget {
                       title: "My earnings",
                       isFontAwesome: true,
                       scaffoldKey: scaffoldKey,
+                      page: const EarningsPage(),
                     ),
                     const SizedBox(
                       height: 15,
@@ -104,6 +117,7 @@ class CusDrawer extends HookConsumerWidget {
                       title: "Drafts",
                       isFontAwesome: false,
                       scaffoldKey: scaffoldKey,
+                      page: const DraftsPage(),
                     ),
                     const SizedBox(
                       height: 15,
@@ -114,6 +128,7 @@ class CusDrawer extends HookConsumerWidget {
                       title: "Favourite",
                       isFontAwesome: false,
                       scaffoldKey: scaffoldKey,
+                      page: const FavouritePage(),
                     ),
                     const SizedBox(
                       height: 15,
@@ -124,6 +139,7 @@ class CusDrawer extends HookConsumerWidget {
                       title: "Invite",
                       isFontAwesome: false,
                       scaffoldKey: scaffoldKey,
+                      page: const InvitePage(),
                     ),
                     const SizedBox(
                       height: 30,
@@ -134,6 +150,7 @@ class CusDrawer extends HookConsumerWidget {
                       title: "Help",
                       isFontAwesome: false,
                       scaffoldKey: scaffoldKey,
+                      page: const HelpPage(),
                     ),
                   ],
                 )),
@@ -150,6 +167,7 @@ class DrawerButton extends HookConsumerWidget {
   final IconData icon;
   final String title;
   final bool isFontAwesome;
+  final Widget page;
   const DrawerButton({
     Key? key,
     required this.index,
@@ -157,22 +175,24 @@ class DrawerButton extends HookConsumerWidget {
     required this.title,
     required this.isFontAwesome,
     required this.scaffoldKey,
+    required this.page,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final indexpage = ref.read(pageIndex);
+    final drawerIndexW = ref.read(drawerIndex);
     return GestureDetector(
       onTap: () {
         scaffoldKey.currentState?.closeDrawer();
-        ref.read(pageIndex.state).state = index;
+        drawerIndexW.setIndex(index);
+        Navigator.push(context, MaterialPageRoute(builder: (context) => page));
       },
       child: Container(
         width: 200,
         padding: const EdgeInsets.all(10),
         margin: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: indexpage == index ? tertiaryC : whiteC,
+          color: drawerIndexW.index == index ? tertiaryC : whiteC,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Row(
@@ -180,12 +200,12 @@ class DrawerButton extends HookConsumerWidget {
             if (isFontAwesome) ...[
               FaIcon(
                 icon,
-                color: indexpage == index ? whiteC : tertiaryC,
+                color: drawerIndexW.index == index ? whiteC : tertiaryC,
               ),
             ] else ...[
               Icon(
                 icon,
-                color: indexpage == index ? whiteC : tertiaryC,
+                color: drawerIndexW.index == index ? whiteC : tertiaryC,
               ),
             ],
             const SizedBox(
@@ -196,7 +216,7 @@ class DrawerButton extends HookConsumerWidget {
               textScaleFactor: 1,
               textAlign: TextAlign.left,
               style: TextStyle(
-                color: indexpage == index ? whiteC : tertiaryC,
+                color: drawerIndexW.index == index ? whiteC : tertiaryC,
                 fontSize: 18,
                 fontWeight: FontWeight.w500,
               ),

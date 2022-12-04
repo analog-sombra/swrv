@@ -5,10 +5,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/utils/utilthemes.dart';
+import 'package:swrv/view/home/inbox.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
 
-import '../state/navstate.dart';
 import '../state/userstate.dart';
+import '../view/home/home.dart';
 
 class HomeCard extends HookConsumerWidget {
   final String title;
@@ -23,6 +24,7 @@ class HomeCard extends HookConsumerWidget {
   final String currency;
   final String amount;
   final List platforms;
+  final bool networkImg;
   const HomeCard({
     super.key,
     required this.title,
@@ -37,6 +39,7 @@ class HomeCard extends HookConsumerWidget {
     required this.platforms,
     this.isHeart = true,
     this.isSocial = true,
+    this.networkImg = true,
   });
 
   @override
@@ -71,10 +74,23 @@ class HomeCard extends HookConsumerWidget {
                   child: SizedBox(
                     width: 60,
                     height: 60,
-                    child: Image.asset(
-                      imgUrl,
-                      fit: BoxFit.cover,
-                    ),
+                    child: networkImg
+                        ? CachedNetworkImage(
+                            imageUrl: imgUrl,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) =>
+                                    CircularProgressIndicator(
+                                        value: downloadProgress.progress),
+                            errorWidget: (context, url, error) => Image.asset(
+                              "assets/images/user.png",
+                              fit: BoxFit.cover,
+                            ),
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            imgUrl,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
                 const SizedBox(
@@ -254,7 +270,13 @@ class Header extends HookConsumerWidget {
         children: [
           GestureDetector(
             onTap: () {
-              ref.watch(pageIndex.state).state = 0;
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: ((context) => const HomePage()),
+                ),
+                (Route<dynamic> route) => false,
+              );
             },
             child: SizedBox(
               width: 120,
@@ -262,9 +284,14 @@ class Header extends HookConsumerWidget {
             ),
           ),
           const Spacer(),
-          GestureDetector(
+          InkWell(
             onTap: () {
-              ref.watch(pageIndex.state).state = 9;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: ((context) => const Inbox()),
+                ),
+              );
             },
             child: const FaIcon(
               FontAwesomeIcons.solidBell,
@@ -300,15 +327,12 @@ class Header extends HookConsumerWidget {
             const SizedBox(
               width: 5,
             ),
-            SizedBox(
-              width: 100,
-              child: Text(
-                userName.value.toString(),
-                textScaleFactor: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                    fontSize: 14, color: blackC, fontWeight: FontWeight.w500),
-              ),
+            Text(
+              userName.value.toString(),
+              textScaleFactor: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  fontSize: 14, color: blackC, fontWeight: FontWeight.w500),
             )
           ],
         ],

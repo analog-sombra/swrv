@@ -140,12 +140,12 @@ class LoginState extends ChangeNotifier {
           data[0]["message"],
         );
       } else {
-        final isuserset =
-            await userState.setNewUserData(context, data[0]["data"]["id"]);
+        final isuserset = await userState.setNewUserData(
+            context, data[0]["data"]["id"].toString());
 
         if (isuserset) {
           if (isChecked) {
-            setLogPref(email, password);
+            setLogPref();
           }
           notifyListeners();
           return true;
@@ -158,7 +158,7 @@ class LoginState extends ChangeNotifier {
     return false;
   }
 
-  void setLogPref(String email, String password) async {
+  void setLogPref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool("isLogin", true);
   }

@@ -1,14 +1,22 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:ui';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:swrv/database/models/favoritechamp.dart';
 import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
+import 'package:swrv/view/home/home.dart';
 import 'package:swrv/widgets/cuswidgets.dart';
 
+import '../database/database.dart';
 import '../state/compaign/createcampaignstate.dart';
+import '../view/login.dart';
 
 void welcomeAlert(BuildContext context, String email) {
   showDialog(
@@ -199,7 +207,8 @@ void cusAlertTwo(BuildContext context) {
   );
 }
 
-void connectAlert(BuildContext context) {
+void connectAlert(BuildContext context, TextEditingController sub,
+    TextEditingController msg) {
   showDialog(
     context: context,
     barrierDismissible: false,
@@ -249,6 +258,7 @@ void connectAlert(BuildContext context) {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: TextField(
+                    controller: sub,
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: const Color(0xfff3f4f6),
@@ -275,6 +285,7 @@ void connectAlert(BuildContext context) {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: TextField(
+                    controller: msg,
                     minLines: 5,
                     maxLines: 5,
                     decoration: InputDecoration(
@@ -304,11 +315,28 @@ void connectAlert(BuildContext context) {
                   SizedBox(
                     width: 100,
                     child: CusBtn(
-                        btnColor: secondaryC,
-                        btnText: "sent",
-                        textSize: 16,
-                        textColor: whiteC,
-                        btnFunction: () {}),
+                      btnColor: secondaryC,
+                      btnText: "sent",
+                      textSize: 16,
+                      textColor: whiteC,
+                      btnFunction: () {
+                        if (sub.text.isEmpty) {
+                          Navigator.pop(context);
+
+                          erroralert(
+                              context, "Error", "Please fill the subject");
+                        } else if (msg.text.isEmpty) {
+                          Navigator.pop(context);
+
+                          erroralert(
+                              context, "Error", "Please fill the message");
+                        } else {
+                          Navigator.pop(context);
+                          susalert(
+                              context, "Sent", "Your request has been sent");
+                        }
+                      },
+                    ),
                   ),
                 ],
               )
@@ -820,6 +848,172 @@ void addDontAlert(
                           createCmpSW.addDont(dont.text);
                           dont.clear();
                           Navigator.pop(context);
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void removeFav(BuildContext context, List<int> delfav) async {
+  return await showDialog(
+    context: context,
+    builder: (context) => BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: AlertDialog(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        contentPadding: const EdgeInsets.all(5),
+        backgroundColor: whiteC,
+        content: Container(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                "Remove",
+                textScaleFactor: 1,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: blackC, fontSize: 25, fontWeight: FontWeight.w500),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Text(
+                  'Are you sure you want to remove all Favorite campaign',
+                  style: TextStyle(
+                    color: blackC.withOpacity(0.55),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  textAlign: TextAlign.center,
+                  textScaleFactor: 1,
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: redC,
+                      btnText: "Cancel",
+                      textSize: 18,
+                      btnFunction: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: greenC,
+                      btnText: "Clear",
+                      textSize: 18,
+                      btnFunction: () async {
+                        await isarDB.writeTxn(() async {
+                          await isarDB.favoriteChamps.deleteAll(delfav);
+                        });
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomePage()),
+                          (Route<dynamic> route) => false,
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void logoutAlert(BuildContext context) async {
+  return await showDialog(
+    context: context,
+    builder: (context) => BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: AlertDialog(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        contentPadding: const EdgeInsets.all(5),
+        backgroundColor: whiteC,
+        content: Container(
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                "Remove",
+                textScaleFactor: 1,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: blackC, fontSize: 25, fontWeight: FontWeight.w500),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Text(
+                  'Are you sure you want to logout?',
+                  style: TextStyle(
+                    color: blackC.withOpacity(0.55),
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                  ),
+                  textAlign: TextAlign.center,
+                  textScaleFactor: 1,
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: redC,
+                      btnText: "No",
+                      textSize: 18,
+                      btnFunction: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: greenC,
+                      btnText: "Yes",
+                      textSize: 18,
+                      btnFunction: () async {
+                        await FirebaseAuth.instance.signOut();
+                        FirebaseAuth.instance.currentUser;
+
+                        final prefs = await SharedPreferences.getInstance();
+
+                        bool? success = await prefs.remove('isLogin');
+                        if (success) {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Login(),
+                            ),
+                            (Route<dynamic> route) => false,
+                          );
                         }
                       },
                     ),

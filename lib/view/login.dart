@@ -4,11 +4,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:swrv/state/navstate.dart';
+import 'package:swrv/view/home/home.dart';
 
 import '../state/loginstate.dart';
 import '../widgets/alerts.dart';
-import 'navigation/bottomnavbar.dart';
 import 'register.dart';
 
 class Login extends HookConsumerWidget {
@@ -29,9 +28,8 @@ class Login extends HookConsumerWidget {
     void init() async {
       bool isLogin = await loginStateW.isLogin();
       if (isLogin) {
-        ref.watch(pageIndex.state).state = 0;
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => Bottomnav()));
+            context, MaterialPageRoute(builder: (context) => const HomePage()));
       }
       isLoading.value = false;
     }
@@ -61,15 +59,17 @@ class Login extends HookConsumerWidget {
                         children: [
                           Transform.translate(
                             offset: const Offset(0, 80),
-                            child: SizedBox(
-                              width: width,
-                              child: Center(
-                                child: Text(
-                                  "WELCOME",
-                                  style: GoogleFonts.londrinaShadow(
-                                    textStyle: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: width / 3.2),
+                            child: Center(
+                              child: SizedBox(
+                                height: 150,
+                                child: FittedBox(
+                                  child: Text(
+                                    "WELCOME",
+                                    style: GoogleFonts.londrinaShadow(
+                                      textStyle: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: width / 3),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -213,15 +213,11 @@ class Login extends HookConsumerWidget {
                                                       email.text,
                                                       password.text);
                                               if (res) {
-                                                ref
-                                                    .watch(pageIndex.state)
-                                                    .state = 0;
-
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                     builder: (context) =>
-                                                        Bottomnav(),
+                                                        const HomePage(),
                                                   ),
                                                 );
                                               }
@@ -310,7 +306,7 @@ class Login extends HookConsumerWidget {
                                   ),
                                   RichText(
                                     text: const TextSpan(
-                                      text: "CAN'T LOGIN REGISTER",
+                                      text: "CAN'T LOGIN",
                                       style: TextStyle(
                                           fontSize: 12,
                                           fontWeight: FontWeight.w400,

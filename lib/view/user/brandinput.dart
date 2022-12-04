@@ -1,16 +1,15 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:swrv/state/navstate.dart';
 import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
+import 'package:swrv/view/home/home.dart';
 
 import '../../services/apirequest.dart';
 import '../../state/brandinputstate.dart';
@@ -18,7 +17,6 @@ import '../../utils/alerts.dart';
 import '../../widgets/componets.dart';
 import '../../widgets/cuswidgets.dart';
 import '../brand/createbrand.dart';
-import '../navigation/bottomnavbar.dart';
 
 class BrandInput extends HookConsumerWidget {
   const BrandInput({Key? key}) : super(key: key);
@@ -31,7 +29,7 @@ class BrandInput extends HookConsumerWidget {
 
     ValueNotifier<String?> name = useState(null);
 
-    final userInputStateW = ref.watch(brandInputState);
+    final brandInputStateW = ref.watch(brandInputState);
     final userStateW = ref.watch(userState);
 
     void init() async {
@@ -83,15 +81,15 @@ class BrandInput extends HookConsumerWidget {
                 child: Stack(
                   children: [
                     Container(
-                      width: (userInputStateW.curInput == 0)
+                      width: (brandInputStateW.curInput == 0)
                           ? ((width - 60) * 0)
-                          : (userInputStateW.curInput == 1)
+                          : (brandInputStateW.curInput == 1)
                               ? ((width - 60) * 0.2)
-                              : (userInputStateW.curInput == 2)
+                              : (brandInputStateW.curInput == 2)
                                   ? ((width - 60) * 0.4)
-                                  : (userInputStateW.curInput == 3)
+                                  : (brandInputStateW.curInput == 3)
                                       ? ((width - 60) * 0.6)
-                                      : (userInputStateW.curInput == 4)
+                                      : (brandInputStateW.curInput == 4)
                                           ? ((width - 60) * 0.8)
                                           : ((width - 60)),
                       padding: const EdgeInsets.symmetric(vertical: 13),
@@ -106,13 +104,17 @@ class BrandInput extends HookConsumerWidget {
                         child: Padding(
                           padding: const EdgeInsets.only(top: 5),
                           child: Text(
-                            (userInputStateW.curInput == 0)
-                                ? "15% Completed"
-                                : (userInputStateW.curInput == 1)
-                                    ? "50% Completed"
-                                    : (userInputStateW.curInput == 2)
-                                        ? "75% Completed"
-                                        : "100% Completed",
+                            (brandInputStateW.curInput == 0)
+                                ? "0% Completed"
+                                : (brandInputStateW.curInput == 1)
+                                    ? "20% Completed"
+                                    : (brandInputStateW.curInput == 2)
+                                        ? "40% Completed"
+                                        : (brandInputStateW.curInput == 3)
+                                            ? "60% Completed"
+                                            : (brandInputStateW.curInput == 4)
+                                                ? "80% Completed"
+                                                : "100% Completed",
                             textScaleFactor: 1,
                             style: const TextStyle(
                               fontSize: 16,
@@ -187,7 +189,7 @@ class BrandInput extends HookConsumerWidget {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 10),
                                 decoration: BoxDecoration(
-                                  color: (userInputStateW.curInput >= 0)
+                                  color: (brandInputStateW.curInput >= 0)
                                       ? Colors.pink
                                       : const Color(0xffe5e7eb),
                                   borderRadius: BorderRadius.circular(6),
@@ -198,7 +200,7 @@ class BrandInput extends HookConsumerWidget {
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: (userInputStateW.curInput >= 0)
+                                    color: (brandInputStateW.curInput >= 0)
                                         ? Colors.white
                                         : Colors.black.withOpacity(0.6),
                                   ),
@@ -208,7 +210,7 @@ class BrandInput extends HookConsumerWidget {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 10),
                                 decoration: BoxDecoration(
-                                  color: (userInputStateW.curInput >= 1)
+                                  color: (brandInputStateW.curInput >= 1)
                                       ? Colors.pink
                                       : const Color(0xffe5e7eb),
                                   borderRadius: BorderRadius.circular(6),
@@ -219,7 +221,7 @@ class BrandInput extends HookConsumerWidget {
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: (userInputStateW.curInput >= 1)
+                                    color: (brandInputStateW.curInput >= 1)
                                         ? Colors.white
                                         : Colors.black.withOpacity(0.6),
                                   ),
@@ -229,7 +231,7 @@ class BrandInput extends HookConsumerWidget {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 10),
                                 decoration: BoxDecoration(
-                                  color: (userInputStateW.curInput >= 2)
+                                  color: (brandInputStateW.curInput >= 2)
                                       ? Colors.pink
                                       : const Color(0xffe5e7eb),
                                   borderRadius: BorderRadius.circular(6),
@@ -240,7 +242,7 @@ class BrandInput extends HookConsumerWidget {
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: (userInputStateW.curInput >= 2)
+                                    color: (brandInputStateW.curInput >= 2)
                                         ? Colors.white
                                         : Colors.black.withOpacity(0.6),
                                   ),
@@ -250,7 +252,7 @@ class BrandInput extends HookConsumerWidget {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 10),
                                 decoration: BoxDecoration(
-                                  color: (userInputStateW.curInput >= 3)
+                                  color: (brandInputStateW.curInput >= 3)
                                       ? Colors.pink
                                       : const Color(0xffe5e7eb),
                                   borderRadius: BorderRadius.circular(6),
@@ -261,7 +263,7 @@ class BrandInput extends HookConsumerWidget {
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: (userInputStateW.curInput >= 3)
+                                    color: (brandInputStateW.curInput >= 3)
                                         ? Colors.white
                                         : Colors.black.withOpacity(0.6),
                                   ),
@@ -271,7 +273,7 @@ class BrandInput extends HookConsumerWidget {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 10),
                                 decoration: BoxDecoration(
-                                  color: (userInputStateW.curInput >= 4)
+                                  color: (brandInputStateW.curInput >= 4)
                                       ? Colors.pink
                                       : const Color(0xffe5e7eb),
                                   borderRadius: BorderRadius.circular(6),
@@ -282,7 +284,7 @@ class BrandInput extends HookConsumerWidget {
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: (userInputStateW.curInput >= 4)
+                                    color: (brandInputStateW.curInput >= 4)
                                         ? Colors.white
                                         : Colors.black.withOpacity(0.6),
                                   ),
@@ -291,7 +293,7 @@ class BrandInput extends HookConsumerWidget {
                             ],
                           ),
                         ),
-                        inputs[userInputStateW.curInput],
+                        inputs[brandInputStateW.curInput],
                         const SizedBox(
                           height: 10,
                         ),
@@ -325,10 +327,17 @@ class BInput1 extends HookConsumerWidget {
     ValueNotifier<String> userId = useState("0");
 
     void init() async {
-      final name = await userStateW.getBrandName();
-      final code = await userStateW.getBrandCode();
-      brand.text = "$name [$code]";
+      final havebrand = await userStateW.isBrandAdded();
+
+      if (havebrand) {
+        final name = await userStateW.getBrandName();
+        final code = await userStateW.getBrandCode();
+        brand.text = "$name [$code]";
+      }
+
       userId.value = await userStateW.getUserId();
+
+      final userdata = await userStateW.getUserData(context);
     }
 
     useEffect(() {
@@ -384,7 +393,25 @@ class BInput1 extends HookConsumerWidget {
                           backgroundColor: const Color(0xff9ca3af),
                         ),
                         onPressed: () async {
-                          brandInputStateW.pickImage(context);
+                          await brandInputStateW.pickImage(context);
+                          final res = await brandInputStateW.uloadAvatar(
+                              context,
+                              brandInputStateW.imageFile!.path,
+                              userId.value);
+
+                          final response = await userStateW.setNewUserData(
+                              context, userId.value);
+
+                          final userdata =
+                              await userStateW.getUserData(context);
+
+                          if (res && response) {
+                            susalert(context, "Uploaded",
+                                "Successfully updated profile image");
+                          } else {
+                            erroralert(context, "Error",
+                                "Unable to set image try again");
+                          }
                         },
                         child: const Text(
                           "Upload",
@@ -563,7 +590,6 @@ class BInput1 extends HookConsumerWidget {
         ),
         InkWell(
           onTap: () {
-            ref.watch(pageIndex.state).state = 32;
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -634,21 +660,14 @@ class BInput1 extends HookConsumerWidget {
               if (brandInputStateW.imageFile == null) {
                 erroralert(context, "Image", "Please select one image");
               } else {
-                final res = await brandInputStateW.uloadAvatar(
-                    context, brandInputStateW.imageFile!.path, userId.value);
+                final result = await brandInputStateW.userUpdate1(
+                  context,
+                  [name.text, website.text, info.text, brand.text, dob.text],
+                  userId.value,
+                );
 
-                try {
-                  final result = await brandInputStateW.userUpdate1(
-                    context,
-                    [name.text, website.text, info.text, brand.text, dob.text],
-                    userId.value,
-                  );
-
-                  if (result && res) {
-                    brandInputStateW.setCurInput(brandInputStateW.curInput + 1);
-                  }
-                } catch (e) {
-                  log(e.toString());
+                if (result) {
+                  brandInputStateW.setCurInput(brandInputStateW.curInput + 1);
                 }
               }
             }),
@@ -1561,18 +1580,13 @@ class BInput2 extends HookConsumerWidget {
                 btnText: "Next",
                 textSize: 18,
                 btnFunction: () async {
-                  try {
-                    final restult = await brandInputStateW.userUpdate2(
-                      context,
-                      userId.value,
-                    );
+                  final restult = await brandInputStateW.userUpdate2(
+                    context,
+                    userId.value,
+                  );
 
-                    if (restult) {
-                      brandInputStateW
-                          .setCurInput(brandInputStateW.curInput + 1);
-                    }
-                  } catch (e) {
-                    log(e.toString());
+                  if (restult) {
+                    brandInputStateW.setCurInput(brandInputStateW.curInput + 1);
                   }
                 },
               ),
@@ -1594,18 +1608,14 @@ class BInput3 extends HookConsumerWidget {
     CusApiReq apiReq = CusApiReq();
 
     void init() async {
-      try {
-        final req = {};
-        List data =
-            await apiReq.postApi(jsonEncode(req), path: "/api/getplatform");
-        brandInputStateW.setPlatforms(data[0]["data"]);
+      final req = {};
+      List data =
+          await apiReq.postApi(jsonEncode(req), path: "/api/getplatform");
+      brandInputStateW.setPlatforms(data[0]["data"]);
 
-        if (data[0]["status"] == false) {
-          erroralert(
-              context, "Error", "Oops something went wrong please try again");
-        }
-      } catch (e) {
-        log(e.toString());
+      if (data[0]["status"] == false) {
+        erroralert(
+            context, "Error", "Oops something went wrong please try again");
       }
     }
 
@@ -2648,8 +2658,13 @@ class BInput5 extends HookConsumerWidget {
                   if (newuser) {
                     brandInputStateW.setCurInput(0);
 
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Bottomnav()));
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomePage(),
+                      ),
+                      (Route<dynamic> route) => false,
+                    );
                   }
                 },
               ),

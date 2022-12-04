@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -312,8 +311,6 @@ class CreateCampState extends ChangeNotifier {
         "dos": seletedText(dos),
         "donts": seletedText(dont)
       };
-
-      log(req.toString());
 
       // List data =
       //     await apiReq.postApi(jsonEncode(req), path: "/api/createchampaign");

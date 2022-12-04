@@ -5,6 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/firebase_options.dart';
 
+import 'database/database.dart';
 import 'view/login.dart';
 
 //removing scroll grow
@@ -18,6 +19,7 @@ class MyBehavior extends ScrollBehavior {
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await isarInit();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const ProviderScope(child: SWRV()));
 }

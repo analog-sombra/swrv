@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -75,7 +74,8 @@ class CreateBrandState extends ChangeNotifier {
         "brandSupportEmail": fields[3],
         "brandSupportContact": fields[4],
         "brandBioInfo": fields[5],
-        "cityId": cityId
+        "cityId": cityId,
+        "brandLogoUrl": await userState.getUserAvatar()
       };
 
       List data = await apiReq.postApi(jsonEncode(req), path: "/api/add-brand");
@@ -96,8 +96,6 @@ class CreateBrandState extends ChangeNotifier {
         await userState.setNewUserData(context, data[0]["data"]["id"]);
         brandInput.setBrandValue(
             "${data[0]["data"]["brand"]["name"]} [${data[0]["data"]["brand"]["code"]}]");
-        log("${data[0]["data"]["brand"]["name"]} [${data[0]["data"]["brand"]["code"]}]");
-        log(brandInput.brandValue.toString());
         notifyListeners();
         return true;
       }

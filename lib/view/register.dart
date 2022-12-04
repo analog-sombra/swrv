@@ -1,15 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:swrv/view/home/home.dart';
 import 'package:swrv/view/login.dart';
 
 import '../state/registerstate.dart';
 import '../utils/alerts.dart';
 import '../widgets/alerts.dart';
-import 'navigation/bottomnavbar.dart';
 
 class Register extends HookConsumerWidget {
   const Register({super.key});
@@ -338,7 +337,8 @@ class Register extends HookConsumerWidget {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => Bottomnav(
+                                            builder: (context) =>
+                                                const HomePage(
                                               isWelcomeAlert: true,
                                             ),
                                           ),
@@ -357,7 +357,7 @@ class Register extends HookConsumerWidget {
                                 ),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
                                       height: 20,
@@ -373,10 +373,12 @@ class Register extends HookConsumerWidget {
                                     const SizedBox(
                                       width: 10,
                                     ),
-                                    const Text(
-                                      'I agree with Terms of use and acknowledge that my \npersonal data is being collected and processed in.',
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(fontSize: 11),
+                                    const Expanded(
+                                      child: Text(
+                                        'I agree with Terms of use and acknowledge that my personal data is being collected and processed in.',
+                                        textAlign: TextAlign.left,
+                                        style: TextStyle(fontSize: 10),
+                                      ),
                                     )
                                   ],
                                 ),
@@ -387,7 +389,7 @@ class Register extends HookConsumerWidget {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       SizedBox(
                                         height: 20,
@@ -404,7 +406,7 @@ class Register extends HookConsumerWidget {
                                         width: 10,
                                       ),
                                       const Text(
-                                        'Also i confirm i am of eligible to age.',
+                                        'Also I confirm I am of eligible age.',
                                         textAlign: TextAlign.left,
                                         style: TextStyle(fontSize: 11),
                                       )

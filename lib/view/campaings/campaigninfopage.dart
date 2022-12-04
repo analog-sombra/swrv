@@ -6,11 +6,18 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:isar/isar.dart';
+import 'package:swrv/database/database.dart';
+import 'package:swrv/database/models/favoritechamp.dart';
 import 'package:swrv/services/apirequest.dart';
 import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
+import 'package:swrv/widgets/alerts.dart';
+import 'package:swrv/widgets/cuswidgets.dart';
 
 import '../../widgets/componets.dart';
+import '../navigation/bottomnavbar.dart';
+import '../navigation/drawer.dart';
 
 class ChampignInfopage extends HookConsumerWidget {
   final String id;
@@ -18,13 +25,31 @@ class ChampignInfopage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final GlobalKey<ScaffoldState> scaffoldKey =
+        useMemoized(() => GlobalKey<ScaffoldState>());
     final width = MediaQuery.of(context).size.width;
 
     CusApiReq apiReq = CusApiReq();
     final champdata = useState([]);
     ValueNotifier<bool> isLoading = useState(true);
+    ValueNotifier<List> favList = useState([]);
+
+    ValueNotifier<bool> isFav = useState(false);
+
+    TextEditingController res = useTextEditingController();
+    TextEditingController msg = useTextEditingController();
 
     void init() async {
+      final getfav =
+          await isarDB.favoriteChamps.filter().champidEqualTo(id).findAll();
+      favList.value = getfav;
+
+      if (favList.value.isEmpty) {
+        isFav.value = false;
+      } else {
+        isFav.value = true;
+      }
+
       final req = {
         "id": id,
       };
@@ -46,6 +71,14 @@ class ChampignInfopage extends HookConsumerWidget {
 
     return Scaffold(
       backgroundColor: backgroundC,
+      key: scaffoldKey,
+      drawerEnableOpenDragGesture: false,
+      drawer: CusDrawer(
+        scaffoldKey: scaffoldKey,
+      ),
+      bottomNavigationBar: BotttomBar(
+        scaffoldKey: scaffoldKey,
+      ),
       body: SafeArea(
         child: isLoading.value
             ? const Center(
@@ -87,8 +120,18 @@ class ChampignInfopage extends HookConsumerWidget {
                                 child: SizedBox(
                                     width: 60,
                                     height: 60,
-                                    child: Image.asset(
-                                      "assets/images/user.png",
+                                    child: CachedNetworkImage(
+                                      imageUrl: champdata.value[0]["brand"]
+                                          ["logo"],
+                                      progressIndicatorBuilder: (context, url,
+                                              downloadProgress) =>
+                                          CircularProgressIndicator(
+                                              value: downloadProgress.progress),
+                                      errorWidget: (context, url, error) =>
+                                          const Icon(
+                                        Icons.error,
+                                        color: Colors.blue,
+                                      ),
                                       fit: BoxFit.cover,
                                     )),
                               ),
@@ -133,6 +176,32 @@ class ChampignInfopage extends HookConsumerWidget {
                                   ],
                                 ),
                               ),
+                              InkWell(
+                                onTap: () async {
+                                  isFav.value = !isFav.value;
+                                  if (favList.value.isEmpty) {
+                                    final newFav = FavoriteChamp()
+                                      ..champid = id
+                                      ..name =
+                                          champdata.value[0]["campaignName"]
+                                      ..img =
+                                          champdata.value[0]["brand"]["logo"];
+                                    await isarDB.writeTxn(() async {
+                                      await isarDB.favoriteChamps.put(newFav);
+                                    });
+                                  } else {
+                                    await isarDB.writeTxn(() async {
+                                      await isarDB.favoriteChamps
+                                          .delete(favList.value[0].id);
+                                    });
+                                  }
+                                },
+                                child: Icon(
+                                  Icons.favorite,
+                                  size: 30,
+                                  color: isFav.value ? Colors.red : Colors.grey,
+                                ),
+                              )
                             ],
                           ),
                           const SizedBox(
@@ -566,6 +635,49 @@ class ChampignInfopage extends HookConsumerWidget {
                         ],
                       ),
                     ),
+                    Container(
+                        width: width,
+                        margin: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: secondaryC,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: const [
+                            BoxShadow(
+                                color: shadowC,
+                                blurRadius: 5,
+                                offset: Offset(0, 6))
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(15),
+                        child: Column(
+                          children: [
+                            const Text(
+                              "Would you like to participate in this campaign?",
+                              textScaleFactor: 1,
+                              style: TextStyle(
+                                color: whiteC,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Center(
+                              child: SizedBox(
+                                width: 200,
+                                child: CusBtn(
+                                  btnColor: primaryC,
+                                  btnText: "Apply",
+                                  textSize: 18,
+                                  btnFunction: () {
+                                    connectAlert(context, res, msg);
+                                  },
+                                ),
+                              ),
+                            )
+                          ],
+                        )),
                     const SizedBox(
                       height: 80,
                     ),

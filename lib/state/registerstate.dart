@@ -1,11 +1,11 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swrv/state/userstate.dart';
 
 import '../services/apirequest.dart';
@@ -135,10 +135,14 @@ class RegisterStatus extends ChangeNotifier {
               data[0]["message"].toString(),
             );
           } else {
-            log("great");
-            log(data[0]["data"].toString());
-            notifyListeners();
-            return true;
+            final isuserset = await userState.setNewUserData(
+                context, data[0]["data"]["id"].toString());
+            if (isuserset) {
+              notifyListeners();
+              return true;
+            } else {
+              erroralert(context, "Error", "unable to set new user");
+            }
           }
         }
       } else {
@@ -166,6 +170,7 @@ class RegisterStatus extends ChangeNotifier {
             data[0]["message"].toString(),
           );
         } else {
+          setLogPref();
           userState.setNewUserData(context, data[0]["data"]["id"].toString());
           notifyListeners();
           return true;
@@ -174,5 +179,10 @@ class RegisterStatus extends ChangeNotifier {
     }
     notifyListeners();
     return false;
+  }
+
+  void setLogPref() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool("isLogin", true);
   }
 }

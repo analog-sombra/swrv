@@ -127,6 +127,17 @@ class UserState extends ChangeNotifier {
     return userId;
   }
 
+  Future<bool> isBrandAdded() async {
+    bool res = false;
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    final brand = jsonDecode(userdata!)[0]["brand"];
+    if (brand.isNotEmpty) {
+      res = true;
+    }
+    return res;
+  }
+
   Future<String> getBrandName() async {
     String brandName = "";
     SharedPreferences prefs = await SharedPreferences.getInstance();

@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +11,11 @@ import 'package:swrv/services/apirequest.dart';
 import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
+import 'package:swrv/view/home/home.dart';
 
 import '../../state/influencerinputstate.dart';
 import '../../widgets/componets.dart';
 import '../../widgets/cuswidgets.dart';
-import '../navigation/bottomnavbar.dart';
 
 class InfluencerInput extends HookConsumerWidget {
   const InfluencerInput({Key? key}) : super(key: key);
@@ -612,7 +611,6 @@ class UInput2 extends HookConsumerWidget {
     CusApiReq apiReq = CusApiReq();
     void init() async {
       userId.value = await userStateW.getUserId();
-      log(userId.value);
 
       final req1 = {};
       List accountRes =
@@ -1130,18 +1128,14 @@ class UInput2 extends HookConsumerWidget {
                 btnText: "Next",
                 textSize: 18,
                 btnFunction: () async {
-                  try {
-                    final restult = await userInputStateW.userUpdate2(
-                      context,
-                      userId.value,
-                    );
+                  final restult = await userInputStateW.userUpdate2(
+                    context,
+                    userId.value,
+                  );
 
-                    if (restult) {
-                      // userInputStateW.clear();
-                      userInputStateW.setCurInput(userInputStateW.curInput + 1);
-                    }
-                  } catch (e) {
-                    log(e.toString());
+                  if (restult) {
+                    // userInputStateW.clear();
+                    userInputStateW.setCurInput(userInputStateW.curInput + 1);
                   }
                 },
               ),
@@ -1163,18 +1157,14 @@ class UInput3 extends HookConsumerWidget {
     CusApiReq apiReq = CusApiReq();
 
     void init() async {
-      try {
-        final req = {};
-        List data =
-            await apiReq.postApi(jsonEncode(req), path: "/api/getplatform");
-        userInputStateW.setPlatforms(data[0]["data"]);
+      final req = {};
+      List data =
+          await apiReq.postApi(jsonEncode(req), path: "/api/getplatform");
+      userInputStateW.setPlatforms(data[0]["data"]);
 
-        if (data[0]["status"] == false) {
-          erroralert(
-              context, "Error", "Oops something went wrong please try again");
-        }
-      } catch (e) {
-        log(e.toString());
+      if (data[0]["status"] == false) {
+        erroralert(
+            context, "Error", "Oops something went wrong please try again");
       }
     }
 
@@ -2050,8 +2040,13 @@ class UInput4 extends HookConsumerWidget {
                     userInputStateW.setCurInput(0);
 
                     // userStateW.setProfileComp(true);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Bottomnav()));
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomePage(),
+                      ),
+                      (Route<dynamic> route) => false,
+                    );
                   }
                 },
               ),
