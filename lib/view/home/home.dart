@@ -1,7 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:developer';
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +10,7 @@ import 'package:swrv/state/navigation/drawer.dart';
 import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/componets.dart';
-import 'package:swrv/widgets/cuswidgets.dart';
+import 'package:swrv/widgets/buttons.dart';
 
 import '../../utils/alerts.dart';
 import '../../widgets/alerts.dart';
@@ -58,8 +56,6 @@ class HomePage extends HookConsumerWidget {
       userName.value = username;
       isBrand.value = await userStateW.isBrand();
       isCompleted.value = await userStateW.isProfileCompleted();
-      log(isCompleted.value.toString());
-      log(await userStateW.getUserData(context));
     }
 
     useEffect(() {

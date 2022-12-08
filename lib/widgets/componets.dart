@@ -6,7 +6,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/view/home/inbox.dart';
-import 'package:swrv/widgets/cuswidgets.dart';
+import 'package:swrv/widgets/buttons.dart';
 
 import '../state/userstate.dart';
 import '../view/home/home.dart';

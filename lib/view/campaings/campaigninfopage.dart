@@ -13,7 +13,7 @@ import 'package:swrv/services/apirequest.dart';
 import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/alerts.dart';
-import 'package:swrv/widgets/cuswidgets.dart';
+import 'package:swrv/widgets/buttons.dart';
 
 import '../../widgets/componets.dart';
 import '../navigation/bottomnavbar.dart';

@@ -12,7 +12,7 @@ import 'package:swrv/database/models/favoritechamp.dart';
 import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/view/home/home.dart';
-import 'package:swrv/widgets/cuswidgets.dart';
+import 'package:swrv/widgets/buttons.dart';
 
 import '../database/database.dart';
 import '../state/compaign/createcampaignstate.dart';

@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/utils/utilthemes.dart';
-import 'package:swrv/widgets/cuswidgets.dart';
+import 'package:swrv/widgets/buttons.dart';
 
 import '../../widgets/componets.dart';
 import '../navigation/bottomnavbar.dart';

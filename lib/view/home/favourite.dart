@@ -6,7 +6,7 @@ import 'package:isar/isar.dart';
 import 'package:swrv/database/database.dart';
 import 'package:swrv/database/models/favoritechamp.dart';
 import 'package:swrv/utils/utilthemes.dart';
-import 'package:swrv/widgets/cuswidgets.dart';
+import 'package:swrv/widgets/buttons.dart';
 
 import '../../state/userstate.dart';
 import '../../widgets/alerts.dart';
