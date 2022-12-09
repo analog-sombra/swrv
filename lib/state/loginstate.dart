@@ -145,7 +145,7 @@ class LoginState extends ChangeNotifier {
 
         if (isuserset) {
           if (isChecked) {
-            setLogPref();
+            await setLogPref();
           }
           notifyListeners();
           return true;
@@ -158,14 +158,14 @@ class LoginState extends ChangeNotifier {
     return false;
   }
 
-  void setLogPref() async {
+  Future<void> setLogPref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool("isLogin", true);
+    await prefs.setBool("login", true);
   }
 
   Future<bool> isLogin() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool? isLogin = prefs.getBool("isLogin");
+    bool? isLogin = prefs.getBool("login");
     if (isLogin != null) {
       if (isLogin) {
         notifyListeners();

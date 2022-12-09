@@ -4,26 +4,28 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 
-import '../../utils/alerts.dart';
-import '../../widgets/componets.dart';
-import '../navigation/bottomnavbar.dart';
-import '../navigation/drawer.dart';
+import '../../../utils/alerts.dart';
+import '../../../widgets/componets.dart';
+import '../../navigation/bottomnavbar.dart';
+import '../../navigation/drawer.dart';
 
-class EditProfile extends HookConsumerWidget {
-  const EditProfile({super.key});
+class BrandEditOne extends HookConsumerWidget {
+  const BrandEditOne({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final GlobalKey<ScaffoldState> scaffoldKey =
         useMemoized(() => GlobalKey<ScaffoldState>());
-    TextEditingController email = useTextEditingController();
+
     TextEditingController userName = useTextEditingController();
     TextEditingController knowAs = useTextEditingController();
-    TextEditingController dob = useTextEditingController();
+    TextEditingController cname = useTextEditingController();
+    TextEditingController website = useTextEditingController();
+    TextEditingController brand = useTextEditingController();
+    TextEditingController info = useTextEditingController();
 
     ValueNotifier<String> userAvatar = useState("");
     ValueNotifier<String> showuserName = useState("");
@@ -35,7 +37,6 @@ class EditProfile extends HookConsumerWidget {
       showuserName.value = await userStateW.getUserName();
       shownickName.value = await userStateW.getNickname();
 
-      email.text = await userStateW.getUserEmail();
       userName.text = await userStateW.getUserName();
       knowAs.text = await userStateW.getNickname();
     }
@@ -158,7 +159,7 @@ class EditProfile extends HookConsumerWidget {
                     const Padding(
                       padding: EdgeInsets.only(top: 16),
                       child: Text(
-                        "Email",
+                        "Company name",
                         textScaleFactor: 1,
                         style: TextStyle(
                           color: Colors.black,
@@ -172,7 +173,7 @@ class EditProfile extends HookConsumerWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: TextField(
-                          controller: email,
+                          controller: cname,
                           readOnly: true,
                           decoration: const InputDecoration(
                             filled: true,
@@ -189,7 +190,7 @@ class EditProfile extends HookConsumerWidget {
                     const Padding(
                       padding: EdgeInsets.only(top: 16),
                       child: Text(
-                        "UserName",
+                        "Website",
                         textScaleFactor: 1,
                         style: TextStyle(
                           color: Colors.black,
@@ -203,7 +204,7 @@ class EditProfile extends HookConsumerWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: TextField(
-                          controller: userName,
+                          controller: website,
                           decoration: const InputDecoration(
                             filled: true,
                             fillColor: Color(0xfff3f4f6),
@@ -219,7 +220,7 @@ class EditProfile extends HookConsumerWidget {
                     const Padding(
                       padding: EdgeInsets.only(top: 16),
                       child: Text(
-                        "Know As",
+                        "Brand",
                         textScaleFactor: 1,
                         style: TextStyle(
                           color: Colors.black,
@@ -233,7 +234,7 @@ class EditProfile extends HookConsumerWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: TextField(
-                          controller: knowAs,
+                          controller: brand,
                           decoration: const InputDecoration(
                             filled: true,
                             fillColor: Color(0xfff3f4f6),
@@ -249,7 +250,7 @@ class EditProfile extends HookConsumerWidget {
                     const Padding(
                       padding: EdgeInsets.only(top: 16),
                       child: Text(
-                        "Date of birth",
+                        "Company info",
                         textScaleFactor: 1,
                         style: TextStyle(
                           color: Colors.black,
@@ -263,100 +264,10 @@ class EditProfile extends HookConsumerWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: TextField(
-                          readOnly: true,
-                          controller: dob,
-                          decoration: InputDecoration(
-                            suffixIcon: Icon(
-                              Icons.calendar_month,
-                              color: Colors.black.withOpacity(0.8),
-                            ),
-                            filled: true,
-                            fillColor: const Color(0xfff3f4f6),
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            errorBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
-                          ),
-                          onTap: () async {
-                            var date = await showDatePicker(
-                              context: context,
-                              initialDate: DateTime(DateTime.now().year - 18,
-                                  DateTime.now().month, DateTime.now().day),
-                              firstDate: DateTime(1900),
-                              lastDate: DateTime(DateTime.now().year - 18,
-                                  DateTime.now().month, DateTime.now().day),
-                              builder: (context, child) {
-                                return Theme(
-                                  data: Theme.of(context).copyWith(
-                                    colorScheme: const ColorScheme.light(
-                                      primary: Colors.pink,
-                                      onSurface: Colors.pink,
-                                    ),
-                                    textButtonTheme: TextButtonThemeData(
-                                      style: TextButton.styleFrom(
-                                        foregroundColor: Colors.pink,
-                                      ),
-                                    ),
-                                  ),
-                                  child: child!,
-                                );
-                              },
-                            );
-                            dob.text = DateFormat("dd-MM-yyyy").format(date!);
-                          },
-                        ),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 16),
-                      child: Text(
-                        "Gender",
-                        textScaleFactor: 1,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 5),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: const TextField(
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: Color(0xfff3f4f6),
-                            border: InputBorder.none,
-                            focusedBorder: InputBorder.none,
-                            enabledBorder: InputBorder.none,
-                            errorBorder: InputBorder.none,
-                            disabledBorder: InputBorder.none,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(top: 16),
-                      child: Text(
-                        "Bio",
-                        textScaleFactor: 1,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 5),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: const TextField(
+                          controller: info,
                           minLines: 4,
                           maxLines: 6,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             filled: true,
                             fillColor: Color(0xfff3f4f6),
                             border: InputBorder.none,
@@ -379,30 +290,30 @@ class EditProfile extends HookConsumerWidget {
                         Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              // Expanded(
-                              //   child: ElevatedButton(
-                              //     style: ElevatedButton.styleFrom(
-                              //       shape: RoundedRectangleBorder(
-                              //         borderRadius: BorderRadius.circular(10),
-                              //       ),
-                              //       elevation: 0,
-                              //       backgroundColor: backgroundC,
-                              //     ),
-                              //     onPressed: () {},
-                              //     child: const Text(
-                              //       "Back",
-                              //       textAlign: TextAlign.center,
-                              //       textScaleFactor: 1,
-                              //       style: TextStyle(
-                              //           color: Colors.black,
-                              //           fontSize: 16,
-                              //           fontWeight: FontWeight.w500),
-                              //     ),
-                              //   ),
-                              // ),
-                              // const SizedBox(
-                              //   width: 20,
-                              // ),
+                              Expanded(
+                                child: ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    elevation: 0,
+                                    backgroundColor: backgroundC,
+                                  ),
+                                  onPressed: () {},
+                                  child: const Text(
+                                    "Back",
+                                    textAlign: TextAlign.center,
+                                    textScaleFactor: 1,
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
                               Expanded(
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(

@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:swrv/view/home/home.dart';
+import 'package:swrv/view/brand/createbrand.dart';
 import 'package:swrv/view/login.dart';
 
 import '../state/registerstate.dart';
@@ -146,7 +146,7 @@ class Register extends HookConsumerWidget {
                                 const Padding(
                                   padding: EdgeInsets.only(top: 10),
                                   child: Text(
-                                    "join",
+                                    "Join",
                                     textScaleFactor: 1,
                                     style: TextStyle(
                                       color: Colors.black,
@@ -303,7 +303,8 @@ class Register extends HookConsumerWidget {
                                           width: 40,
                                           height: 40,
                                           child: Image.asset(
-                                              "assets/images/apple.png"),
+                                            "assets/images/apple.png",
+                                          ),
                                         ),
                                       ),
                                       const SizedBox(
@@ -338,11 +339,18 @@ class Register extends HookConsumerWidget {
                                           context,
                                           MaterialPageRoute(
                                             builder: (context) =>
-                                                const HomePage(
-                                              isWelcomeAlert: true,
-                                            ),
+                                                const CreateBrandPage(),
                                           ),
                                         );
+                                        // Navigator.push(
+                                        //   context,
+                                        //   MaterialPageRoute(
+                                        //     builder: (context) =>
+                                        //         const HomePage(
+                                        //       isWelcomeAlert: true,
+                                        //     ),
+                                        //   ),
+                                        // );
                                       }
                                     },
                                     child: const Text(
@@ -373,11 +381,17 @@ class Register extends HookConsumerWidget {
                                     const SizedBox(
                                       width: 10,
                                     ),
-                                    const Expanded(
-                                      child: Text(
-                                        'I agree with Terms of use and acknowledge that my personal data is being collected and processed in.',
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(fontSize: 10),
+                                    Expanded(
+                                      child: InkWell(
+                                        onTap: () {
+                                          registerStateW.setCheck1(
+                                              !registerStateW.isCheck1);
+                                        },
+                                        child: const Text(
+                                          'I agree with Terms of use and acknowledge that my personal data is being collected and processed in.',
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(fontSize: 10),
+                                        ),
                                       ),
                                     )
                                   ],
@@ -405,10 +419,16 @@ class Register extends HookConsumerWidget {
                                       const SizedBox(
                                         width: 10,
                                       ),
-                                      const Text(
-                                        'Also I confirm I am of eligible age.',
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(fontSize: 11),
+                                      InkWell(
+                                        onTap: () {
+                                          registerStateW.setCheck2(
+                                              !registerStateW.isCheck2);
+                                        },
+                                        child: const Text(
+                                          'Also I confirm I am of eligible age.',
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(fontSize: 11),
+                                        ),
                                       )
                                     ],
                                   ),
@@ -426,22 +446,23 @@ class Register extends HookConsumerWidget {
                                           fontWeight: FontWeight.w400,
                                           color: Colors.black),
                                     ),
-                                    GestureDetector(
+                                    InkWell(
                                       onTap: () {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const Login()),
+                                            builder: (context) => const Login(),
+                                          ),
                                         );
                                       },
                                       child: const Text(
                                         "Let me Login ",
                                         textScaleFactor: 1,
                                         style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
                                       ),
                                     ),
                                   ],

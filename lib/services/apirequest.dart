@@ -1,18 +1,13 @@
-
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../utils/const.dart';
 
 class CusApiReq {
-
-
   Future<List> postApi(String reqdata, {String path = ""}) async {
     try {
-      
       var request = await http.post(Uri.parse("$baseUrl/$path"),
           body: jsonDecode(reqdata));
-
       if (request.statusCode == 200) {
         return [json.decode(request.body)];
       } else {

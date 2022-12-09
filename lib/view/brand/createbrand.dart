@@ -6,6 +6,7 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:swrv/view/home/home.dart';
 
 import '../../services/apirequest.dart';
 import '../../state/brand/createbrandstate.dart';
@@ -421,7 +422,16 @@ class CreateBrandPage extends HookConsumerWidget {
                             );
 
                             if (response) {
-                              Navigator.pop(context);
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const HomePage(
+                                    isWelcomeAlert: true,
+                                  ),
+                                ),
+                                (Route<dynamic> route) => false,
+                              );
+                              // Navigator.pop(context);
                               // Navigator.push(
                               //     context,
                               //     MaterialPageRoute(

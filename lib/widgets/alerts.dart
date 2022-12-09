@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
@@ -1000,20 +1001,24 @@ void logoutAlert(BuildContext context) async {
                       btnText: "Yes",
                       textSize: 18,
                       btnFunction: () async {
-                        await FirebaseAuth.instance.signOut();
-                        FirebaseAuth.instance.currentUser;
+                        try {
+                          await FirebaseAuth.instance.signOut();
+                          FirebaseAuth.instance.currentUser;
 
-                        final prefs = await SharedPreferences.getInstance();
+                          final prefs = await SharedPreferences.getInstance();
 
-                        bool? success = await prefs.remove('isLogin');
-                        if (success) {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const Login(),
-                            ),
-                            (Route<dynamic> route) => false,
-                          );
+                          bool? success = await prefs.remove('login');
+                          if (success) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const Login(),
+                              ),
+                              (Route<dynamic> route) => false,
+                            );
+                          }
+                        } catch (e) {
+                          log(e.toString());
                         }
                       },
                     ),

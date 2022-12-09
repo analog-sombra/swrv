@@ -8,11 +8,14 @@ import 'package:swrv/firebase_options.dart';
 import 'database/database.dart';
 import 'view/login.dart';
 
-//removing scroll grow
+//removing scroll grow effect
 class MyBehavior extends ScrollBehavior {
   @override
   Widget buildOverscrollIndicator(
-      BuildContext context, Widget child, ScrollableDetails details) {
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
     return child;
   }
 }

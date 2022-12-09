@@ -9,14 +9,17 @@ import 'package:swrv/utils/alerts.dart';
 
 import '../services/apirequest.dart';
 
-final userState = ChangeNotifierProvider<UserState>((ref) => UserState());
+final userState = ChangeNotifierProvider.autoDispose<UserState>(
+  (ref) => UserState(),
+);
 
 class UserState extends ChangeNotifier {
   CusApiReq apiReq = CusApiReq();
 
-  void setUserData(String user) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('user', user);
+//user login related setup
+  Future<bool> updateUser(BuildContext context) async {
+    bool response = await setNewUserData(context, await getUserId());
+    return response;
   }
 
   Future<String> getUserData(BuildContext context) async {
@@ -29,6 +32,11 @@ class UserState extends ChangeNotifier {
     return response!;
   }
 
+  void setUserData(String user) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user', user);
+  }
+
   void clearUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('user');
@@ -37,10 +45,8 @@ class UserState extends ChangeNotifier {
 
   Future<bool> setNewUserData(BuildContext context, String userid) async {
     final req = {"id": userid};
-
     final userdata =
         await apiReq.postApi(jsonEncode(req), path: "/api/getuser");
-
     if (userdata[0]["status"] == false) {
       erroralert(context, "Empty User", "There is no user data");
     } else {
@@ -52,6 +58,7 @@ class UserState extends ChangeNotifier {
     return false;
   }
 
+//get some user data
   Future<String> getUserName() async {
     String username = "";
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -98,6 +105,33 @@ class UserState extends ChangeNotifier {
     userId = jsonDecode(userdata!)[0]["id"].toString();
     notifyListeners();
     return userId;
+  }
+
+  Future<String> getUserDob() async {
+    String getDob = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    getDob = jsonDecode(userdata!)[0]["dob"].toString();
+    notifyListeners();
+    return getDob;
+  }
+
+  Future<String> getUserGender() async {
+    String getGender = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    getGender = jsonDecode(userdata!)[0]["gender"]["name"].toString();
+    notifyListeners();
+    return getGender;
+  }
+
+  Future<String> getUserBio() async {
+    String getBio = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    getBio = jsonDecode(userdata!)[0]["bio"].toString();
+    notifyListeners();
+    return getBio;
   }
 
   Future<String> getUserBrandId() async {

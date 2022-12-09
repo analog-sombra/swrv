@@ -138,6 +138,7 @@ class RegisterStatus extends ChangeNotifier {
             final isuserset = await userState.setNewUserData(
                 context, data[0]["data"]["id"].toString());
             if (isuserset) {
+              await setLogPref();
               notifyListeners();
               return true;
             } else {
@@ -170,8 +171,11 @@ class RegisterStatus extends ChangeNotifier {
             data[0]["message"].toString(),
           );
         } else {
-          setLogPref();
-          userState.setNewUserData(context, data[0]["data"]["id"].toString());
+          await setLogPref();
+          userState.setNewUserData(
+            context,
+            data[0]["data"]["id"].toString(),
+          );
           notifyListeners();
           return true;
         }
@@ -181,8 +185,8 @@ class RegisterStatus extends ChangeNotifier {
     return false;
   }
 
-  void setLogPref() async {
+  Future<void> setLogPref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setBool("isLogin", true);
+    await prefs.setBool("login", true);
   }
 }

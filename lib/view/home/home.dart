@@ -201,7 +201,7 @@ class HomePage extends HookConsumerWidget {
                     margin: const EdgeInsets.symmetric(vertical: 25),
                     child: CarouselSlider(
                       options: CarouselOptions(
-                          height: 180.0,
+                          height: 200.0,
                           autoPlay: true,
                           viewportFraction: 0.5,
                           enlargeCenterPage: true),

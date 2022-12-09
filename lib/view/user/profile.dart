@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swrv/view/campaings/mycompaign.dart';
 import 'package:swrv/view/login.dart';
 import 'package:swrv/view/user/myaccount.dart';
+import 'package:swrv/view/user/useredit/usereditone.dart';
 
 import '../../state/userstate.dart';
 import '../../utils/alerts.dart';
@@ -17,7 +18,7 @@ import '../../widgets/componets.dart';
 import '../home/help.dart';
 import '../navigation/bottomnavbar.dart';
 import '../navigation/drawer.dart';
-import 'editprofile.dart';
+import 'brandedit/brandeditone.dart';
 
 class Profile extends HookConsumerWidget {
   const Profile({super.key});
@@ -31,12 +32,14 @@ class Profile extends HookConsumerWidget {
     ValueNotifier<String> userName = useState("loading...");
     ValueNotifier<String> nickname = useState("loading...");
     ValueNotifier<String> userAvatar = useState("");
+    ValueNotifier<bool> isBrand = useState(false);
 
     void init() async {
       prefs.value = await SharedPreferences.getInstance();
       userName.value = await userStateW.getUserName();
       userAvatar.value = await userStateW.getUserAvatar();
       nickname.value = await userStateW.getNickname();
+      isBrand.value = await userStateW.isBrand();
     }
 
     useEffect(() {
@@ -145,11 +148,21 @@ class Profile extends HookConsumerWidget {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                            if (isBrand.value) {
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const EditProfile(),
-                                ));
+                                  builder: (context) => const BrandEditOne(),
+                                ),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const UserEditOne(),
+                                ),
+                              );
+                            }
                           },
                           child: Icon(
                             Icons.edit_outlined,
@@ -335,9 +348,11 @@ class Profile extends HookConsumerWidget {
                     InkWell(
                       onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: ((context) => const MyAccount())));
+                          context,
+                          MaterialPageRoute(
+                            builder: ((context) => const MyAccount()),
+                          ),
+                        );
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 5),

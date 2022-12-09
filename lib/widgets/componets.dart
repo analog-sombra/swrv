@@ -328,7 +328,7 @@ class Header extends HookConsumerWidget {
               width: 5,
             ),
             Text(
-              userName.value.toString(),
+              userName.value.toString().split("@")[0],
               textScaleFactor: 1,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(

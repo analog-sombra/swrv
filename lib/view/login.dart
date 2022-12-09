@@ -22,14 +22,18 @@ class Login extends HookConsumerWidget {
     final loginStateW = ref.watch(loginStatus);
 
     double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
-    double statusBarHeight = MediaQuery.of(context).viewPadding.top;
+    // double height = MediaQuery.of(context).size.height;
+    // double statusBarHeight = MediaQuery.of(context).viewPadding.top;
 
     void init() async {
       bool isLogin = await loginStateW.isLogin();
       if (isLogin) {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const HomePage()));
+          context,
+          MaterialPageRoute(
+            builder: (context) => const HomePage(),
+          ),
+        );
       }
       isLoading.value = false;
     }
@@ -207,6 +211,7 @@ class Login extends HookConsumerWidget {
                                               backgroundColor: Colors.pink,
                                             ),
                                             onPressed: () async {
+                                              isLoading.value = true;
                                               final res =
                                                   await loginStateW.login(
                                                       context,
@@ -294,10 +299,15 @@ class Login extends HookConsumerWidget {
                                       const SizedBox(
                                         width: 10,
                                       ),
-                                      const Text(
-                                        'Keep me Logged in.',
-                                        textAlign: TextAlign.left,
-                                        style: TextStyle(fontSize: 14),
+                                      InkWell(
+                                        onTap: () {
+                                          loginStateW.toggleCheck();
+                                        },
+                                        child: const Text(
+                                          'Keep me Logged in.',
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(fontSize: 14),
+                                        ),
                                       )
                                     ],
                                   ),

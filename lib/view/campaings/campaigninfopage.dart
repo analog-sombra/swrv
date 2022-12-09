@@ -332,7 +332,7 @@ class ChampignInfopage extends HookConsumerWidget {
                           const Padding(
                             padding: EdgeInsets.symmetric(vertical: 10),
                             child: Text(
-                              "Champign info",
+                              "Campaign info",
                               textScaleFactor: 1,
                               textAlign: TextAlign.left,
                               style: TextStyle(

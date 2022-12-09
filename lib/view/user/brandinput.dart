@@ -16,7 +16,6 @@ import '../../state/brandinputstate.dart';
 import '../../utils/alerts.dart';
 import '../../widgets/componets.dart';
 import '../../widgets/buttons.dart';
-import '../brand/createbrand.dart';
 
 class BrandInput extends HookConsumerWidget {
   const BrandInput({Key? key}) : super(key: key);
@@ -337,7 +336,7 @@ class BInput1 extends HookConsumerWidget {
 
       userId.value = await userStateW.getUserId();
 
-      final userdata = await userStateW.getUserData(context);
+      // final userdata = await userStateW.getUserData(context);
     }
 
     useEffect(() {
@@ -401,9 +400,6 @@ class BInput1 extends HookConsumerWidget {
 
                           final response = await userStateW.setNewUserData(
                               context, userId.value);
-
-                          final userdata =
-                              await userStateW.getUserData(context);
 
                           if (res && response) {
                             susalert(context, "Uploaded",
@@ -487,7 +483,7 @@ class BInput1 extends HookConsumerWidget {
         const Padding(
           padding: EdgeInsets.only(top: 16),
           child: Text(
-            "website",
+            "Website",
             textScaleFactor: 1,
             style: TextStyle(
               color: Colors.black,
@@ -576,47 +572,47 @@ class BInput1 extends HookConsumerWidget {
             ),
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Brand",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: ((context) => const CreateBrandPage()),
-              ),
-            );
-          },
-          child: Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: TextField(
-                enabled: false,
-                controller: brand,
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xfff3f4f6),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-        ),
+        // const Padding(
+        //   padding: EdgeInsets.only(top: 16),
+        //   child: Text(
+        //     "Brand",
+        //     textScaleFactor: 1,
+        //     style: TextStyle(
+        //       color: Colors.black,
+        //       fontSize: 18,
+        //       fontWeight: FontWeight.w400,
+        //     ),
+        //   ),
+        // ),
+        // InkWell(
+        //   onTap: () {
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(
+        //         builder: ((context) => const CreateBrandPage()),
+        //       ),
+        //     );
+        //   },
+        //   child: Padding(
+        //     padding: const EdgeInsets.only(top: 5),
+        //     child: ClipRRect(
+        //       borderRadius: BorderRadius.circular(10),
+        //       child: TextField(
+        //         enabled: false,
+        //         controller: brand,
+        //         decoration: const InputDecoration(
+        //           filled: true,
+        //           fillColor: Color(0xfff3f4f6),
+        //           border: InputBorder.none,
+        //           focusedBorder: InputBorder.none,
+        //           enabledBorder: InputBorder.none,
+        //           errorBorder: InputBorder.none,
+        //           disabledBorder: InputBorder.none,
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
         const Padding(
           padding: EdgeInsets.only(top: 16),
           child: Text(

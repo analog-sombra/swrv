@@ -1134,7 +1134,6 @@ class UInput2 extends HookConsumerWidget {
                   );
 
                   if (restult) {
-                    // userInputStateW.clear();
                     userInputStateW.setCurInput(userInputStateW.curInput + 1);
                   }
                 },
