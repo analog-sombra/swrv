@@ -4,19 +4,18 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:isar/isar.dart';
 import 'package:swrv/database/database.dart';
-import 'package:swrv/database/models/favoritechamp.dart';
+import 'package:swrv/database/models/favoritebrand.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/buttons.dart';
 
-import '../../state/userstate.dart';
 import '../../widgets/alerts.dart';
 import '../../widgets/componets.dart';
-import '../campaings/campaigninfopage.dart';
+import '../brand/brandinfo.dart';
 import '../navigation/bottomnavbar.dart';
 import '../navigation/drawer.dart';
 
-class FavouritePage extends HookConsumerWidget {
-  const FavouritePage({super.key});
+class FavouriteBrand extends HookConsumerWidget {
+  const FavouriteBrand({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,15 +23,12 @@ class FavouritePage extends HookConsumerWidget {
         useMemoized(() => GlobalKey<ScaffoldState>());
     final width = MediaQuery.of(context).size.width;
 
-    ValueNotifier<bool> isBrand = useState(false);
-    final userStateW = ref.watch(userState);
-
     ValueNotifier<List> fav = useState([]);
 
     ValueNotifier<List<int>> delfav = useState([]);
 
     void init() async {
-      final getfav = await isarDB.favoriteChamps.where().findAll();
+      final getfav = await isarDB.favoriteBrands.where().findAll();
       fav.value = getfav;
 
       List<int> data = [];
@@ -41,8 +37,6 @@ class FavouritePage extends HookConsumerWidget {
         data.add(fav.value[i].id);
       }
       delfav.value = data;
-
-      isBrand.value = await userStateW.isBrand();
     }
 
     useEffect(() {
@@ -94,7 +88,7 @@ class FavouritePage extends HookConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: const [
                       Text(
-                        "You have no favourite campaign right now",
+                        "You have no favourite brand right now",
                         textScaleFactor: 1,
                         textAlign: TextAlign.center,
                         style: TextStyle(
@@ -132,7 +126,7 @@ class FavouritePage extends HookConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Text(
-                            "Favourite campaign",
+                            "Favourite brand",
                             textScaleFactor: 1,
                             textAlign: TextAlign.left,
                             style: TextStyle(
@@ -148,7 +142,7 @@ class FavouritePage extends HookConsumerWidget {
                               btnText: "Remove All",
                               textSize: 14,
                               btnFunction: () async {
-                                removeFav(context, delfav.value);
+                                removeFavBrand(context, delfav.value);
                               },
                             ),
                           ),
@@ -160,8 +154,8 @@ class FavouritePage extends HookConsumerWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ChampignInfopage(
-                                  id: fav.value[i].champid,
+                                builder: (context) => BrandInfo(
+                                  id: fav.value[i].brandid,
                                 ),
                               ),
                             );
@@ -191,9 +185,9 @@ class FavouritePage extends HookConsumerWidget {
                                         CircularProgressIndicator(
                                             value: downloadProgress.progress),
                                     errorWidget: (context, url, error) =>
-                                        const Icon(
-                                      Icons.error,
-                                      color: Colors.blue,
+                                        Image.asset(
+                                      "assets/images/user.png",
+                                      fit: BoxFit.cover,
                                     ),
                                     fit: BoxFit.cover,
                                   ),

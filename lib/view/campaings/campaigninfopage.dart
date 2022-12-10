@@ -128,9 +128,9 @@ class ChampignInfopage extends HookConsumerWidget {
                                           CircularProgressIndicator(
                                               value: downloadProgress.progress),
                                       errorWidget: (context, url, error) =>
-                                          const Icon(
-                                        Icons.error,
-                                        color: Colors.blue,
+                                          Image.asset(
+                                        "assets/images/user.png",
+                                        fit: BoxFit.cover,
                                       ),
                                       fit: BoxFit.cover,
                                     )),

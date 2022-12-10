@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/state/navigation/drawer.dart';
+import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
-import 'package:swrv/view/campaings/findcampaign.dart';
+import 'package:swrv/view/home/search.dart';
 import 'package:swrv/view/campaings/mycompaign.dart';
+import 'package:swrv/view/home/favourite_brand.dart';
 import 'package:swrv/view/home/inbox.dart';
 
 import '../home/drafts.dart';
 import '../home/earnings.dart';
-import '../home/favourite.dart';
+import '../home/favourite_cam.dart';
 import '../home/help.dart';
 import '../home/invite.dart';
 
@@ -19,6 +22,17 @@ class CusDrawer extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ValueNotifier<bool> isBrand = useState(false);
+    UserState userStateW = ref.watch(userState);
+
+    void init() async {
+      isBrand.value = await userStateW.isBrand();
+    }
+
+    useEffect(() {
+      init();
+      return null;
+    }, []);
     return GestureDetector(
       onHorizontalDragUpdate: (info) => {},
       child: ClipRRect(
@@ -84,7 +98,7 @@ class CusDrawer extends HookConsumerWidget {
                       title: "Find Campaign",
                       isFontAwesome: false,
                       scaffoldKey: scaffoldKey,
-                      page: const FindCampaings(),
+                      page: const Search(),
                     ),
                     const SizedBox(
                       height: 15,
@@ -125,16 +139,29 @@ class CusDrawer extends HookConsumerWidget {
                     DrawerButton(
                       index: 10,
                       icon: Icons.favorite,
-                      title: "Favourite",
+                      title: "Favourite Campaigns",
                       isFontAwesome: false,
                       scaffoldKey: scaffoldKey,
                       page: const FavouritePage(),
                     ),
+                    if (isBrand.value == false) ...[
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      DrawerButton(
+                        index: 11,
+                        icon: Icons.favorite,
+                        title: "Favourite Brands",
+                        isFontAwesome: false,
+                        scaffoldKey: scaffoldKey,
+                        page: const FavouriteBrand(),
+                      ),
+                    ],
                     const SizedBox(
                       height: 15,
                     ),
                     DrawerButton(
-                      index: 11,
+                      index: 12,
                       icon: Icons.person_search,
                       title: "Invite",
                       isFontAwesome: false,
@@ -145,7 +172,7 @@ class CusDrawer extends HookConsumerWidget {
                       height: 30,
                     ),
                     DrawerButton(
-                      index: 12,
+                      index: 13,
                       icon: Icons.help,
                       title: "Help",
                       isFontAwesome: false,
@@ -188,7 +215,7 @@ class DrawerButton extends HookConsumerWidget {
         Navigator.push(context, MaterialPageRoute(builder: (context) => page));
       },
       child: Container(
-        width: 200,
+        width: 230,
         padding: const EdgeInsets.all(10),
         margin: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(

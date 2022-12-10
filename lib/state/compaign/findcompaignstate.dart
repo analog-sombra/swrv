@@ -1,10 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:isar/isar.dart';
+import 'package:swrv/database/models/campaignsearch.dart';
 
+import '../../database/database.dart';
 import '../../services/apirequest.dart';
 import '../../utils/alerts.dart';
 
@@ -17,6 +21,8 @@ class FindCampState extends ChangeNotifier {
   bool isSearch = false;
   bool isAdvance = false;
   List searchData = [];
+  List filterlist = [];
+  String? filtervalue;
 
   void setIsSearch(bool val) {
     isSearch = val;
@@ -154,6 +160,72 @@ class FindCampState extends ChangeNotifier {
 //   "active": "1"
 // });
 
+    notifyListeners();
+    return [false];
+  }
+
+  Future<void> saveFilter(BuildContext context, String filter) async {
+    if (selectedPlatfomrsList.isEmpty) {
+      erroralert(context, "Error", "Please Select platform");
+    } else if (cmpId == null) {
+      erroralert(context, "Error", "Please Select category");
+    } else if (cityId == null) {
+      erroralert(context, "Error", "Please Select city");
+    } else {
+      final newFilter = CampaignSearch()
+        ..name = filter
+        ..category = cmpId
+        ..platforms = selectedPlatformList()
+        ..city = cityId
+        ..isActive = isActiveChamp ? "1" : "0";
+
+      await isarDB.writeTxn(() async {
+        await isarDB.campaignSearchs.put(newFilter);
+      });
+      susalert(context, "Saved", "successfully Saved the filter");
+    }
+    notifyListeners();
+  }
+
+  void setFilterValue(String val) {
+    filtervalue = val;
+    notifyListeners();
+  }
+
+  Future<void> loadFilter() async {
+    filterlist = await isarDB.campaignSearchs.where().findAll();
+    log(filterlist.toString());
+    notifyListeners();
+  }
+
+  Future<List> loadFromFilter(
+      BuildContext context, CampaignSearch filter) async {
+    final req = {
+      "city": filter.city,
+      "platform": filter.platforms,
+      "category": filter.category,
+      "active": filter.isActive
+    };
+
+    List data =
+        await apiReq.postApi(jsonEncode(req), path: "/api/campaign-search");
+
+    if (data[0] == false) {
+      erroralert(
+        context,
+        "Error",
+        data[1].toString(),
+      );
+    } else if (data[0]["status"] == false) {
+      erroralert(
+        context,
+        "Error",
+        data[0]["message"],
+      );
+    } else {
+      notifyListeners();
+      return [jsonEncode(data[0]["data"])];
+    }
     notifyListeners();
     return [false];
   }

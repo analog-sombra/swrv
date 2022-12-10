@@ -1634,7 +1634,7 @@ class UInput4 extends HookConsumerWidget {
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 child: Center(
                     child: Text(
-                  "Country",
+                  "Gender",
                   textScaleFactor: 1,
                   style: TextStyle(
                     fontSize: 20,
@@ -1678,17 +1678,17 @@ class UInput4 extends HookConsumerWidget {
                           backgroundColor: const Color(0xffef4444),
                         ),
                         onPressed: () {
-                          gender.clear();
                           Navigator.pop(context);
                         },
                         child: const Text(
-                          "Clear",
+                          "Cencel",
                           textAlign: TextAlign.center,
                           textScaleFactor: 1,
                           style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
                     ),
@@ -1705,7 +1705,7 @@ class UInput4 extends HookConsumerWidget {
                           if (userInputStateW.genderVal.isNotEmpty) {
                             gender.text = "${userInputStateW.genderVal[0]}";
                           } else {
-                            country.clear();
+                            gender.clear();
                           }
                           setState(() {});
                           Navigator.pop(context);

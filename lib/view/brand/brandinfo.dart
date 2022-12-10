@@ -6,10 +6,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:isar/isar.dart';
+import 'package:swrv/database/models/favoritebrand.dart';
 import 'package:swrv/services/apirequest.dart';
 import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
 
+import '../../database/database.dart';
 import '../../widgets/componets.dart';
 import '../navigation/bottomnavbar.dart';
 import '../navigation/drawer.dart';
@@ -28,11 +31,24 @@ class BrandInfo extends HookConsumerWidget {
     final branddata = useState([]);
     ValueNotifier<bool> isLoading = useState(true);
 
+    ValueNotifier<List> favList = useState([]);
+
+    ValueNotifier<bool> isFav = useState(false);
+
     void init() async {
+      final getfav =
+          await isarDB.favoriteBrands.filter().brandidEqualTo(id).findAll();
+      favList.value = getfav;
+
+      if (favList.value.isEmpty) {
+        isFav.value = false;
+      } else {
+        isFav.value = true;
+      }
+
       final req = {
         "id": id,
       };
-
       List data = await apiReq.postApi(jsonEncode(req), path: "/api/get-brand");
       if (data[0]["status"] == true) {
         branddata.value = [data[0]["data"]];
@@ -107,9 +123,9 @@ class BrandInfo extends HookConsumerWidget {
                                         CircularProgressIndicator(
                                             value: downloadProgress.progress),
                                     errorWidget: (context, url, error) =>
-                                        const Icon(
-                                      Icons.error,
-                                      color: Colors.blue,
+                                        Image.asset(
+                                      "assets/images/user.png",
+                                      fit: BoxFit.cover,
                                     ),
                                     fit: BoxFit.cover,
                                   ),
@@ -156,6 +172,30 @@ class BrandInfo extends HookConsumerWidget {
                                   ],
                                 ),
                               ),
+                              InkWell(
+                                onTap: () async {
+                                  isFav.value = !isFav.value;
+                                  if (favList.value.isEmpty) {
+                                    final newFav = FavoriteBrand()
+                                      ..brandid = id
+                                      ..name = branddata.value[0]["name"]
+                                      ..img = branddata.value[0]["logo"];
+                                    await isarDB.writeTxn(() async {
+                                      await isarDB.favoriteBrands.put(newFav);
+                                    });
+                                  } else {
+                                    await isarDB.writeTxn(() async {
+                                      await isarDB.favoriteBrands
+                                          .delete(favList.value[0].id);
+                                    });
+                                  }
+                                },
+                                child: Icon(
+                                  Icons.favorite,
+                                  size: 30,
+                                  color: isFav.value ? Colors.red : Colors.grey,
+                                ),
+                              )
                             ],
                           ),
                           const SizedBox(

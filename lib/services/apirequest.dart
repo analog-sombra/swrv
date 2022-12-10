@@ -1,3 +1,4 @@
+
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -40,10 +41,9 @@ class CusApiReq {
   Future uploadFile(String filepath, {String path = ""}) async {
     try {
       var request =
-          http.MultipartRequest('POST', Uri.parse('$baseUrl/api/add-file'));
-      request.fields.addAll({'fileAttPathTEC': path});
-      request.files
-          .add(await http.MultipartFile.fromPath('fileAttTEC', filepath));
+          http.MultipartRequest('POST', Uri.parse('$baseUrl/api/upload-file'));
+      // request.fields.addAll({'fileAttPathTEC': path});
+      request.files.add(await http.MultipartFile.fromPath('file', filepath));
 
       http.StreamedResponse response = await request.send();
 

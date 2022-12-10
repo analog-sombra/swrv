@@ -6,9 +6,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/state/navigation/drawer.dart';
 import 'package:swrv/view/chat/chat.dart';
+import 'package:swrv/view/home/earnings.dart';
 import 'package:swrv/view/home/invite.dart';
 import 'package:swrv/utils/utilthemes.dart';
-import 'package:swrv/view/campaings/findcampaign.dart';
 import 'package:swrv/view/user/profile.dart';
 
 class BotttomBar extends HookConsumerWidget {
@@ -56,7 +56,7 @@ class BotttomBar extends HookConsumerWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: ((context) => const FindCampaings()),
+                  builder: ((context) => const EarningsPage()),
                 ),
               );
             },
