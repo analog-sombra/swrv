@@ -12,11 +12,13 @@ import '../../services/apirequest.dart';
 import '../../state/influencer/findinfluencerstate.dart';
 import '../../utils/alerts.dart';
 import '../../utils/utilthemes.dart';
+import '../../widgets/alerts.dart';
 import '../../widgets/componets.dart';
 import '../user/userinfo.dart';
 
 class AdvanceInfSearch extends HookConsumerWidget {
-  const AdvanceInfSearch({super.key});
+  const AdvanceInfSearch({super.key, this.isTextSearch = true});
+  final bool isTextSearch;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,6 +26,7 @@ class AdvanceInfSearch extends HookConsumerWidget {
     CusApiReq apiReq = CusApiReq();
 
     final findInfStateW = ref.watch(findInfState);
+    TextEditingController filter = useTextEditingController();
     void init() async {
       final req1 = {};
       List platforms =
@@ -68,89 +71,111 @@ class AdvanceInfSearch extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          // Row(
-          //   children: [
-          //     const Spacer(),
-          //     ElevatedButton(
-          //       style: ElevatedButton.styleFrom(
-          //         backgroundColor: backgroundC,
-          //         elevation: 0,
-          //         shape: RoundedRectangleBorder(
-          //           borderRadius: BorderRadius.circular(8),
-          //         ),
-          //       ),
-          //       onPressed: () {
-          //         comingalert(context);
-          //       },
-          //       child: const Text(
-          //         "Save filter",
-          //         textAlign: TextAlign.center,
-          //         textScaleFactor: 1,
-          //         style: TextStyle(
-          //           fontSize: 16,
-          //           fontWeight: FontWeight.w500,
-          //           color: blackC,
-          //         ),
-          //       ),
-          //     ),
-          //     const SizedBox(
-          //       width: 10,
-          //     ),
-          //     DropdownButtonHideUnderline(
-          //       child: DropdownButton2<String>(
-          //         hint: const Text(
-          //           "Saved filter",
-          //           textScaleFactor: 1,
-          //           style: TextStyle(
-          //               fontSize: 16,
-          //               color: blackC,
-          //               fontWeight: FontWeight.w500),
-          //         ),
-          //         buttonDecoration: BoxDecoration(
-          //           boxShadow: const [],
-          //           borderRadius: BorderRadius.circular(10),
-          //           color: backgroundC,
-          //         ),
-          //         itemPadding: const EdgeInsets.only(left: 5, right: 5),
-          //         buttonPadding: const EdgeInsets.only(left: 5, right: 5),
-          //         style: const TextStyle(
-          //             fontSize: 18, fontWeight: FontWeight.w400),
-          //         value: filtervalue.value,
-          //         icon: const Icon(
-          //           Icons.arrow_drop_down,
-          //           color: Colors.black,
-          //         ),
-          //         items: filterlist.value.map((String item) {
-          //           return DropdownMenuItem(
-          //               value: item,
-          //               child: Text(
-          //                 item,
-          //                 textScaleFactor: 1,
-          //                 style: const TextStyle(
-          //                     color: Colors.black, fontSize: 18),
-          //               ));
-          //         }).toList(),
-          //         onChanged: (newval) {
-          //           filtervalue.value = newval;
-          //         },
-          //         buttonElevation: 2,
-          //         itemHeight: 40,
-          //         dropdownMaxHeight: 200,
-          //         dropdownPadding: null,
-          //         isDense: false,
-          //         dropdownElevation: 8,
-          //         scrollbarRadius: const Radius.circular(40),
-          //         scrollbarThickness: 6,
-          //         scrollbarAlwaysShow: true,
-          //         offset: const Offset(0, 0),
-          //         dropdownDecoration: BoxDecoration(
-          //           color: whiteC,
-          //           borderRadius: BorderRadius.circular(5),
-          //         ),
-          //       ),
-          //     ),
-          //   ],
-          // ),
+          Row(
+            children: [
+              const Spacer(),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: backgroundC,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                onPressed: () {
+                  saveIFilterAlert(context, filter, ref);
+                },
+                child: const Text(
+                  "Save filter",
+                  textAlign: TextAlign.center,
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: blackC,
+                  ),
+                ),
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              DropdownButtonHideUnderline(
+                child: DropdownButton2<String>(
+                  hint: const Text(
+                    "Saved filter",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                        fontSize: 16,
+                        color: blackC,
+                        fontWeight: FontWeight.w500),
+                  ),
+                  buttonDecoration: BoxDecoration(
+                    boxShadow: const [],
+                    borderRadius: BorderRadius.circular(10),
+                    color: backgroundC,
+                  ),
+                  itemPadding: const EdgeInsets.only(left: 5, right: 5),
+                  buttonPadding: const EdgeInsets.only(left: 5, right: 5),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.w400),
+                  value: findInfStateW.filtervalue,
+                  icon: const Icon(
+                    Icons.arrow_drop_down,
+                    color: Colors.black,
+                  ),
+                  items: [
+                    for (int i = 0;
+                        i < findInfStateW.filterlist.length;
+                        i++) ...[
+                      DropdownMenuItem(
+                        value: findInfStateW.filterlist[i].name,
+                        child: InkWell(
+                          onTap: () async {
+                            final data = await findInfStateW.loadFromFilter(
+                                context, findInfStateW.filterlist[i]);
+                            if (data[0] != false) {
+                              findInfStateW.setIsSearch(true);
+                              findInfStateW.setSearchData(jsonDecode(data[0]));
+
+                              susalert(
+                                context,
+                                "Completed",
+                                "Filter loading from saved filter is completed",
+                              );
+                            }
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            findInfStateW.filterlist[i].name,
+                            textScaleFactor: 1,
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 18),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                  onChanged: (newval) {
+                    findInfStateW.setFilterValue(newval!);
+                  },
+                  buttonElevation: 2,
+                  itemHeight: 40,
+                  dropdownMaxHeight: 200,
+                  dropdownPadding: null,
+                  isDense: false,
+                  dropdownElevation: 8,
+                  scrollbarRadius: const Radius.circular(40),
+                  scrollbarThickness: 6,
+                  scrollbarAlwaysShow: true,
+                  offset: const Offset(0, 0),
+                  dropdownDecoration: BoxDecoration(
+                    color: whiteC,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                ),
+              ),
+            ],
+          ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 10),
             child: Text(
@@ -342,7 +367,7 @@ class AdvanceInfSearch extends HookConsumerWidget {
                         onTap: () {
                           findInfStateW.setCityId(i);
                         },
-                        value: findInfStateW.cityList[i]["cityName"],
+                        value: findInfStateW.cityList[i]["name"],
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border(
@@ -354,7 +379,7 @@ class AdvanceInfSearch extends HookConsumerWidget {
                           width: 220,
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           child: Text(
-                            "[${findInfStateW.cityList[i]["cityCode"]}] ${findInfStateW.cityList[i]["cityName"]}",
+                            "[${findInfStateW.cityList[i]["code"]}] ${findInfStateW.cityList[i]["name"]}",
                             textScaleFactor: 1,
                             style: const TextStyle(
                                 color: Colors.black, fontSize: 16),
@@ -387,28 +412,28 @@ class AdvanceInfSearch extends HookConsumerWidget {
           const SizedBox(
             height: 20,
           ),
-
           Row(
             children: [
-              TextButton.icon(
-                onPressed: () {
-                  findInfStateW.setIsAdvance(false);
-                  // comingalert(context);
-                },
-                icon: const Icon(
-                  Icons.arrow_drop_down,
-                  color: secondaryC,
-                ),
-                label: const Text(
-                  "Text Search",
-                  textScaleFactor: 1,
-                  textAlign: TextAlign.left,
-                  style: TextStyle(
+              if (isTextSearch) ...[
+                TextButton.icon(
+                  onPressed: () {
+                    findInfStateW.setIsAdvance(false);
+                  },
+                  icon: const Icon(
+                    Icons.arrow_drop_down,
                     color: secondaryC,
-                    fontSize: 16,
+                  ),
+                  label: const Text(
+                    "Text Search",
+                    textScaleFactor: 1,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      color: secondaryC,
+                      fontSize: 16,
+                    ),
                   ),
                 ),
-              ),
+              ],
               const Spacer(),
               GestureDetector(
                 onTap: () {
@@ -487,7 +512,7 @@ class UserList extends HookConsumerWidget {
                   child: Row(
                     children: [
                       Text(
-                        "Found: ${findInfStateW.searchData.length} Campaigns",
+                        "Found: ${findInfStateW.searchData.length} Influencer",
                         textAlign: TextAlign.left,
                         textScaleFactor: 1,
                         style: const TextStyle(
@@ -576,35 +601,6 @@ class UserList extends HookConsumerWidget {
                           platforms: const [],
                           isHeart: false,
                         ),
-
-                        // HomeCard(
-                        //   imgUrl: findCampStateW.searchData[i]["brand"]["logo"],
-                        //   title:
-                        //       "${findCampStateW.searchData[i]["campaignName"]}",
-                        //   btnColor: const Color(0xfffbc98e),
-                        //   btnText: "Learn more & apply",
-                        //   btnFunction: () {
-                        //     Navigator.push(
-                        //       context,
-                        //       MaterialPageRoute(
-                        //         builder: (context) => ChampignInfopage(
-                        //           id: findCampStateW.searchData[i]["id"],
-                        //         ),
-                        //       ),
-                        //     );
-                        //     // ref.read(pageIndex.state).state = 21;
-                        //   },
-                        //   website:
-                        //       "Min Eligible Rating : ${findCampStateW.searchData[i]["minEligibleRating"]} ",
-                        //   category: "Category: Consumer Electronics",
-                        //   isHeart: false,
-                        //   amount:
-                        //       "${findCampStateW.searchData[i]["costPerPost"]}",
-                        //   currency:
-                        //       "${findCampStateW.searchData[i]["currency"]["code"]}",
-                        //   platforms: platformUrls(
-                        //       findCampStateW.searchData[i]["platforms"]),
-                        // ),
                       ],
                     ],
                   ),

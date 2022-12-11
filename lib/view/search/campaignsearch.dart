@@ -146,6 +146,7 @@ class AdvanceCampaignSearch extends HookConsumerWidget {
                                 "Filter loading from saved filter is completed",
                               );
                             }
+                            Navigator.pop(context);
                           },
                           child: Text(
                             findCampStateW.filterlist[i].name,
@@ -381,7 +382,7 @@ class AdvanceCampaignSearch extends HookConsumerWidget {
                         onTap: () {
                           findCampStateW.setCityId(i);
                         },
-                        value: findCampStateW.cityList[i]["cityName"],
+                        value: findCampStateW.cityList[i]["name"],
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border(
@@ -393,7 +394,7 @@ class AdvanceCampaignSearch extends HookConsumerWidget {
                           width: 220,
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           child: Text(
-                            "[${findCampStateW.cityList[i]["cityCode"]}] ${findCampStateW.cityList[i]["cityName"]}",
+                            "[${findCampStateW.cityList[i]["code"]}] ${findCampStateW.cityList[i]["name"]}",
                             textScaleFactor: 1,
                             style: const TextStyle(
                                 color: Colors.black, fontSize: 16),

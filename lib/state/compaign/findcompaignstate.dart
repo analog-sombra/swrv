@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -194,7 +193,6 @@ class FindCampState extends ChangeNotifier {
 
   Future<void> loadFilter() async {
     filterlist = await isarDB.campaignSearchs.where().findAll();
-    log(filterlist.toString());
     notifyListeners();
   }
 

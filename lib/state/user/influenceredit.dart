@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -95,17 +96,20 @@ class UserProfileEditState extends ChangeNotifier {
     genderVal = [userGender];
     if (userGender == "MALE") {
       selectedGender[0] = true;
+      genderVal[0] = "MALE";
     } else if (userGender == "FEMALE") {
       selectedGender[1] = true;
+      genderVal[0] = "FEMALE";
     } else {
       selectedGender[2] = true;
+      genderVal[0] = "TRANSGENDER";
     }
     bio = await userState.getUserBio();
 
     notifyListeners();
   }
 
-  Future<bool> sectionOneUpdate(BuildContext context) async {
+  Future<void> sectionOneUpdate(BuildContext context) async {
     String? imgFilePath;
     if (imageFile != null) {
       dynamic res = await cusApiReq.uploadFile(imageFile!.path);
@@ -131,8 +135,89 @@ class UserProfileEditState extends ChangeNotifier {
     if (imgFilePath != null) {
       req["userPicUrl"] = imgFilePath;
     }
+
+    await cusApiReq.postApi(jsonEncode(req), path: "/api/updateuser");
+    userState.updateUser(context);
+
+    // if (data[0] == false) {
+    //   erroralert(
+    //     context,
+    //     "Error1",
+    //     data[1].toString(),
+    //   );
+    // } else if (data[0]["status"] == false) {
+    //   erroralert(
+    //     context,
+    //     "Error2",
+    //     data[0]["message"],
+    //   );
+    // } else {
+    // }
+
+    // notifyListeners();
+    // return false;
+  }
+
+  //section three
+  List platforms = [];
+  List imgUrls = [];
+  List<bool> isCompleted = [];
+  int? selectedPlatform;
+  List<TextEditingController> cont = [];
+  List savedPlatform = [];
+
+  void setPlatforms(List data) {
+    platforms = data;
+    notifyListeners();
+  }
+
+  void addImgUrl(String url) {
+    imgUrls.add(url);
+    notifyListeners();
+  }
+
+  void addIsCompleted(bool value) {
+    isCompleted.add(value);
+    notifyListeners();
+  }
+
+  void setIsComplted(int index, bool value) {
+    isCompleted[index] = value;
+    notifyListeners();
+  }
+
+  void setSelectPlatform(int value) {
+    selectedPlatform = value;
+    notifyListeners();
+  }
+
+  void addControler() {
+    cont.add(TextEditingController());
+    notifyListeners();
+  }
+
+  Future<void> loadSavedPlatform(String platformid) async {
+    final req = {
+      "userId": await userState.getUserId(),
+      "platformId": platformid,
+    };
     List data =
-        await cusApiReq.postApi(jsonEncode(req), path: "/api/updateuser");
+        await cusApiReq.postApi(jsonEncode(req), path: "/api/get-user-handle");
+    log(data.toString());
+    savedPlatform = data[0]["data"];
+    notifyListeners();
+  }
+
+  Future<bool> addHandal(
+      BuildContext context, String platformid, String handal) async {
+    final req = {
+      "userId": await userState.getUserId(),
+      "platformId": platforms[selectedPlatform!]["id"],
+      "handleName": handal
+    };
+
+    List data =
+        await cusApiReq.postApi(jsonEncode(req), path: "/api/add-handle");
 
     if (data[0] == false) {
       erroralert(
@@ -147,7 +232,12 @@ class UserProfileEditState extends ChangeNotifier {
         data[0]["message"],
       );
     } else {
-      userState.updateUser(context);
+      susalert(
+        context,
+        "Successfully",
+        "Successfully added new handle",
+      );
+      await loadSavedPlatform(platforms[selectedPlatform!]["id"]);
       notifyListeners();
       return true;
     }
@@ -156,27 +246,10 @@ class UserProfileEditState extends ChangeNotifier {
     return false;
   }
 
-  void showdata() {
-    // final req = {
-    //   "id": await userState.getUserId(),
-    //   "userName": fields[1],
-    //   "userKnownAs": fields[2],
-    //   "userDOB": DateTime(
-    //           int.parse(fields[3].toString().split("-")[2]),
-    //           int.parse(fields[3].toString().split("-")[1]),
-    //           int.parse(fields[3].toString().split("-")[0]))
-    //       .toString(),
-    //   "userBioInfo": fields[4]
-    // };
-
-    // final req = {
-    //   "username": username,
-    //   "nickname": nickname,
-    //   "email": email,
-    //   "dob": dob,
-    //   "bio": bio,
-    //   "gender": genderVal[0]
-    // };
-    // log(req.toString());
+  void clearAfterAdding() {
+    imgUrls = [];
+    isCompleted = [];
+    cont = [];
+    notifyListeners();
   }
 }

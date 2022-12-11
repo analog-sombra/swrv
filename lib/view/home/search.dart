@@ -22,9 +22,6 @@ class Search extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final GlobalKey<ScaffoldState> scaffoldKey =
         useMemoized(() => GlobalKey<ScaffoldState>());
-    ValueNotifier<String?> filtervalue = useState(null);
-    ValueNotifier<List<String>> filterlist =
-        useState(["filter 1", "filter 2", "flter 3"]);
 
     final findCampStateW = ref.watch(findCampState);
     final findInfStateW = ref.watch(findInfState);

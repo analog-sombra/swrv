@@ -15,9 +15,9 @@ class Login extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ValueNotifier<bool> isLoading = useState(true);
     TextEditingController email = useTextEditingController();
     TextEditingController password = useTextEditingController();
-    ValueNotifier<bool> isLoading = useState(true);
 
     final loginStateW = ref.watch(loginStatus);
 
@@ -71,8 +71,9 @@ class Login extends HookConsumerWidget {
                                     "WELCOME",
                                     style: GoogleFonts.londrinaShadow(
                                       textStyle: TextStyle(
-                                          color: Colors.black,
-                                          fontSize: width / 3),
+                                        color: Colors.black,
+                                        fontSize: width / 3,
+                                      ),
                                     ),
                                   ),
                                 ),

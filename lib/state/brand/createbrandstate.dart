@@ -1,9 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:swrv/state/userstate.dart';
 
 import '../../services/apirequest.dart';
@@ -22,6 +25,21 @@ class CreateBrandState extends ChangeNotifier {
   String? cityId;
   List cityList = [];
   String? brandlogo;
+  File? imageFile;
+  String? countryCode;
+
+  Future<void> uploadImage(BuildContext context) async {
+    try {
+      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (image == null) return;
+      final imageTemp = File(image.path);
+      imageFile = imageTemp;
+    } on PlatformException catch (e) {
+      erroralert(context, "Error", 'Failed to pick image: $e');
+    }
+    notifyListeners();
+  }
+
   void setCity(List data) {
     cityList = data;
     notifyListeners();
@@ -34,6 +52,11 @@ class CreateBrandState extends ChangeNotifier {
 
   void setCityValue(String val) {
     cityValue = val;
+    notifyListeners();
+  }
+
+  void setCountryCode(int id) {
+    countryCode = cityList[id]["country"]["isd"];
     notifyListeners();
   }
 

@@ -9,6 +9,7 @@ import 'package:swrv/view/login.dart';
 import '../state/registerstate.dart';
 import '../utils/alerts.dart';
 import '../widgets/alerts.dart';
+import 'home/home.dart';
 
 class Register extends HookConsumerWidget {
   const Register({super.key});
@@ -335,22 +336,25 @@ class Register extends HookConsumerWidget {
                                       final res = await registerStateW.register(
                                           context, email, pass, coPass);
                                       if (res) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                const CreateBrandPage(),
-                                          ),
-                                        );
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //     builder: (context) =>
-                                        //         const HomePage(
-                                        //       isWelcomeAlert: true,
-                                        //     ),
-                                        //   ),
-                                        // );
+                                        if (registerStateW.isBrand) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const CreateBrandPage(),
+                                            ),
+                                          );
+                                        } else {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const HomePage(
+                                                isWelcomeAlert: true,
+                                              ),
+                                            ),
+                                          );
+                                        }
                                       }
                                     },
                                     child: const Text(

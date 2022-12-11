@@ -81,6 +81,64 @@ class InfluencerInputState extends ChangeNotifier {
   }
 
   //user input 2
+  List mainmarketList = [];
+  List selectedMainmarket = [];
+  List mainmarketVal = [];
+
+  void setMainmarketList(List data) {
+    mainmarketList = data;
+    for (int i = 0; i < data.length; i++) {
+      selectedMainmarket.add(false);
+    }
+    notifyListeners();
+  }
+
+  void setMainmarket(int index, bool value) {
+    for (int i = 0; i < selectedMainmarket.length; i++) {
+      selectedMainmarket[i] = false;
+    }
+
+    selectedMainmarket[index] = value;
+    if (value) {
+      mainmarketVal = [mainmarketList[index]];
+    } else {
+      mainmarketVal = [];
+    }
+
+    notifyListeners();
+  }
+
+  List othermarketList = [];
+  List selectedOthermarket = [];
+  List othermarketVal = [];
+
+  void setOthermarketList(List data) {
+    othermarketList = data;
+    for (int i = 0; i < data.length; i++) {
+      selectedOthermarket.add(false);
+    }
+    notifyListeners();
+  }
+
+  void setOthermarket(int index, bool value) {
+    selectedOthermarket[index] = value;
+    if (value) {
+      othermarketVal.add(othermarketList[index]);
+    } else {
+      othermarketVal.remove(othermarketList[index]);
+    }
+
+    notifyListeners();
+  }
+
+  String getOthermarketValue() {
+    String res = "";
+    for (int i = 0; i < othermarketVal.length; i++) {
+      res += "${othermarketVal[i]["name"]}, ";
+    }
+    return res;
+  }
+
   List currencyList = [];
   List selectedCurrency = [];
   List currencyVal = [];
@@ -325,12 +383,18 @@ class InfluencerInputState extends ChangeNotifier {
       erroralert(context, "Empty Field", "Please some category");
     } else if (languageVal.isEmpty) {
       erroralert(context, "Empty Field", "Please select a language");
+    } else if (mainmarketVal.isEmpty) {
+      erroralert(context, "Empty Field", "Please select Main Market");
+    } else if (othermarketVal.isEmpty) {
+      erroralert(context, "Empty Field", "Please select a Other Market");
     } else {
       final req = {
         "id": userid.toString(),
         "currencyId": currencyVal[0]["id"].toString(),
         "languages": getLanguages(),
-        "categories": getCategorys()
+        "categories": getCategorys(),
+        "marketId": mainmarketVal[0]["id"].toString(),
+        "markets": getOthermarket()
       };
 
       List data =
@@ -371,7 +435,14 @@ class InfluencerInputState extends ChangeNotifier {
     for (int i = 0; i < languageVal.length; i++) {
       res += "${languageVal[i]["id"]},";
     }
+    return res;
+  }
 
+  String getOthermarket() {
+    String res = "";
+    for (int i = 0; i < othermarketVal.length; i++) {
+      res += "${othermarketVal[i]["id"]},";
+    }
     return res;
   }
 

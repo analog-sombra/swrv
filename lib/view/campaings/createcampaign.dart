@@ -1084,7 +1084,7 @@ class CreateCampaings extends HookConsumerWidget {
                                   onTap: () {
                                     createCmpSW.setCityId(i);
                                   },
-                                  value: createCmpSW.cityList[i]["cityName"],
+                                  value: createCmpSW.cityList[i]["name"],
                                   child: Container(
                                     decoration: BoxDecoration(
                                       border: Border(
@@ -1097,7 +1097,7 @@ class CreateCampaings extends HookConsumerWidget {
                                     padding:
                                         const EdgeInsets.symmetric(vertical: 8),
                                     child: Text(
-                                      "[${createCmpSW.cityList[i]["cityCode"]}] ${createCmpSW.cityList[i]["cityName"]}",
+                                      "[${createCmpSW.cityList[i]["code"]}] ${createCmpSW.cityList[i]["name"]}",
                                       textScaleFactor: 1,
                                       style: const TextStyle(
                                           color: Colors.black, fontSize: 16),

@@ -5,11 +5,11 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/utils/utilthemes.dart';
-import 'package:swrv/view/home/inbox.dart';
 import 'package:swrv/widgets/buttons.dart';
 
 import '../state/userstate.dart';
 import '../view/home/home.dart';
+import '../view/notifications/notifications.dart';
 
 class HomeCard extends HookConsumerWidget {
   final String title;
@@ -280,18 +280,15 @@ class Header extends HookConsumerWidget {
             },
             child: SizedBox(
               width: 120,
-              child: Image.asset("assets/images/logo.png"),
+              child: Image.asset(
+                "assets/images/logo.png",
+              ),
             ),
           ),
           const Spacer(),
           InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: ((context) => const Inbox()),
-                ),
-              );
+              notificationsAlert(context);
             },
             child: const FaIcon(
               FontAwesomeIcons.solidBell,

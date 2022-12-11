@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -317,7 +318,6 @@ class BInput1 extends HookConsumerWidget {
     TextEditingController website = useTextEditingController();
     TextEditingController name = useTextEditingController();
     TextEditingController dob = useTextEditingController();
-    TextEditingController brand = useTextEditingController();
     TextEditingController info = useTextEditingController();
 
     final brandInputStateW = ref.watch(brandInputState);
@@ -331,7 +331,6 @@ class BInput1 extends HookConsumerWidget {
       if (havebrand) {
         final name = await userStateW.getBrandName();
         final code = await userStateW.getBrandCode();
-        brand.text = "$name [$code]";
       }
 
       userId.value = await userStateW.getUserId();
@@ -658,7 +657,7 @@ class BInput1 extends HookConsumerWidget {
               } else {
                 final result = await brandInputStateW.userUpdate1(
                   context,
-                  [name.text, website.text, info.text, brand.text, dob.text],
+                  [name.text, website.text, info.text, dob.text],
                   userId.value,
                 );
 
@@ -1054,6 +1053,9 @@ class BInput2 extends HookConsumerWidget {
 
     ValueNotifier<String> userId = useState("0");
 
+    TextEditingController mainmarket = useTextEditingController();
+    TextEditingController othermarket = useTextEditingController();
+
     TextEditingController account = useTextEditingController();
     TextEditingController category = useTextEditingController();
     TextEditingController languages = useTextEditingController();
@@ -1073,12 +1075,24 @@ class BInput2 extends HookConsumerWidget {
       List languagesRes =
           await apiReq.postApi(jsonEncode(req3), path: "/api/getlanguage");
 
+      final req4 = {};
+      List mainmarketRes =
+          await apiReq.postApi(jsonEncode(req4), path: "/api/get-market");
+
+      final req5 = {};
+      List othermarketRes =
+          await apiReq.postApi(jsonEncode(req5), path: "/api/get-market");
+
       if (accountRes[0]["status"] &&
           categoryRes[0]["status"] &&
-          languagesRes[0]["status"]) {
+          languagesRes[0]["status"] &&
+          mainmarketRes[0]["status"] &&
+          othermarketRes[0]["status"]) {
         brandInputStateW.setCurrencyList(accountRes[0]["data"]);
         brandInputStateW.setCategoryList(categoryRes[0]["data"]);
         brandInputStateW.setLanguageList(languagesRes[0]["data"]);
+        brandInputStateW.setMainmarketList(mainmarketRes[0]["data"]);
+        brandInputStateW.setOthermarketList(othermarketRes[0]["data"]);
       } else {
         erroralert(context, "error", "No Record Fount");
       }
@@ -1088,6 +1102,237 @@ class BInput2 extends HookConsumerWidget {
       init();
       return;
     }, []);
+
+    void mainMarketBox() {
+      showModalBottomSheet(
+        backgroundColor: whiteC,
+        isDismissible: false,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
+        context: context,
+        builder: (context) => StatefulBuilder(builder: (context, setState) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                child: Center(
+                    child: Text(
+                  "Main Market",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black.withOpacity(0.85),
+                  ),
+                )),
+              ),
+              const Divider(),
+              Expanded(
+                  child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    for (int i = 0;
+                        i < brandInputStateW.mainmarketList.length;
+                        i++) ...[
+                      CheckboxListTile(
+                        value: brandInputStateW.selectedMainmarket[i],
+                        onChanged: (val) {
+                          brandInputStateW.setMainmarket(i, val!);
+
+                          setState(() {});
+                        },
+                        title: Text(
+                            '${brandInputStateW.mainmarketList[i]["name"]}   [ ${brandInputStateW.mainmarketList[i]["code"]} ]'),
+                      )
+                    ]
+                  ],
+                ),
+              )),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          elevation: 0,
+                          backgroundColor: const Color(0xffef4444),
+                        ),
+                        onPressed: () {
+                          account.clear();
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          "Clear",
+                          textAlign: TextAlign.center,
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            backgroundColor: const Color(0xff22c55e)),
+                        onPressed: () {
+                          if (brandInputStateW.mainmarketVal.isNotEmpty) {
+                            mainmarket.text =
+                                "${brandInputStateW.mainmarketVal[0]["name"]} [${brandInputStateW.mainmarketVal[0]["code"]}]";
+                          } else {
+                            mainmarket.clear();
+                          }
+                          setState(() {});
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          "confirm",
+                          textAlign: TextAlign.center,
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        }),
+      );
+    }
+
+    void othermarketBox() {
+      showModalBottomSheet(
+        backgroundColor: whiteC,
+        isDismissible: false,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
+        context: context,
+        builder: (context) => StatefulBuilder(builder: (context, setState) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                child: Center(
+                  child: Text(
+                    "Other Market",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black.withOpacity(0.85),
+                    ),
+                  ),
+                ),
+              ),
+              const Divider(),
+              Expanded(
+                  child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    for (int i = 0;
+                        i < brandInputStateW.othermarketList.length;
+                        i++) ...[
+                      CheckboxListTile(
+                        value: brandInputStateW.selectedOthermarket[i],
+                        onChanged: (val) {
+                          brandInputStateW.setOthermarket(i, val!);
+                          setState(() {});
+                        },
+                        title: Text(
+                            '${brandInputStateW.othermarketList[i]["name"]}   [ ${brandInputStateW.othermarketList[i]["code"]} ]'),
+                      )
+                    ]
+                  ],
+                ),
+              )),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          elevation: 0,
+                          backgroundColor: const Color(0xffef4444),
+                        ),
+                        onPressed: () {
+                          othermarket.clear();
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          "Clear",
+                          textAlign: TextAlign.center,
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            backgroundColor: const Color(0xff22c55e)),
+                        onPressed: () {
+                          if (brandInputStateW.othermarketVal.isNotEmpty) {
+                            othermarket.text =
+                                brandInputStateW.getOthermarketValue();
+                          } else {
+                            othermarket.clear();
+                          }
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          "confirm",
+                          textAlign: TextAlign.center,
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ],
+          );
+        }),
+      );
+    }
 
     void accountBox() {
       showModalBottomSheet(
@@ -1437,6 +1682,82 @@ class BInput2 extends HookConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
+        const Padding(
+          padding: EdgeInsets.only(top: 16),
+          child: Text(
+            "Main Market",
+            textScaleFactor: 1,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 5),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: TextField(
+              controller: mainmarket,
+              readOnly: true,
+              onTap: () {
+                mainMarketBox();
+              },
+              decoration: InputDecoration(
+                suffixIcon: Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.black.withOpacity(0.8),
+                ),
+                filled: true,
+                fillColor: const Color(0xfff3f4f6),
+                border: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+              ),
+            ),
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.only(top: 16),
+          child: Text(
+            "Other Market",
+            textScaleFactor: 1,
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 18,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 5),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: TextField(
+              controller: othermarket,
+              readOnly: true,
+              onTap: () {
+                othermarketBox();
+              },
+              decoration: InputDecoration(
+                suffixIcon: Icon(
+                  Icons.arrow_drop_down,
+                  color: Colors.black.withOpacity(0.8),
+                ),
+                filled: true,
+                fillColor: const Color(0xfff3f4f6),
+                border: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                errorBorder: InputBorder.none,
+                disabledBorder: InputBorder.none,
+              ),
+            ),
+          ),
+        ),
         const Padding(
           padding: EdgeInsets.only(top: 16),
           child: Text(
@@ -1939,6 +2260,7 @@ class BInput4 extends HookConsumerWidget {
       if (countryRes[0]["status"] && cityRes[0]["status"]) {
         brandInputStateW.setCountryList(countryRes[0]["data"]);
         brandInputStateW.setCityList(cityRes[0]["data"]);
+        log(countryRes.toString());
       } else {
         erroralert(context, "error", "No Record Fount");
       }
@@ -1990,7 +2312,7 @@ class BInput4 extends HookConsumerWidget {
                           setState(() {});
                         },
                         title: Text(
-                            '${brandInputStateW.countryList[i]["id"]} ${brandInputStateW.countryList[i]["countryName"]}   [ ${brandInputStateW.countryList[i]["countryCode"]} ]'),
+                            '${brandInputStateW.countryList[i]["id"]} ${brandInputStateW.countryList[i]["name"]}   [ ${brandInputStateW.countryList[i]["code"]} ]'),
                       )
                     ]
                   ],
@@ -2037,7 +2359,7 @@ class BInput4 extends HookConsumerWidget {
                         onPressed: () {
                           if (brandInputStateW.countryVal.isNotEmpty) {
                             country.text =
-                                "${brandInputStateW.countryVal[0]["countryName"]} [${brandInputStateW.countryVal[0]["countryCode"]}]";
+                                "${brandInputStateW.countryVal[0]["code"]} [${brandInputStateW.countryVal[0]["name"]}]";
                           } else {
                             country.clear();
                           }
@@ -2219,7 +2541,7 @@ class BInput4 extends HookConsumerWidget {
                           setState(() {});
                         },
                         title: Text(
-                            '${brandInputStateW.cityList[i]["id"]} ${brandInputStateW.cityList[i]["cityName"]}   [ ${brandInputStateW.cityList[i]["cityCode"]} ]'),
+                            '${brandInputStateW.cityList[i]["id"]} ${brandInputStateW.cityList[i]["name"]}   [ ${brandInputStateW.cityList[i]["code"]} ]'),
                       )
                     ]
                   ],
@@ -2266,7 +2588,7 @@ class BInput4 extends HookConsumerWidget {
                         onPressed: () {
                           if (brandInputStateW.cityVal.isNotEmpty) {
                             city.text =
-                                "${brandInputStateW.cityVal[0]["cityName"]} [${brandInputStateW.cityVal[0]["cityCode"]}]";
+                                "${brandInputStateW.cityVal[0]["name"]} [${brandInputStateW.cityVal[0]["code"]}]";
                           } else {
                             city.clear();
                           }
@@ -2355,9 +2677,11 @@ class BInput4 extends HookConsumerWidget {
             child: TextField(
               keyboardType: TextInputType.number,
               controller: number,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
+                prefixText:  brandInputStateW.countryVal.isEmpty? "0 - ": "${brandInputStateW.countryVal[0]["isd"]} - ",
+                prefixStyle: const TextStyle(color: blackC, fontSize: 16),
                 filled: true,
-                fillColor: Color(0xfff3f4f6),
+                fillColor: const Color(0xfff3f4f6),
                 border: InputBorder.none,
                 focusedBorder: InputBorder.none,
                 enabledBorder: InputBorder.none,

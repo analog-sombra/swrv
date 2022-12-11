@@ -18,6 +18,7 @@ import 'package:swrv/widgets/buttons.dart';
 import '../database/database.dart';
 import '../state/compaign/createcampaignstate.dart';
 import '../state/compaign/findcompaignstate.dart';
+import '../state/influencer/findinfluencerstate.dart';
 import '../view/login.dart';
 
 void welcomeAlert(BuildContext context, String email) {
@@ -1211,6 +1212,121 @@ void saveCFilterAlert(
                           }
                           filter.clear();
                           await ref.watch(findCampState).loadFilter();
+                        },
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void saveIFilterAlert(
+    BuildContext context, TextEditingController filter, WidgetRef ref) async {
+  final formKey = GlobalKey<FormState>();
+  return await showDialog(
+    context: context,
+    builder: (context) => BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: AlertDialog(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        contentPadding: const EdgeInsets.all(5),
+        backgroundColor: whiteC,
+        content: Container(
+          padding: const EdgeInsets.all(10),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  "Save Filter",
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: blackC, fontSize: 25, fontWeight: FontWeight.w500),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: Text(
+                    'Name the filter and save',
+                    style: TextStyle(
+                      color: blackC.withOpacity(0.55),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    textAlign: TextAlign.center,
+                    textScaleFactor: 1,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      controller: filter,
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return 'Please enter name of the filter';
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        hintText: "Filter Name",
+                        hintStyle: TextStyle(
+                          color: Colors.black.withOpacity(0.45),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CusBtn(
+                        btnColor: redC,
+                        btnText: "Cencel",
+                        textSize: 18,
+                        btnFunction: () {
+                          Navigator.pop(context);
+                          filter.clear();
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Expanded(
+                      child: CusBtn(
+                        btnColor: greenC,
+                        btnText: "Save",
+                        textSize: 18,
+                        btnFunction: () async {
+                          if (formKey.currentState!.validate()) {
+                            await ref
+                                .watch(findInfState)
+                                .saveFilter(context, filter.text);
+                            Navigator.pop(context);
+                          }
+                          filter.clear();
+                          await ref.watch(findInfState).loadFilter();
                         },
                       ),
                     ),

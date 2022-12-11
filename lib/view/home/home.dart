@@ -9,6 +9,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/state/navigation/drawer.dart';
 import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
+import 'package:swrv/view/brand/createbrand.dart';
 import 'package:swrv/widgets/componets.dart';
 import 'package:swrv/widgets/buttons.dart';
 
@@ -16,6 +17,7 @@ import '../../utils/alerts.dart';
 import '../../widgets/alerts.dart';
 import '../navigation/bottomnavbar.dart';
 import '../navigation/drawer.dart';
+import '../search/usersearch.dart';
 import '../user/brandinput.dart';
 import '../user/influencerinput.dart';
 
@@ -27,6 +29,8 @@ class HomePage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final GlobalKey<ScaffoldState> scaffoldKey =
         useMemoized(() => GlobalKey<ScaffoldState>());
+
+  
     List postImg = [
       "user1.jpg",
       'user2.jpg',
@@ -148,12 +152,6 @@ class HomePage extends HookConsumerWidget {
                             btnText: "Click here to complete",
                             textSize: 16,
                             btnFunction: () {
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(
-                              //     builder: ((context) => const BrandInput()),
-                              //   ),
-                              // );
                               if (isBrand.value) {
                                 Navigator.push(
                                   context,
@@ -179,14 +177,27 @@ class HomePage extends HookConsumerWidget {
                   const SizedBox(
                     height: 20,
                   ),
-                  const Text(
-                    "Welcome to SWRV",
-                    textAlign: TextAlign.center,
-                    textScaleFactor: 1,
-                    style: TextStyle(
-                        color: secondaryC,
-                        fontSize: 40,
-                        fontWeight: FontWeight.w900),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const CreateBrandPage(),
+                        ),
+                      );
+                    },
+                    child: const Text("Create Brand"),
+                  ),
+                  const FittedBox(
+                    child: Text(
+                      "Welcome to SWRV",
+                      textAlign: TextAlign.center,
+                      textScaleFactor: 1,
+                      style: TextStyle(
+                          color: secondaryC,
+                          fontSize: 40,
+                          fontWeight: FontWeight.w900),
+                    ),
                   ),
                   const Text(
                     "Reach the next billion",
@@ -226,75 +237,20 @@ class HomePage extends HookConsumerWidget {
                       }).toList(),
                     ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF7941D),
-                      boxShadow: const [
-                        BoxShadow(
-                            color: shadowC, blurRadius: 5, offset: Offset(0, 6))
-                      ],
-                      borderRadius: BorderRadius.circular(16),
+                  if (isBrand.value) ...[
+                    const AdvanceInfSearch(
+                      isTextSearch: false,
                     ),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          flex: 3,
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.horizontal(
-                              left: Radius.circular(16),
-                            ),
-                            child: Container(
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFFDB60C),
-                              ),
-                              child:
-                                  Image.asset("assets/images/homeavatar.png"),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          flex: 7,
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 20),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
-                                  "Welcome to SWRV",
-                                  textScaleFactor: 1,
-                                  textAlign: TextAlign.left,
-                                  style: TextStyle(
-                                      color: blackC,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w700),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 10),
-                                  child: Text(
-                                    "Search, apply for brands campaings\nand create more great content.",
-                                    textAlign: TextAlign.left,
-                                    textScaleFactor: 1,
-                                    style: TextStyle(
-                                        color: blackC,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                    const UserList(),
+                    const TopInflunderList(),
+                  ] else ...[
+                    const WelcomeBanner(),
+                    const CampaingList(),
+                    const SizedBox(
+                      height: 30,
                     ),
-                  ),
-                  const CampaingList(),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  const TopBrandsList(),
+                    const TopBrandsList(),
+                  ],
                   const SizedBox(
                     height: 80,
                   ),
@@ -458,7 +414,7 @@ class TopBrandsList extends HookConsumerWidget {
                   width: 15,
                 ),
                 Text(
-                  "Top brands",
+                  "Top Influencer",
                   textAlign: TextAlign.left,
                   textScaleFactor: 1,
                   style: TextStyle(
@@ -537,6 +493,384 @@ class TopBrandsList extends HookConsumerWidget {
               ],
             ),
           )
+        ],
+      ),
+    );
+  }
+}
+
+class WelcomeBanner extends HookConsumerWidget {
+  const WelcomeBanner({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF7941D),
+        boxShadow: const [
+          BoxShadow(color: shadowC, blurRadius: 5, offset: Offset(0, 6))
+        ],
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.horizontal(
+                left: Radius.circular(16),
+              ),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Color(0xFFFDB60C),
+                ),
+                child: Image.asset("assets/images/homeavatar.png"),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 7,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    "Welcome to SWRV",
+                    textScaleFactor: 1,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        color: blackC,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      "Search, apply for brands campaings\nand create more great content.",
+                      textAlign: TextAlign.left,
+                      textScaleFactor: 1,
+                      style: TextStyle(
+                          color: blackC,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TopInflunderList extends HookConsumerWidget {
+  const TopInflunderList({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final width = MediaQuery.of(context).size.width;
+    return Container(
+      width: width,
+      margin: const EdgeInsets.symmetric(horizontal: 25),
+      padding: const EdgeInsets.symmetric(vertical: 15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: shadowC, blurRadius: 5, offset: Offset(0, 6))
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              children: const [
+                FaIcon(CupertinoIcons.star_fill, color: primaryC),
+                SizedBox(
+                  width: 15,
+                ),
+                Text(
+                  "Top Influencer",
+                  textAlign: TextAlign.left,
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                      color: blackC, fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
+              children: const [
+                TopInfluencerBox(
+                  name: "sona",
+                  avatar: "assets/images/post1.jpg",
+                  score: "2000",
+                  rating: 4,
+                  reach: "200000",
+                  imporession: "300000",
+                  dob: "Dec 12, 2003",
+                ),
+                TopInfluencerBox(
+                  name: "Sonali",
+                  avatar: "assets/images/post2.jpg",
+                  score: "2000",
+                  rating: 4,
+                  reach: "200000",
+                  imporession: "300000",
+                  dob: "Dec 12, 2003",
+                ),
+                TopInfluencerBox(
+                  name: "Jaya",
+                  avatar: "assets/images/post3.jpg",
+                  score: "2000",
+                  rating: 4,
+                  reach: "200000",
+                  imporession: "300000",
+                  dob: "Dec 12, 2003",
+                ),
+                TopInfluencerBox(
+                  name: "Moni",
+                  avatar: "assets/images/post6.jpg",
+                  score: "2000",
+                  rating: 4,
+                  reach: "200000",
+                  imporession: "300000",
+                  dob: "Dec 12, 2003",
+                ),
+                TopInfluencerBox(
+                  name: "Amina",
+                  avatar: "assets/images/post5.jpg",
+                  score: "2000",
+                  rating: 4,
+                  reach: "200000",
+                  imporession: "300000",
+                  dob: "Dec 12, 2003",
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class TopInfluencerBox extends HookConsumerWidget {
+  final String name;
+  final String avatar;
+  final String score;
+  final int rating;
+  final String reach;
+  final String imporession;
+  final String dob;
+  const TopInfluencerBox({
+    super.key,
+    required this.name,
+    required this.avatar,
+    required this.score,
+    required this.rating,
+    required this.reach,
+    required this.imporession,
+    required this.dob,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 10),
+      margin: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 4,
+      ),
+      width: 240,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(color: blackC.withOpacity(0.1), blurRadius: 6),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+            child: Image.asset(
+              avatar,
+              fit: BoxFit.cover,
+              height: 140,
+              width: 240,
+              alignment: Alignment.center,
+            ),
+          ),
+          Center(
+            child: Container(
+              width: 220,
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 4,
+              ),
+              child: IntrinsicHeight(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          name,
+                          textScaleFactor: 1,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            for (int i = 0; i < rating; i++) ...[
+                              const Icon(
+                                Icons.star,
+                                color: primaryC,
+                                size: 15,
+                              ),
+                            ],
+                            for (int i = 0; i < 5 - rating; i++) ...[
+                              const Icon(
+                                Icons.star,
+                                color: backgroundC,
+                                size: 15,
+                              ),
+                            ],
+                          ],
+                        )
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        const Text(
+                          "3500 USD",
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          dob,
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: blackC.withOpacity(0.75),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Center(
+            child: Container(
+              width: 220,
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 4,
+              ),
+              decoration: BoxDecoration(
+                color: backgroundC,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: IntrinsicHeight(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Column(
+                      children: [
+                        Text(
+                          reach,
+                          textScaleFactor: 1,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          "Reach",
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: blackC.withOpacity(0.75),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const VerticalDivider(
+                      color: blackC,
+                    ),
+                    Column(
+                      children: [
+                        Text(
+                          imporession,
+                          textScaleFactor: 1,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        Text(
+                          "Imporession",
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: blackC.withOpacity(0.75),
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Center(
+            child: SizedBox(
+              width: 220,
+              child: CusBtn(
+                btnColor: backgroundC,
+                btnText: "Score : $score",
+                textSize: 16,
+                textColor: blackC,
+                btnFunction: () {},
+                elevation: 0,
+              ),
+            ),
+          ),
         ],
       ),
     );
