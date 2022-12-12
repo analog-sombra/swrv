@@ -9,10 +9,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/state/navigation/drawer.dart';
 import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
-import 'package:swrv/view/brand/createbrand.dart';
 import 'package:swrv/widgets/componets.dart';
 import 'package:swrv/widgets/buttons.dart';
 
+import '../../services/apirequest.dart';
 import '../../utils/alerts.dart';
 import '../../widgets/alerts.dart';
 import '../navigation/bottomnavbar.dart';
@@ -30,7 +30,8 @@ class HomePage extends HookConsumerWidget {
     final GlobalKey<ScaffoldState> scaffoldKey =
         useMemoized(() => GlobalKey<ScaffoldState>());
 
-  
+    CusApiReq apiReq = CusApiReq();
+
     List postImg = [
       "user1.jpg",
       'user2.jpg',
@@ -53,6 +54,7 @@ class HomePage extends HookConsumerWidget {
       drawerIndexW.setIndex(0);
       bottomIndexW.setIndex(0);
       if (isWelcomeAlert) {
+        await apiReq.sendOTP(await userStateW.getUserId());
         await Future.delayed(const Duration(milliseconds: 400));
         welcomeAlert(context, await userStateW.getUserEmail());
       }
@@ -177,17 +179,6 @@ class HomePage extends HookConsumerWidget {
                   const SizedBox(
                     height: 20,
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CreateBrandPage(),
-                        ),
-                      );
-                    },
-                    child: const Text("Create Brand"),
-                  ),
                   const FittedBox(
                     child: Text(
                       "Welcome to SWRV",
@@ -242,6 +233,9 @@ class HomePage extends HookConsumerWidget {
                       isTextSearch: false,
                     ),
                     const UserList(),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     const TopInflunderList(),
                   ] else ...[
                     const WelcomeBanner(),
@@ -414,7 +408,7 @@ class TopBrandsList extends HookConsumerWidget {
                   width: 15,
                 ),
                 Text(
-                  "Top Influencer",
+                  "Top Brands",
                   textAlign: TextAlign.left,
                   textScaleFactor: 1,
                   style: TextStyle(

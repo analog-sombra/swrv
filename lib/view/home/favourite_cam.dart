@@ -11,7 +11,7 @@ import 'package:swrv/widgets/buttons.dart';
 import '../../state/userstate.dart';
 import '../../widgets/alerts.dart';
 import '../../widgets/componets.dart';
-import '../campaings/campaigninfopage.dart';
+import '../campaings/campaigninfo.dart';
 import '../navigation/bottomnavbar.dart';
 import '../navigation/drawer.dart';
 
@@ -160,7 +160,7 @@ class FavouritePage extends HookConsumerWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ChampignInfopage(
+                                builder: (context) => ChampignInfo(
                                   id: fav.value[i].champid,
                                 ),
                               ),

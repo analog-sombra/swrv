@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:html_unescape/html_unescape.dart';
 import 'package:intl/intl.dart';
 import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
@@ -315,27 +316,19 @@ class BInput1 extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final GlobalKey<FormState> formKey =
+        useMemoized(() => GlobalKey<FormState>());
     TextEditingController website = useTextEditingController();
     TextEditingController name = useTextEditingController();
     TextEditingController dob = useTextEditingController();
-    TextEditingController info = useTextEditingController();
+    TextEditingController bio = useTextEditingController();
 
     final brandInputStateW = ref.watch(brandInputState);
-    final userStateW = ref.watch(userState);
 
-    ValueNotifier<String> userId = useState("0");
+    // ValueNotifier<String> userId = useState("0");
 
     void init() async {
-      final havebrand = await userStateW.isBrandAdded();
-
-      if (havebrand) {
-        final name = await userStateW.getBrandName();
-        final code = await userStateW.getBrandCode();
-      }
-
-      userId.value = await userStateW.getUserId();
-
-      // final userdata = await userStateW.getUserData(context);
+      // userId.value = await userStateW.getUserId();
     }
 
     useEffect(() {
@@ -343,705 +336,308 @@ class BInput1 extends HookConsumerWidget {
       return null;
     }, []);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: const Color(0xffe5e7eb),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: SizedBox(
-                    width: 80,
-                    height: 80,
-                    child: (brandInputStateW.imageFile == null)
-                        ? Image.asset("assets/images/user.png")
-                        : Image.file(
-                            brandInputStateW.imageFile!,
-                            fit: BoxFit.cover,
-                          ),
+    return Form(
+      key: formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xffe5e7eb),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: (brandInputStateW.imageFile == null)
+                          ? Image.asset("assets/images/user.png")
+                          : Image.file(
+                              brandInputStateW.imageFile!,
+                              fit: BoxFit.cover,
+                            ),
+                    ),
                   ),
                 ),
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(40),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            elevation: 0,
+                            backgroundColor: const Color(0xff9ca3af),
+                          ),
+                          onPressed: () async {
+                            await brandInputStateW.pickImage(context);
+                          },
+                          child: const Text(
+                            "Upload",
+                            textAlign: TextAlign.center,
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Text(
+                            "Upload profile photo here.",
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                              color: Colors.black.withOpacity(0.5),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Text(
+                            "The image shoudl either be jpg or jpeg or png format and be a maximum seixe of 10 MB.",
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                              color: Colors.black.withOpacity(0.5),
+                              fontSize: 10,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: Text(
+              "Username",
+              textScaleFactor: 1,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
               ),
-              Expanded(
-                flex: 3,
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          minimumSize: const Size.fromHeight(40),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty || value == "") {
+                    return "Please enter the username";
+                  }
+                  return null;
+                },
+                controller: name,
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Color(0xfff3f4f6),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                ),
+              ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: Text(
+              "Website",
+              textScaleFactor: 1,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty || value == "") {
+                    return "Please enter the website";
+                  }
+                  return null;
+                },
+                controller: website,
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Color(0xfff3f4f6),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                ),
+              ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: Text(
+              "Date of birth",
+              textScaleFactor: 1,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty || value == "") {
+                    return "Please enter the date of birth";
+                  }
+                  return null;
+                },
+                readOnly: true,
+                controller: dob,
+                decoration: InputDecoration(
+                  suffixIcon: Icon(
+                    Icons.calendar_month,
+                    color: Colors.black.withOpacity(0.8),
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xfff3f4f6),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                ),
+                onTap: () async {
+                  var date = await showDatePicker(
+                    context: context,
+                    initialDate: DateTime(DateTime.now().year - 18,
+                        DateTime.now().month, DateTime.now().day),
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime(DateTime.now().year - 18,
+                        DateTime.now().month, DateTime.now().day),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: const ColorScheme.light(
+                            primary: Colors.pink,
+                            onSurface: Colors.pink,
                           ),
-                          elevation: 0,
-                          backgroundColor: const Color(0xff9ca3af),
-                        ),
-                        onPressed: () async {
-                          await brandInputStateW.pickImage(context);
-                          final res = await brandInputStateW.uloadAvatar(
-                              context,
-                              brandInputStateW.imageFile!.path,
-                              userId.value);
-
-                          final response = await userStateW.setNewUserData(
-                              context, userId.value);
-
-                          if (res && response) {
-                            susalert(context, "Uploaded",
-                                "Successfully updated profile image");
-                          } else {
-                            erroralert(context, "Error",
-                                "Unable to set image try again");
-                          }
-                        },
-                        child: const Text(
-                          "Upload",
-                          textAlign: TextAlign.center,
-                          textScaleFactor: 1,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5),
-                        child: Text(
-                          "Upload profile photo here.",
-                          textScaleFactor: 1,
-                          style: TextStyle(
-                            color: Colors.black.withOpacity(0.5),
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.pink,
+                            ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: Text(
-                          "The image shoudl either be jpg or jpeg or png format and be a maximum seixe of 10 MB.",
-                          textScaleFactor: 1,
-                          style: TextStyle(
-                            color: Colors.black.withOpacity(0.5),
-                            fontSize: 10,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                      ),
+                        child: child!,
+                      );
+                    },
+                  );
+                  dob.text = DateFormat("dd-MM-yyyy").format(date!);
+                },
+              ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: Text(
+              "Company info",
+              textScaleFactor: 1,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty || value == "") {
+                    return "Please enter the bio";
+                  }
+                  return null;
+                },
+                maxLines: 6,
+                minLines: 4,
+                controller: bio,
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Color(0xfff3f4f6),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          CusBtn(
+              btnColor: primaryC,
+              btnText: "Next",
+              textSize: 18,
+              btnFunction: () async {
+                if (brandInputStateW.imageFile == null) {
+                  erroralert(context, "Image", "Please select one image");
+                } else if (formKey.currentState!.validate()) {
+                  final result = await brandInputStateW.userUpdate1(
+                    context,
+                    [
+                      name.text,
+                      website.text,
+                      dob.text,
+                      bio.text,
                     ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Company name",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: name,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-              ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Website",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: website,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-              ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Date of birth",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              readOnly: true,
-              controller: dob,
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.calendar_month,
-                  color: Colors.black.withOpacity(0.8),
-                ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-              ),
-              onTap: () async {
-                var date = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime(DateTime.now().year - 18,
-                      DateTime.now().month, DateTime.now().day),
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime(DateTime.now().year - 18,
-                      DateTime.now().month, DateTime.now().day),
-                  builder: (context, child) {
-                    return Theme(
-                      data: Theme.of(context).copyWith(
-                        colorScheme: const ColorScheme.light(
-                          primary: Colors.pink,
-                          onSurface: Colors.pink,
-                        ),
-                        textButtonTheme: TextButtonThemeData(
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.pink,
-                          ),
-                        ),
-                      ),
-                      child: child!,
-                    );
-                  },
-                );
-                dob.text = DateFormat("dd-MM-yyyy").format(date!);
-              },
-            ),
-          ),
-        ),
-        // const Padding(
-        //   padding: EdgeInsets.only(top: 16),
-        //   child: Text(
-        //     "Brand",
-        //     textScaleFactor: 1,
-        //     style: TextStyle(
-        //       color: Colors.black,
-        //       fontSize: 18,
-        //       fontWeight: FontWeight.w400,
-        //     ),
-        //   ),
-        // ),
-        // InkWell(
-        //   onTap: () {
-        //     Navigator.push(
-        //       context,
-        //       MaterialPageRoute(
-        //         builder: ((context) => const CreateBrandPage()),
-        //       ),
-        //     );
-        //   },
-        //   child: Padding(
-        //     padding: const EdgeInsets.only(top: 5),
-        //     child: ClipRRect(
-        //       borderRadius: BorderRadius.circular(10),
-        //       child: TextField(
-        //         enabled: false,
-        //         controller: brand,
-        //         decoration: const InputDecoration(
-        //           filled: true,
-        //           fillColor: Color(0xfff3f4f6),
-        //           border: InputBorder.none,
-        //           focusedBorder: InputBorder.none,
-        //           enabledBorder: InputBorder.none,
-        //           errorBorder: InputBorder.none,
-        //           disabledBorder: InputBorder.none,
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        // ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Company info",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              maxLines: 6,
-              minLines: 4,
-              controller: info,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        CusBtn(
-            btnColor: primaryC,
-            btnText: "Next",
-            textSize: 18,
-            btnFunction: () async {
-              if (brandInputStateW.imageFile == null) {
-                erroralert(context, "Image", "Please select one image");
-              } else {
-                final result = await brandInputStateW.userUpdate1(
-                  context,
-                  [name.text, website.text, info.text, dob.text],
-                  userId.value,
-                );
+                  );
 
-                if (result) {
-                  brandInputStateW.setCurInput(brandInputStateW.curInput + 1);
+                  if (result) {
+                    brandInputStateW.setCurInput(brandInputStateW.curInput + 1);
+                  }
                 }
-              }
-            }),
-      ],
+              }),
+        ],
+      ),
     );
   }
 }
-
-// class BInput2 extends HookConsumerWidget {
-//   const BInput2({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     TextEditingController targeted = useTextEditingController();
-//     TextEditingController markets = useTextEditingController();
-//     TextEditingController age = useTextEditingController();
-//     TextEditingController gender = useTextEditingController();
-//     TextEditingController category = useTextEditingController();
-//     TextEditingController languages = useTextEditingController();
-
-//     final brandInputStateW = ref.watch(brandInputState);
-
-//     return Column(
-//       mainAxisAlignment: MainAxisAlignment.start,
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       mainAxisSize: MainAxisSize.min,
-//       children: [
-//         const Padding(
-//           padding: EdgeInsets.only(top: 16),
-//           child: Text(
-//             "Targeted marked",
-//             textScaleFactor: 1,
-//             style: TextStyle(
-//               color: Colors.black,
-//               fontSize: 18,
-//               fontWeight: FontWeight.w400,
-//             ),
-//           ),
-//         ),
-//         Padding(
-//           padding: const EdgeInsets.only(top: 5),
-//           child: ClipRRect(
-//             borderRadius: BorderRadius.circular(10),
-//             child: TextField(
-//               readOnly: true,
-//               controller: targeted,
-//               decoration: const InputDecoration(
-//                 filled: true,
-//                 fillColor: Color(0xfff3f4f6),
-//                 border: InputBorder.none,
-//                 focusedBorder: InputBorder.none,
-//                 enabledBorder: InputBorder.none,
-//                 errorBorder: InputBorder.none,
-//                 disabledBorder: InputBorder.none,
-//               ),
-//             ),
-//           ),
-//         ),
-//         const Padding(
-//           padding: EdgeInsets.only(top: 16),
-//           child: Text(
-//             "Other makets",
-//             textScaleFactor: 1,
-//             style: TextStyle(
-//               color: Colors.black,
-//               fontSize: 18,
-//               fontWeight: FontWeight.w400,
-//             ),
-//           ),
-//         ),
-//         Padding(
-//           padding: const EdgeInsets.only(top: 5),
-//           child: ClipRRect(
-//             borderRadius: BorderRadius.circular(10),
-//             child: TextField(
-//               controller: markets,
-//               decoration: const InputDecoration(
-//                 filled: true,
-//                 fillColor: Color(0xfff3f4f6),
-//                 border: InputBorder.none,
-//                 focusedBorder: InputBorder.none,
-//                 enabledBorder: InputBorder.none,
-//                 errorBorder: InputBorder.none,
-//                 disabledBorder: InputBorder.none,
-//               ),
-//             ),
-//           ),
-//         ),
-//         Row(
-//           children: [
-//             Expanded(
-//               child: Column(
-//                 mainAxisSize: MainAxisSize.min,
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 mainAxisAlignment: MainAxisAlignment.start,
-//                 children: [
-//                   const Padding(
-//                     padding: EdgeInsets.only(top: 16),
-//                     child: Text(
-//                       "Age",
-//                       textScaleFactor: 1,
-//                       style: TextStyle(
-//                         color: Colors.black,
-//                         fontSize: 18,
-//                         fontWeight: FontWeight.w400,
-//                       ),
-//                     ),
-//                   ),
-//                   Padding(
-//                     padding: const EdgeInsets.only(top: 5),
-//                     child: ClipRRect(
-//                       borderRadius: BorderRadius.circular(10),
-//                       child: TextField(
-//                         controller: category,
-//                         decoration: const InputDecoration(
-//                           filled: true,
-//                           fillColor: Color(0xfff3f4f6),
-//                           border: InputBorder.none,
-//                           focusedBorder: InputBorder.none,
-//                           enabledBorder: InputBorder.none,
-//                           errorBorder: InputBorder.none,
-//                           disabledBorder: InputBorder.none,
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//             const SizedBox(
-//               width: 20,
-//             ),
-//             Expanded(
-//               child: Column(
-//                 mainAxisSize: MainAxisSize.min,
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 mainAxisAlignment: MainAxisAlignment.start,
-//                 children: [
-//                   const Padding(
-//                     padding: EdgeInsets.only(top: 16),
-//                     child: Text(
-//                       "Gender",
-//                       textScaleFactor: 1,
-//                       style: TextStyle(
-//                         color: Colors.black,
-//                         fontSize: 18,
-//                         fontWeight: FontWeight.w400,
-//                       ),
-//                     ),
-//                   ),
-//                   Padding(
-//                     padding: const EdgeInsets.only(top: 5),
-//                     child: ClipRRect(
-//                       borderRadius: BorderRadius.circular(10),
-//                       child: TextField(
-//                         controller: category,
-//                         decoration: const InputDecoration(
-//                           filled: true,
-//                           fillColor: Color(0xfff3f4f6),
-//                           border: InputBorder.none,
-//                           focusedBorder: InputBorder.none,
-//                           enabledBorder: InputBorder.none,
-//                           errorBorder: InputBorder.none,
-//                           disabledBorder: InputBorder.none,
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ),
-//           ],
-//         ),
-//         const Padding(
-//           padding: EdgeInsets.only(top: 16),
-//           child: Text(
-//             "Category",
-//             textScaleFactor: 1,
-//             style: TextStyle(
-//               color: Colors.black,
-//               fontSize: 18,
-//               fontWeight: FontWeight.w400,
-//             ),
-//           ),
-//         ),
-//         Padding(
-//           padding: const EdgeInsets.only(top: 5),
-//           child: ClipRRect(
-//             borderRadius: BorderRadius.circular(10),
-//             child: TextField(
-//               controller: category,
-//               decoration: const InputDecoration(
-//                 filled: true,
-//                 fillColor: Color(0xfff3f4f6),
-//                 border: InputBorder.none,
-//                 focusedBorder: InputBorder.none,
-//                 enabledBorder: InputBorder.none,
-//                 errorBorder: InputBorder.none,
-//                 disabledBorder: InputBorder.none,
-//               ),
-//             ),
-//           ),
-//         ),
-//         const Padding(
-//           padding: EdgeInsets.only(top: 16),
-//           child: Text(
-//             "Languages",
-//             textScaleFactor: 1,
-//             style: TextStyle(
-//               color: Colors.black,
-//               fontSize: 18,
-//               fontWeight: FontWeight.w400,
-//             ),
-//           ),
-//         ),
-//         Padding(
-//           padding: const EdgeInsets.only(top: 5),
-//           child: ClipRRect(
-//             borderRadius: BorderRadius.circular(10),
-//             child: TextField(
-//               controller: languages,
-//               decoration: const InputDecoration(
-//                 filled: true,
-//                 fillColor: Color(0xfff3f4f6),
-//                 border: InputBorder.none,
-//                 focusedBorder: InputBorder.none,
-//                 enabledBorder: InputBorder.none,
-//                 errorBorder: InputBorder.none,
-//                 disabledBorder: InputBorder.none,
-//               ),
-//             ),
-//           ),
-//         ),
-//         const SizedBox(
-//           height: 15,
-//         ),
-//         Row(
-//           children: [
-//             Expanded(
-//               child: CusBtn(
-//                 btnColor: backgroundC,
-//                 btnText: "Back",
-//                 textSize: 18,
-//                 btnFunction: () {
-//                   brandInputStateW.setCurInput(brandInputStateW.curInput - 1);
-//                 },
-//                 textColor: blackC,
-//               ),
-//             ),
-//             const SizedBox(
-//               width: 20,
-//             ),
-//             Expanded(
-//               child: CusBtn(
-//                 btnColor: primaryC,
-//                 btnText: "Next",
-//                 textSize: 18,
-//                 btnFunction: () async {
-//                   brandInputStateW.setCurInput(brandInputStateW.curInput + 1);
-//                 },
-//               ),
-//             ),
-//           ],
-//         )
-//       ],
-//     );
-//   }
-// }
-
-// class BInput3 extends HookConsumerWidget {
-//   const BInput3({Key? key}) : super(key: key);
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     TextEditingController city = useTextEditingController();
-//     TextEditingController phone = useTextEditingController();
-
-//     final userInputStateW = ref.watch(brandInputState);
-
-//     return Column(
-//       mainAxisAlignment: MainAxisAlignment.start,
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       mainAxisSize: MainAxisSize.min,
-//       children: [
-//         const Padding(
-//           padding: EdgeInsets.only(top: 16),
-//           child: Text(
-//             "City",
-//             textScaleFactor: 1,
-//             style: TextStyle(
-//               color: Colors.black,
-//               fontSize: 18,
-//               fontWeight: FontWeight.w400,
-//             ),
-//           ),
-//         ),
-//         Padding(
-//           padding: const EdgeInsets.only(top: 5),
-//           child: ClipRRect(
-//             borderRadius: BorderRadius.circular(10),
-//             child: TextField(
-//               controller: city,
-//               decoration: const InputDecoration(
-//                 filled: true,
-//                 fillColor: Color(0xfff3f4f6),
-//                 border: InputBorder.none,
-//                 focusedBorder: InputBorder.none,
-//                 enabledBorder: InputBorder.none,
-//                 errorBorder: InputBorder.none,
-//                 disabledBorder: InputBorder.none,
-//               ),
-//             ),
-//           ),
-//         ),
-//         const Padding(
-//           padding: EdgeInsets.only(top: 16),
-//           child: Text(
-//             "Phone Number",
-//             textScaleFactor: 1,
-//             style: TextStyle(
-//               color: Colors.black,
-//               fontSize: 18,
-//               fontWeight: FontWeight.w400,
-//             ),
-//           ),
-//         ),
-//         Padding(
-//           padding: const EdgeInsets.only(top: 5),
-//           child: ClipRRect(
-//             borderRadius: BorderRadius.circular(10),
-//             child: TextField(
-//               controller: phone,
-//               decoration: const InputDecoration(
-//                 filled: true,
-//                 fillColor: Color(0xfff3f4f6),
-//                 border: InputBorder.none,
-//                 focusedBorder: InputBorder.none,
-//                 enabledBorder: InputBorder.none,
-//                 errorBorder: InputBorder.none,
-//                 disabledBorder: InputBorder.none,
-//               ),
-//             ),
-//           ),
-//         ),
-//         const SizedBox(
-//           height: 15,
-//         ),
-//         Row(
-//           children: [
-//             Expanded(
-//               child: CusBtn(
-//                 btnColor: backgroundC,
-//                 btnText: "Back",
-//                 textSize: 18,
-//                 btnFunction: () {
-//                   userInputStateW.setCurInput(userInputStateW.curInput - 1);
-//                 },
-//                 textColor: blackC,
-//               ),
-//             ),
-//             const SizedBox(
-//               width: 20,
-//             ),
-//             Expanded(
-//               child: CusBtn(
-//                 btnColor: primaryC,
-//                 btnText: "Next",
-//                 textSize: 18,
-//                 btnFunction: () async {
-//                   userInputStateW.setCurInput(userInputStateW.curInput + 1);
-//                 },
-//               ),
-//             ),
-//           ],
-//         )
-//       ],
-//     );
-//   }
-// }
 
 class BInput2 extends HookConsumerWidget {
   const BInput2({super.key});
@@ -1049,9 +645,6 @@ class BInput2 extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final brandInputStateW = ref.watch(brandInputState);
-    final userStateW = ref.watch(userState);
-
-    ValueNotifier<String> userId = useState("0");
 
     TextEditingController mainmarket = useTextEditingController();
     TextEditingController othermarket = useTextEditingController();
@@ -1062,8 +655,6 @@ class BInput2 extends HookConsumerWidget {
 
     CusApiReq apiReq = CusApiReq();
     void init() async {
-      userId.value = await userStateW.getUserId();
-
       final req1 = {};
       List accountRes =
           await apiReq.postApi(jsonEncode(req1), path: "/api/getcurrency");
@@ -1096,6 +687,7 @@ class BInput2 extends HookConsumerWidget {
       } else {
         erroralert(context, "error", "No Record Fount");
       }
+      log(languagesRes[0]["data"].toString());
     }
 
     useEffect(() {
@@ -1376,7 +968,7 @@ class BInput2 extends HookConsumerWidget {
                           setState(() {});
                         },
                         title: Text(
-                            '${brandInputStateW.currencyList[i]["currencyName"]}   [ ${brandInputStateW.currencyList[i]["currencyCode"]} ]'),
+                            '${brandInputStateW.currencyList[i]["currencyCode"]} ${HtmlUnescape().convert(brandInputStateW.currencyList[i]["currencyAsciiSymbol"])} ${brandInputStateW.currencyList[i]["currencyName"]}'),
                       )
                     ]
                   ],
@@ -1491,7 +1083,7 @@ class BInput2 extends HookConsumerWidget {
                           setState(() {});
                         },
                         title: Text(
-                            '${brandInputStateW.categoryList[i]["categoryName"]}   [ ${brandInputStateW.categoryList[i]["categoryCode"]} ]'),
+                            '${brandInputStateW.categoryList[i]["categoryCode"]}-${brandInputStateW.categoryList[i]["categoryName"]}'),
                       )
                     ]
                   ],
@@ -1604,7 +1196,7 @@ class BInput2 extends HookConsumerWidget {
                           setState(() {});
                         },
                         title: Text(
-                            '${brandInputStateW.languageList[i]["languageName"]}   [ ${brandInputStateW.languageList[i]["languageCode"]} ]'),
+                            '${brandInputStateW.languageList[i]["languageCode"]} ${brandInputStateW.languageList[i]["languageAsciiSymbol"]} ${brandInputStateW.languageList[i]["languageName"]} '),
                       )
                     ]
                   ],
@@ -1899,7 +1491,7 @@ class BInput2 extends HookConsumerWidget {
                 btnFunction: () async {
                   final restult = await brandInputStateW.userUpdate2(
                     context,
-                    userId.value,
+                    // userId.value,
                   );
 
                   if (restult) {
@@ -2260,7 +1852,6 @@ class BInput4 extends HookConsumerWidget {
       if (countryRes[0]["status"] && cityRes[0]["status"]) {
         brandInputStateW.setCountryList(countryRes[0]["data"]);
         brandInputStateW.setCityList(cityRes[0]["data"]);
-        log(countryRes.toString());
       } else {
         erroralert(context, "error", "No Record Fount");
       }
@@ -2677,11 +2268,15 @@ class BInput4 extends HookConsumerWidget {
             child: TextField(
               keyboardType: TextInputType.number,
               controller: number,
+              maxLength: 10,
               decoration: InputDecoration(
-                prefixText:  brandInputStateW.countryVal.isEmpty? "0 - ": "${brandInputStateW.countryVal[0]["isd"]} - ",
+                prefixText: brandInputStateW.countryVal.isEmpty
+                    ? "0 - "
+                    : "${brandInputStateW.countryVal[0]["isd"]} - ",
                 prefixStyle: const TextStyle(color: blackC, fontSize: 16),
                 filled: true,
                 fillColor: const Color(0xfff3f4f6),
+                counterText: "",
                 border: InputBorder.none,
                 focusedBorder: InputBorder.none,
                 enabledBorder: InputBorder.none,
@@ -2849,8 +2444,11 @@ class BInput5 extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final GlobalKey<FormState> formKey =
+        useMemoized(() => GlobalKey<FormState>());
     TextEditingController name = useTextEditingController();
     TextEditingController email = useTextEditingController();
+    TextEditingController number = useTextEditingController();
     ValueNotifier<String> userId = useState("0");
 
     final brandInputStateW = ref.watch(brandInputState);
@@ -2865,133 +2463,196 @@ class BInput5 extends HookConsumerWidget {
       return;
     }, []);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Name",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              readOnly: true,
-              controller: name,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
+    return Form(
+      key: formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: Text(
+              "Name",
+              textScaleFactor: 1,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Email",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: email,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Align(
-          alignment: Alignment.topRight,
-          child: SizedBox(
-            width: 80,
-            child: CusBtn(
-                btnColor: primaryC,
-                btnText: "Invite",
-                textSize: 18,
-                btnFunction: () {}),
-          ),
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: CusBtn(
-                btnColor: backgroundC,
-                btnText: "Back",
-                textSize: 18,
-                btnFunction: () {
-                  brandInputStateW.setCurInput(brandInputStateW.curInput - 1);
-                },
-                textColor: blackC,
-              ),
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            Expanded(
-              child: CusBtn(
-                btnColor: primaryC,
-                btnText: "Submit",
-                textSize: 18,
-                btnFunction: () async {
-                  userStateW.clearUserData();
-
-                  final newuser =
-                      await userStateW.setNewUserData(context, userId.value);
-
-                  if (newuser) {
-                    brandInputStateW.setCurInput(0);
-
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomePage(),
-                      ),
-                      (Route<dynamic> route) => false,
-                    );
+          Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty || value == "") {
+                    return "Please enter the name";
                   }
+                  return null;
                 },
+                controller: name,
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Color(0xfff3f4f6),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                ),
               ),
             ),
-          ],
-        )
-      ],
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: Text(
+              "Email",
+              textScaleFactor: 1,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: TextFormField(
+                validator: (value) {
+                  if (value == null || value.isEmpty || value == "") {
+                    return "Please enter the email";
+                  }
+                  return null;
+                },
+                controller: email,
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: Color(0xfff3f4f6),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                ),
+              ),
+            ),
+          ),
+          const Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: Text(
+              "Number",
+              textScaleFactor: 1,
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 5),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: TextFormField(
+                keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty || value == "") {
+                    return "Please enter the name";
+                  } else if (value.length < 10) {
+                    return "Please enter 10 degit mobile number";
+                  }
+                  return null;
+                },
+                maxLength: 10,
+                controller: number,
+                decoration: const InputDecoration(
+                  filled: true,
+                  counterText: "",
+                  fillColor: Color(0xfff3f4f6),
+                  border: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
+                  disabledBorder: InputBorder.none,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Align(
+            alignment: Alignment.topRight,
+            child: SizedBox(
+              width: 80,
+              child: CusBtn(
+                  btnColor: primaryC,
+                  btnText: "Invite",
+                  textSize: 18,
+                  btnFunction: () async {
+                    if (formKey.currentState!.validate()) {
+                      await brandInputStateW.inviteUser(
+                          context, name.text, email.text, number.text);
+                      name.clear();
+                      email.clear();
+                      number.clear();
+                    }
+                  }),
+            ),
+          ),
+          const SizedBox(
+            height: 15,
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: CusBtn(
+                  btnColor: backgroundC,
+                  btnText: "Back",
+                  textSize: 18,
+                  btnFunction: () {
+                    brandInputStateW.setCurInput(brandInputStateW.curInput - 1);
+                  },
+                  textColor: blackC,
+                ),
+              ),
+              const SizedBox(
+                width: 20,
+              ),
+              Expanded(
+                child: CusBtn(
+                  btnColor: primaryC,
+                  btnText: "Submit",
+                  textSize: 18,
+                  btnFunction: () async {
+                    await userStateW.clearUserData();
+
+                    final newuser =
+                        await userStateW.setNewUserData(context, userId.value);
+
+                    if (newuser) {
+                      brandInputStateW.setCurInput(0);
+
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomePage(),
+                        ),
+                        (Route<dynamic> route) => false,
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
     );
   }
 }

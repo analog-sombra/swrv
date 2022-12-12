@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/utils/utilthemes.dart';
-import 'package:swrv/view/campaings/campaigninfopage.dart';
 import 'package:swrv/widgets/componets.dart';
 
 import '../../services/apirequest.dart';
 import '../../state/userstate.dart';
 import '../navigation/bottomnavbar.dart';
 import '../navigation/drawer.dart';
+import 'campaigninfo.dart';
 
 class MyCampaings extends HookConsumerWidget {
   const MyCampaings({super.key});
@@ -224,7 +224,7 @@ class MyCampaings extends HookConsumerWidget {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => ChampignInfopage(
+                                      builder: (context) => ChampignInfo(
                                         id: champ.value[i]["id"],
                                       ),
                                     ),

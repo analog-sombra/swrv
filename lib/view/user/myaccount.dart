@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:swrv/state/user/myaccoutstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/buttons.dart';
 
@@ -22,9 +23,17 @@ class MyAccount extends HookConsumerWidget {
 
     ValueNotifier<bool> isBrand = useState(false);
     final userStateW = ref.watch(userState);
+    final myAccountStateW = ref.watch(myAccountState);
+
+    ValueNotifier<String?> username = useState(null);
+    ValueNotifier<String?> bio = useState(null);
+    ValueNotifier<String?> rating = useState(null);
 
     void init() async {
       isBrand.value = await userStateW.isBrand();
+      username.value = await userStateW.getUserName();
+      bio.value = await userStateW.getUserBio();
+      rating.value = await userStateW.getUserRating();
     }
 
     ValueNotifier<List> data = useState([
@@ -97,11 +106,11 @@ class MyAccount extends HookConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              const Text(
-                                "Alexander Hirschi",
+                              Text(
+                                username.value!,
                                 textScaleFactor: 1,
                                 textAlign: TextAlign.start,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w500,
                                   color: blackC,
@@ -109,11 +118,30 @@ class MyAccount extends HookConsumerWidget {
                               ),
                               Row(
                                 children: [
-                                  for (int i = 0; i < 4; i++) ...[
-                                    const Icon(Icons.star, color: secondaryC)
+                                  //  double.parse(champdata.value[0]
+                                  //                 ["minEligibleRating"])
+                                  //             .toInt()
+                                  for (int i = 0;
+                                      i < double.parse(rating.value!).toInt();
+                                      i++) ...[
+                                    const Icon(
+                                      Icons.star,
+                                      color: primaryC,
+                                      size: 25,
+                                    ),
                                   ],
-                                  Icon(Icons.star,
-                                      color: blackC.withOpacity(0.35))
+                                  for (int i = 0;
+                                      i <
+                                          5 -
+                                              double.parse(rating.value!)
+                                                  .toInt();
+                                      i++) ...[
+                                    const Icon(
+                                      Icons.star,
+                                      color: backgroundC,
+                                      size: 25,
+                                    ),
+                                  ],
                                 ],
                               ),
                             ],
@@ -221,13 +249,13 @@ class MyAccount extends HookConsumerWidget {
                             color: blackC),
                       ),
                     ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
-                        "Don't miss out on Early Access sale of EOSS for members only. Become a Adi club member and get Early access to EOSS from 21st to 23rd June. adidas® Official Shop. Free Shipping. Types: Running Shoes, Running Shorts & Tights, Running Jackets, Tracksuits & Track Pants.Don't miss out on Early Access sale of EOSS for members only. Become a Adi club member and get Early access to EOSS from 21st to 23rd June. adidas® Official Shop. Free Shipping. Types: Running Shoes, Running Shorts & Tights, Running Jackets, Tracksuits & Track Pants.",
+                        bio.value!,
                         textScaleFactor: 1,
                         textAlign: TextAlign.start,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
                             color: blackC),
@@ -285,7 +313,7 @@ class MyAccount extends HookConsumerWidget {
                       ),
                       CusBtn(
                         btnColor: primaryC,
-                        btnText: "create campign",
+                        btnText: "Create campaign",
                         textSize: 18,
                         btnFunction: () {
                           Navigator.push(
@@ -468,6 +496,76 @@ class MyAccount extends HookConsumerWidget {
                         ),
                       ),
                     ],
+                  ],
+                ),
+              ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 35, vertical: 20),
+                width: width,
+                margin: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: whiteC,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: shadowC,
+                      blurRadius: 5,
+                      offset: Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          for (int i = 0;
+                              i < myAccountStateW.tabName.length;
+                              i++) ...[
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 5,
+                                  )
+                                ],
+                                color: (myAccountStateW.curTab == i)
+                                    ? secondaryC
+                                    : backgroundC,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                myAccountStateW.tabName[i],
+                                textScaleFactor: 1,
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                  color: (myAccountStateW.curTab == i)
+                                      ? whiteC
+                                      : blackC,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                   ],
                 ),
               ),

@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:swrv/state/userstate.dart';
 
 import '../services/apirequest.dart';
 import '../utils/alerts.dart';
@@ -17,6 +18,7 @@ final brandInputState = ChangeNotifierProvider<BrandInputState>(
 
 class BrandInputState extends ChangeNotifier {
   CusApiReq apiReq = CusApiReq();
+  UserState userState = UserState();
   int curInput = 0;
   void setCurInput(int val) {
     curInput = val;
@@ -300,52 +302,44 @@ class BrandInputState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> userUpdate1(
-      BuildContext context, List fields, String userid) async {
-    bool testcase = false;
-
-    for (int i = 0; i < fields.length; i++) {
-      if (fields[i] == "") {
-        testcase = true;
-      }
+  Future<bool> userUpdate1(BuildContext context, List fields) async {
+    String? imgFilePath;
+    if (imageFile != null) {
+      dynamic res = await apiReq.uploadFile(imageFile!.path);
+      imgFilePath = res["data"]["filePath"];
     }
-    if (testcase) {
+
+    final req = {
+      "id": await userState.getUserId(),
+      "userName": fields[0],
+      "userKnownAs": fields[0],
+      "userWebUrl": fields[1],
+      "userDOB": DateTime(
+              int.parse(fields[2].toString().split("-")[2]),
+              int.parse(fields[2].toString().split("-")[1]),
+              int.parse(fields[2].toString().split("-")[0]))
+          .toString(),
+      "userBioInfo": fields[3],
+      "userPicUrl": imgFilePath
+    };
+
+    List data = await apiReq.postApi(jsonEncode(req), path: "/api/updateuser");
+
+    if (data[0] == false) {
       erroralert(
         context,
-        "Empty Field",
-        "Please fill all the fields",
+        "Error",
+        data[1].toString(),
+      );
+    } else if (data[0]["status"] == false) {
+      erroralert(
+        context,
+        "Error",
+        data[0]["message"],
       );
     } else {
-      final req = {
-        "id": userid,
-        "userName": fields[0],
-        "userKnownAs": fields[0],
-        "userWebUrl": fields[1],
-        "userDOB": DateTime(
-                int.parse(fields[3].toString().split("-")[2]),
-                int.parse(fields[3].toString().split("-")[1]),
-                int.parse(fields[3].toString().split("-")[0]))
-            .toString()
-      };
-      List data =
-          await apiReq.postApi(jsonEncode(req), path: "/api/updateuser");
-
-      if (data[0] == false) {
-        erroralert(
-          context,
-          "Error",
-          data[1].toString(),
-        );
-      } else if (data[0]["status"] == false) {
-        erroralert(
-          context,
-          "Error",
-          data[0]["message"],
-        );
-      } else {
-        notifyListeners();
-        return true;
-      }
+      notifyListeners();
+      return true;
     }
 
     notifyListeners();
@@ -378,16 +372,22 @@ class BrandInputState extends ChangeNotifier {
     return false;
   }
 
-  Future<bool> userUpdate2(BuildContext context, String userid) async {
+  Future<bool> userUpdate2(
+    BuildContext context,
+  ) async {
     if (currencyVal.isEmpty) {
       erroralert(context, "Empty Field", "Please select a currecny");
     } else if (categoryVal.isEmpty) {
       erroralert(context, "Empty Field", "Please some category");
     } else if (languageVal.isEmpty) {
       erroralert(context, "Empty Field", "Please select a language");
+    } else if (mainmarketVal.isEmpty) {
+      erroralert(context, "Empty Field", "Please select Main Market");
+    } else if (othermarketVal.isEmpty) {
+      erroralert(context, "Empty Field", "Please select a Other Market");
     } else {
       final req = {
-        "id": userid.toString(),
+        "id": await userState.getUserId(),
         "currencyId": currencyVal[0]["id"].toString(),
         "languages": getLanguages(),
         "categories": getCategorys(),
@@ -550,5 +550,20 @@ class BrandInputState extends ChangeNotifier {
 
     notifyListeners();
     return false;
+  }
+
+  Future<void> inviteUser(
+      BuildContext context, String name, String email, String number) async {
+    final req = {
+      "invitedUserId": await userState.getUserId(),
+      "name": name,
+      "email": email,
+      "number": number
+    };
+
+    List data = await apiReq.postApi(jsonEncode(req), path: "/api/send-otp");
+    if (data[0]["status"] == true) {
+      susalert(context, "Invited", "Successfully Invited the user $name");
+    }
   }
 }

@@ -52,8 +52,11 @@ class Login extends HookConsumerWidget {
         backgroundColor: const Color(0xfff3f4f6),
         body: SafeArea(
           child: isLoading.value
-              ? const Center(
-                  child: CircularProgressIndicator(),
+              ? const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 )
               : SingleChildScrollView(
                   child: SizedBox(
@@ -215,9 +218,10 @@ class Login extends HookConsumerWidget {
                                               isLoading.value = true;
                                               final res =
                                                   await loginStateW.login(
-                                                      context,
-                                                      email.text,
-                                                      password.text);
+                                                context,
+                                                email.text,
+                                                password.text,
+                                              );
                                               if (res) {
                                                 Navigator.push(
                                                   context,
@@ -227,6 +231,7 @@ class Login extends HookConsumerWidget {
                                                   ),
                                                 );
                                               }
+                                              isLoading.value = false;
                                             },
                                             child: const Text(
                                               "Login",

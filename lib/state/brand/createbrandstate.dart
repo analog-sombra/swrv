@@ -61,22 +61,16 @@ class CreateBrandState extends ChangeNotifier {
   }
 
   Future<bool> createBrand(
-      BuildContext context, List fields, String userid) async {
-    bool testcase = false;
-
-    for (int i = 0; i < fields.length; i++) {
-      if (fields[i] == "") {
-        testcase = true;
-      }
+    BuildContext context,
+    List<String> fields,
+  ) async {
+    String? imgFilePath;
+    if (imageFile != null) {
+      dynamic res = await apiReq.uploadFile(imageFile!.path);
+      imgFilePath = res["data"]["filePath"];
     }
 
-    if (testcase) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please fill all the fields",
-      );
-    } else if (fields[4].toString().length != 10) {
+    if (fields[5].toString().length != 10) {
       erroralert(
         context,
         "Contact number",
@@ -90,15 +84,17 @@ class CreateBrandState extends ChangeNotifier {
       );
     } else {
       final req = {
-        "userId": userid,
+        "userId": await userState.getUserId(),
+        "brandLogoUrl": imgFilePath,
         "brandName": fields[0],
         "brandCode": fields[1],
-        "brandFullRegisteredAddress": fields[2],
-        "brandSupportEmail": fields[3],
-        "brandSupportContact": fields[4],
-        "brandBioInfo": fields[5],
-        "cityId": cityId,
-        "brandLogoUrl": await userState.getUserAvatar()
+        "brandWebUrl": fields[2],
+        "brandFullRegisteredAddress": fields[3],
+        "brandSupportEmail": fields[4],
+        "brandSupportContact": fields[5],
+        "brandBioInfo": fields[6],
+        "comapnyBio": fields[7],
+        "cityId": cityId
       };
 
       List data = await apiReq.postApi(jsonEncode(req), path: "/api/add-brand");

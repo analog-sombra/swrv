@@ -33,6 +33,7 @@ class Profile extends HookConsumerWidget {
     ValueNotifier<String> nickname = useState("loading...");
     ValueNotifier<String> userAvatar = useState("");
     ValueNotifier<bool> isBrand = useState(false);
+    ValueNotifier<bool> isProfileCompleted = useState(false);
 
     void init() async {
       prefs.value = await SharedPreferences.getInstance();
@@ -40,6 +41,7 @@ class Profile extends HookConsumerWidget {
       userAvatar.value = await userStateW.getUserAvatar();
       nickname.value = await userStateW.getNickname();
       isBrand.value = await userStateW.isBrand();
+      isProfileCompleted.value = await userStateW.isProfileCompleted();
     }
 
     useEffect(() {
@@ -149,21 +151,30 @@ class Profile extends HookConsumerWidget {
                             ],
                           ),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            if (isBrand.value) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const BrandEditOne(),
-                                ),
-                              );
+                        InkWell(
+                          onTap: () async {
+                            final res = await userStateW.isProfileCompleted();
+                            if (res) {
+                              if (isBrand.value) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const BrandEditOne(),
+                                  ),
+                                );
+                              } else {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const UserEditOne(),
+                                  ),
+                                );
+                              }
                             } else {
-                              Navigator.push(
+                              erroralert(
                                 context,
-                                MaterialPageRoute(
-                                  builder: (context) => const UserEditOne(),
-                                ),
+                                "Uncomplete Profile",
+                                "Please Complete your profile first",
                               );
                             }
                           },
@@ -350,12 +361,20 @@ class Profile extends HookConsumerWidget {
                     ),
                     InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: ((context) => const MyAccount()),
-                          ),
-                        );
+                        if (isProfileCompleted.value) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: ((context) => const MyAccount()),
+                            ),
+                          );
+                        } else {
+                          erroralert(
+                            context,
+                            "Uncompleted",
+                            "Please first complete your profile first...",
+                          );
+                        }
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 5),
@@ -400,18 +419,6 @@ class Profile extends HookConsumerWidget {
                     GestureDetector(
                       onTap: () async {
                         logoutAlert(context);
-                        // await FirebaseAuth.instance.signOut();
-                        // FirebaseAuth.instance.currentUser;
-
-                        // bool? success = await prefs.value?.remove('isLogin');
-                        // if (success!) {
-                        //   Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //       builder: (context) => const Login(),
-                        //     ),
-                        //   );
-                        // }
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(vertical: 5),

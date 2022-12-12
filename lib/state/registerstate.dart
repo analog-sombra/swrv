@@ -172,7 +172,7 @@ class RegisterStatus extends ChangeNotifier {
           );
         } else {
           await setLogPref();
-          userState.setNewUserData(
+          await userState.setNewUserData(
             context,
             data[0]["data"]["id"].toString(),
           );

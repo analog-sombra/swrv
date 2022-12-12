@@ -2,7 +2,6 @@
 
 import 'dart:ui';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -1083,9 +1082,6 @@ void logoutAlert(BuildContext context) async {
                       btnText: "Yes",
                       textSize: 18,
                       btnFunction: () async {
-                        await FirebaseAuth.instance.signOut();
-                        FirebaseAuth.instance.currentUser;
-
                         final prefs = await SharedPreferences.getInstance();
 
                         bool? success = await prefs.remove('login');

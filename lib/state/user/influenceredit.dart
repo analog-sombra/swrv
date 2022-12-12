@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -137,7 +136,7 @@ class UserProfileEditState extends ChangeNotifier {
     }
 
     await cusApiReq.postApi(jsonEncode(req), path: "/api/updateuser");
-    userState.updateUser(context);
+    await userState.updateUser(context);
 
     // if (data[0] == false) {
     //   erroralert(
@@ -203,7 +202,6 @@ class UserProfileEditState extends ChangeNotifier {
     };
     List data =
         await cusApiReq.postApi(jsonEncode(req), path: "/api/get-user-handle");
-    log(data.toString());
     savedPlatform = data[0]["data"];
     notifyListeners();
   }

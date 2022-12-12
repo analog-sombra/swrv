@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -8,20 +6,14 @@ import 'package:swrv/widgets/buttons.dart';
 
 import '../../widgets/componets.dart';
 
-class ChatPage extends HookConsumerWidget with WidgetsBindingObserver {
+class ChatPage extends HookConsumerWidget {
   const ChatPage({super.key});
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    log('state = $state');
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final width = MediaQuery.of(context).size.width;
     ScrollController scrollController = useScrollController();
     useEffect(() {
-      WidgetsBinding.instance.addObserver(this);
       WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
         scrollController.animateTo(
           scrollController.position.maxScrollExtent,
@@ -30,9 +22,7 @@ class ChatPage extends HookConsumerWidget with WidgetsBindingObserver {
         );
       });
 
-      return () {
-        WidgetsBinding.instance.removeObserver(this);
-      };
+      return () {};
     });
 
     return Scaffold(

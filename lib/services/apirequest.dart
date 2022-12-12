@@ -1,4 +1,3 @@
-
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -54,6 +53,20 @@ class CusApiReq {
       }
     } catch (e) {
       return {'status': false, 'message': e.toString()};
+    }
+  }
+
+  Future<bool> sendOTP(String userid) async {
+    try {
+      var request = await http
+          .post(Uri.parse("$baseUrl/api/send-otp"), body: {"userId": userid});
+      if (request.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
     }
   }
 }

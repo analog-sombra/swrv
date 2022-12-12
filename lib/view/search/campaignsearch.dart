@@ -15,7 +15,7 @@ import '../../utils/alerts.dart';
 import '../../utils/utilthemes.dart';
 import '../../widgets/alerts.dart';
 import '../../widgets/componets.dart';
-import '../campaings/campaigninfopage.dart';
+import '../campaings/campaigninfo.dart';
 
 class AdvanceCampaignSearch extends HookConsumerWidget {
   const AdvanceCampaignSearch({super.key});
@@ -642,7 +642,7 @@ class CampaingList extends HookConsumerWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ChampignInfopage(
+                                builder: (context) => ChampignInfo(
                                   id: findCampStateW.searchData[i]["id"],
                                 ),
                               ),

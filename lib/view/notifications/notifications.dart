@@ -59,12 +59,6 @@ void notificationsAlert(BuildContext context) {
               const NotificationBox(),
               const NotificationBox(),
               const NotificationBox(),
-              const NotificationBox(),
-              const NotificationBox(),
-              const NotificationBox(),
-              const NotificationBox(),
-              const NotificationBox(),
-              const NotificationBox()
             ],
           ),
         ),

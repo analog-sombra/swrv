@@ -32,12 +32,12 @@ class UserState extends ChangeNotifier {
     return response!;
   }
 
-  void setUserData(String user) async {
+  Future<void> setUserData(String user) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('user', user);
   }
 
-  void clearUserData() async {
+  Future<void> clearUserData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('user');
     notifyListeners();
@@ -50,7 +50,7 @@ class UserState extends ChangeNotifier {
     if (userdata[0]["status"] == false) {
       erroralert(context, "Empty User", "There is no user data");
     } else {
-      setUserData(jsonEncode(userdata[0]["data"]));
+      await setUserData(jsonEncode(userdata[0]["data"]));
       notifyListeners();
       return true;
     }
@@ -132,6 +132,24 @@ class UserState extends ChangeNotifier {
     getBio = jsonDecode(userdata!)[0]["bio"].toString();
     notifyListeners();
     return getBio;
+  }
+
+  Future<String> getUserInfo() async {
+    String getInfo = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    getInfo = jsonDecode(userdata!)[0]["info"].toString();
+    notifyListeners();
+    return getInfo;
+  }
+
+  Future<String> getUserRating() async {
+    String getRating = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    getRating = jsonDecode(userdata!)[0]["rating"].toString();
+    notifyListeners();
+    return getRating;
   }
 
   Future<String> getUserBrandId() async {
