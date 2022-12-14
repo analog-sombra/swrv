@@ -1516,7 +1516,10 @@ class UInput3 extends HookConsumerWidget {
 
       if (data[0]["status"] == false) {
         erroralert(
-            context, "Error", "Oops something went wrong please try again");
+          context,
+          "Error",
+          "Oops something went wrong please try again",
+        );
       }
     }
 
@@ -1551,9 +1554,11 @@ class UInput3 extends HookConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               for (int i = 0; i < userInputStateW.platforms.length; i++) ...[
-                GestureDetector(
+                InkWell(
                   onTap: () {
                     userInputStateW.setSelectPlatform(i);
+                    userInputStateW
+                        .setPlatfromId(userInputStateW.platforms[i]["id"]);
                   },
                   child: Container(
                     margin:
@@ -1615,15 +1620,21 @@ class UInput3 extends HookConsumerWidget {
                 userInputStateW.setNullPlatform();
               } else {
                 erroralert(
-                    context, "Error", "Please select any platform first");
+                  context,
+                  "Error",
+                  "Please select any platform first",
+                );
               }
             } else if (userInputStateW.cont.last.text == "") {
-              erroralert(context, "Error", "Please fill the last field first");
+              erroralert(
+                context,
+                "Error",
+                "Please fill the last field first",
+              );
             } else {
               if (userInputStateW.selectedPlatform != null) {
                 userInputStateW.addControler();
 
-                // cont.value = [...cont.value, TextEditingController()];
                 userInputStateW.addIsCompleted(false);
                 userInputStateW.addImgUrl(
                     userInputStateW.platforms[userInputStateW.selectedPlatform!]
@@ -1662,7 +1673,6 @@ class UInput3 extends HookConsumerWidget {
                 btnText: "Back",
                 textSize: 18,
                 btnFunction: () {
-                  // userInputStateW.clear();
                   userInputStateW.setCurInput(userInputStateW.curInput - 1);
                 },
                 textColor: blackC,
@@ -1789,10 +1799,7 @@ class CusFiels extends HookConsumerWidget {
                     if (userInputStateW.cont[index].text == "") {
                       erroralert(context, "Error", "Field can't be empty");
                     } else {
-                      userInputStateW.addHandal(
-                          context,
-                          userId.value,
-                          userInputStateW.platforms[index]["id"],
+                      userInputStateW.addHandal(context, userId.value,
                           userInputStateW.cont[index].text);
                       userInputStateW.setIsComplted(index, true);
 
@@ -2385,8 +2392,6 @@ class UInput4 extends HookConsumerWidget {
                     userId.value,
                     [number.text, gender.text],
                   );
-
-                  await userStateW.clearUserData();
 
                   final newuser =
                       await userStateW.setNewUserData(context, userId.value);

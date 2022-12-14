@@ -1,6 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
+
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -13,6 +16,7 @@ import 'package:swrv/widgets/componets.dart';
 import 'package:swrv/widgets/buttons.dart';
 
 import '../../services/apirequest.dart';
+import '../../state/firebase/messagestate.dart';
 import '../../utils/alerts.dart';
 import '../../widgets/alerts.dart';
 import '../navigation/bottomnavbar.dart';
@@ -31,6 +35,7 @@ class HomePage extends HookConsumerWidget {
         useMemoized(() => GlobalKey<ScaffoldState>());
 
     CusApiReq apiReq = CusApiReq();
+    final messageStateW = ref.watch(messageState);
 
     List postImg = [
       "user1.jpg",
@@ -51,6 +56,27 @@ class HomePage extends HookConsumerWidget {
     ValueNotifier<String> userName = useState("loading..");
 
     void init() async {
+      try {
+        FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+        NotificationSettings settings = await messaging.requestPermission(
+          alert: true,
+          announcement: false,
+          badge: true,
+          carPlay: false,
+          criticalAlert: false,
+          provisional: false,
+          sound: true,
+        );
+        String? token = await messaging.getToken();
+
+        // log('User granted permission: ${settings.authorizationStatus}');
+        // String? token = await FirebaseMessaging.instance.getToken();
+        // log("Token = $token");
+        await messageStateW.saveToken(token!);
+      } catch (e) {
+        log(e.toString());
+      }
       drawerIndexW.setIndex(0);
       bottomIndexW.setIndex(0);
       if (isWelcomeAlert) {

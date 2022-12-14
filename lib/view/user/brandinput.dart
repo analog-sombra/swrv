@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -687,7 +686,6 @@ class BInput2 extends HookConsumerWidget {
       } else {
         erroralert(context, "error", "No Record Fount");
       }
-      log(languagesRes[0]["data"].toString());
     }
 
     useEffect(() {
@@ -1562,6 +1560,8 @@ class BInput3 extends HookConsumerWidget {
                 GestureDetector(
                   onTap: () {
                     brandInputStateW.setSelectPlatform(i);
+                    brandInputStateW
+                        .setPlatfromId(brandInputStateW.platforms[i]["id"]);
                   },
                   child: Container(
                     margin:
@@ -1795,11 +1795,8 @@ class CusFiels extends HookConsumerWidget {
                     if (brandInputStateW.cont[index].text == "") {
                       erroralert(context, "Error", "Field can't be empty");
                     } else {
-                      final res = await brandInputStateW.addHandal(
-                          context,
-                          userId.value,
-                          brandInputStateW.platforms[index]["id"],
-                          brandInputStateW.cont[index].text);
+                      final res = await brandInputStateW.addHandal(context,
+                          userId.value, brandInputStateW.cont[index].text);
                       if (res) {
                         brandInputStateW.setIsComplted(index, true);
                       }
@@ -2449,14 +2446,11 @@ class BInput5 extends HookConsumerWidget {
     TextEditingController name = useTextEditingController();
     TextEditingController email = useTextEditingController();
     TextEditingController number = useTextEditingController();
-    ValueNotifier<String> userId = useState("0");
 
     final brandInputStateW = ref.watch(brandInputState);
     final userStateW = ref.watch(userState);
 
-    void init() async {
-      userId.value = await userStateW.getUserId();
-    }
+    void init() async {}
 
     useEffect(() {
       init();
@@ -2470,6 +2464,21 @@ class BInput5 extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.only(top: 16),
+              child: Text(
+                "Invite user to in your company",
+                textScaleFactor: 1,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
+          const Divider(),
           const Padding(
             padding: EdgeInsets.only(top: 16),
             child: Text(
@@ -2591,18 +2600,20 @@ class BInput5 extends HookConsumerWidget {
             child: SizedBox(
               width: 80,
               child: CusBtn(
-                  btnColor: primaryC,
-                  btnText: "Invite",
-                  textSize: 18,
-                  btnFunction: () async {
-                    if (formKey.currentState!.validate()) {
-                      await brandInputStateW.inviteUser(
-                          context, name.text, email.text, number.text);
-                      name.clear();
-                      email.clear();
-                      number.clear();
-                    }
-                  }),
+                btnColor: primaryC,
+                btnText: "Invite",
+                textSize: 18,
+                btnFunction: () async {
+                  if (formKey.currentState!.validate()) {
+                    await brandInputStateW.inviteUser(
+                        context, name.text, email.text, number.text);
+
+                    name.clear();
+                    email.clear();
+                    number.clear();
+                  }
+                },
+              ),
             ),
           ),
           const SizedBox(
@@ -2630,10 +2641,8 @@ class BInput5 extends HookConsumerWidget {
                   btnText: "Submit",
                   textSize: 18,
                   btnFunction: () async {
-                    await userStateW.clearUserData();
 
-                    final newuser =
-                        await userStateW.setNewUserData(context, userId.value);
+                    final newuser = await userStateW.updateUser(context);
 
                     if (newuser) {
                       brandInputStateW.setCurInput(0);

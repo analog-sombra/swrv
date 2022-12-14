@@ -542,6 +542,9 @@ class CreateBrandPage extends HookConsumerWidget {
                                 ),
                               ),
                             ),
+                            const SizedBox(
+                              height: 10,
+                            ),
                             CusBtn(
                               btnColor: primaryC,
                               btnText: "Create Brand",

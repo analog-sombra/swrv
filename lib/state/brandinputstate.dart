@@ -36,6 +36,7 @@ class BrandInputState extends ChangeNotifier {
   List imgUrls = [];
   List<bool> isCompleted = [];
   int? selectedPlatform;
+  String? platfromId;
   List<TextEditingController> cont = [];
 
   void setPlatforms(List data) {
@@ -55,6 +56,11 @@ class BrandInputState extends ChangeNotifier {
 
   void setIsComplted(int index, bool value) {
     isCompleted[index] = value;
+    notifyListeners();
+  }
+
+  void setPlatfromId(String id) {
+    platfromId = id;
     notifyListeners();
   }
 
@@ -346,32 +352,6 @@ class BrandInputState extends ChangeNotifier {
     return false;
   }
 
-  Future<bool> uloadAvatar(
-      BuildContext context, String imagepath, String userid) async {
-    List data =
-        await apiReq.uploadImage(imagepath, userid, path: "/api/uploadavatar");
-
-    if (data[0] == false) {
-      erroralert(
-        context,
-        "Error",
-        data[1].toString(),
-      );
-    } else if (data[0]["status"] == false) {
-      erroralert(
-        context,
-        "Error",
-        data[0]["message"],
-      );
-    } else {
-      notifyListeners();
-      return true;
-    }
-
-    notifyListeners();
-    return false;
-  }
-
   Future<bool> userUpdate2(
     BuildContext context,
   ) async {
@@ -444,11 +424,11 @@ class BrandInputState extends ChangeNotifier {
     return res;
   }
 
-  Future<bool> addHandal(BuildContext context, String userid, String platformid,
-      String handal) async {
+  Future<bool> addHandal(
+      BuildContext context, String userid, String handal) async {
     final req = {
       "userId": userid,
-      "platformId": platformid,
+      "platformId": platfromId,
       "handleName": handal
     };
 
@@ -552,7 +532,7 @@ class BrandInputState extends ChangeNotifier {
     return false;
   }
 
-  Future<void> inviteUser(
+  Future<bool> inviteUser(
       BuildContext context, String name, String email, String number) async {
     final req = {
       "invitedUserId": await userState.getUserId(),
@@ -562,8 +542,24 @@ class BrandInputState extends ChangeNotifier {
     };
 
     List data = await apiReq.postApi(jsonEncode(req), path: "/api/send-otp");
-    if (data[0]["status"] == true) {
+    if (data[0] == false) {
+      erroralert(
+        context,
+        "Error",
+        "Something went wrong, Please try again",
+      );
+    } else if (data[0]["status"] == false) {
+      erroralert(
+        context,
+        "Error",
+        data[0]["message"],
+      );
+    } else {
       susalert(context, "Invited", "Successfully Invited the user $name");
+      notifyListeners();
+      return true;
     }
+    notifyListeners();
+    return false;
   }
 }

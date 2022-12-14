@@ -6,7 +6,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/view/home/home.dart';
 
@@ -26,7 +25,7 @@ class UserEditThree extends HookConsumerWidget {
         useMemoized(() => GlobalKey<ScaffoldState>());
 
     CusApiReq apiReq = CusApiReq();
-    final userStateW = ref.watch(userState);
+    // final userStateW = ref.watch(userState);
     final userProfileEditW = ref.watch(userProfileEditState);
 
     void init() async {
@@ -88,8 +87,8 @@ class UserEditThree extends HookConsumerWidget {
                       textScaleFactor: 1,
                       style: TextStyle(
                           color: Colors.black,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(
                       height: 20,
@@ -177,31 +176,31 @@ class UserEditThree extends HookConsumerWidget {
                       ),
                       onPressed: () {
                         if (userProfileEditW.cont.isEmpty) {
-                          if (userProfileEditW.selectedPlatform != null) {
-                            userProfileEditW.addControler();
-                            userProfileEditW.addIsCompleted(false);
-                            userProfileEditW.addImgUrl(
-                                userProfileEditW.platforms[userProfileEditW
-                                    .selectedPlatform!]["platformLogoUrl"]);
-                          } else {
-                            erroralert(context, "Error",
-                                "Please select any platform first");
-                          }
+                          // if (userProfileEditW.selectedPlatform != null) {
+                          userProfileEditW.addControler();
+                          userProfileEditW.addIsCompleted(false);
+                          userProfileEditW.addImgUrl(userProfileEditW
+                                  .platforms[userProfileEditW.selectedPlatform]
+                              ["platformLogoUrl"]);
+                          // } else {
+                          //   erroralert(context, "Error",
+                          //       "Please select any platform first");
+                          // }
                         } else if (userProfileEditW.cont.last.text == "") {
                           erroralert(context, "Error",
                               "Please fill the last field first");
                         } else {
-                          if (userProfileEditW.selectedPlatform != null) {
-                            userProfileEditW.addControler();
+                          // if (userProfileEditW.selectedPlatform != null) {
+                          userProfileEditW.addControler();
 
-                            userProfileEditW.addIsCompleted(false);
-                            userProfileEditW.addImgUrl(
-                                userProfileEditW.platforms[userProfileEditW
-                                    .selectedPlatform!]["platformLogoUrl"]);
-                          } else {
-                            erroralert(context, "Error",
-                                "Please select any platform first");
-                          }
+                          userProfileEditW.addIsCompleted(false);
+                          userProfileEditW.addImgUrl(userProfileEditW
+                                  .platforms[userProfileEditW.selectedPlatform]
+                              ["platformLogoUrl"]);
+                          // } else {
+                          //   erroralert(context, "Error",
+                          //       "Please select any platform first");
+                          // }
                         }
                       },
                       child: const Text(

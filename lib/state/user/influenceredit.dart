@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
@@ -157,11 +158,50 @@ class UserProfileEditState extends ChangeNotifier {
     // return false;
   }
 
+  //section two
+  String? userInfo;
+  String? personalHistory;
+  String? careerHistory;
+  String? website;
+
+  void setUserInfo(String value) {
+    userInfo = value;
+    notifyListeners();
+  }
+
+  void setPersonalHistory(String value) {
+    personalHistory = value;
+    notifyListeners();
+  }
+
+  void setCareerHistory(String value) {
+    careerHistory = value;
+    notifyListeners();
+  }
+
+  void setWebsite(String value) {
+    website = value;
+    notifyListeners();
+  }
+
+  Future<void> sectionTwoUpdate(BuildContext context) async {
+    final req = {
+      "id": await userState.getUserId(),
+      "personalHistory": personalHistory,
+      "careerHistory": careerHistory,
+      "userWebUrl": website
+    };
+    log(req.toString());
+
+    await cusApiReq.postApi(jsonEncode(req), path: "/api/updateuser");
+    await userState.updateUser(context);
+  }
+
   //section three
   List platforms = [];
   List imgUrls = [];
   List<bool> isCompleted = [];
-  int? selectedPlatform;
+  int selectedPlatform = 0;
   List<TextEditingController> cont = [];
   List savedPlatform = [];
 
@@ -210,7 +250,7 @@ class UserProfileEditState extends ChangeNotifier {
       BuildContext context, String platformid, String handal) async {
     final req = {
       "userId": await userState.getUserId(),
-      "platformId": platforms[selectedPlatform!]["id"],
+      "platformId": platforms[selectedPlatform]["id"],
       "handleName": handal
     };
 
@@ -235,7 +275,7 @@ class UserProfileEditState extends ChangeNotifier {
         "Successfully",
         "Successfully added new handle",
       );
-      await loadSavedPlatform(platforms[selectedPlatform!]["id"]);
+      await loadSavedPlatform(platforms[selectedPlatform]["id"]);
       notifyListeners();
       return true;
     }

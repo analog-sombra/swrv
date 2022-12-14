@@ -164,8 +164,7 @@ class CreateCampaignsPage extends HookConsumerWidget {
                                                 ["id"] ==
                                             createCmpSW.categoryId)
                                         ? Border.all(
-                                            color: blackC.withOpacity(0.65),
-                                            width: 2.5)
+                                            color: secondaryC, width: 2.5)
                                         : Border.all(
                                             color: Colors.transparent,
                                             width: 0),
@@ -191,10 +190,13 @@ class CreateCampaignsPage extends HookConsumerWidget {
                                               progressIndicatorBuilder:
                                                   (context, url,
                                                           downloadProgress) =>
-                                                      CircularProgressIndicator(
-                                                          value:
-                                                              downloadProgress
-                                                                  .progress),
+                                                      Column(
+                                                children: [
+                                                  CircularProgressIndicator(
+                                                      value: downloadProgress
+                                                          .progress),
+                                                ],
+                                              ),
                                               errorWidget:
                                                   (context, url, error) =>
                                                       const Icon(

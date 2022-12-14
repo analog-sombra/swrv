@@ -40,6 +40,7 @@ class InfluencerInputState extends ChangeNotifier {
   List imgUrls = [];
   List<bool> isCompleted = [];
   int? selectedPlatform;
+  String? platfromId;
   List<TextEditingController> cont = [];
 
   void setCurInput(int val) {
@@ -64,6 +65,11 @@ class InfluencerInputState extends ChangeNotifier {
 
   void setIsComplted(int index, bool value) {
     isCompleted[index] = value;
+    notifyListeners();
+  }
+
+  void setPlatfromId(String id) {
+    platfromId = id;
     notifyListeners();
   }
 
@@ -342,32 +348,6 @@ class InfluencerInputState extends ChangeNotifier {
     return false;
   }
 
-  // Future<bool> uloadAvatar(
-  //     BuildContext context, String imagepath, String userid) async {
-  //   List data =
-  //       await apiReq.uploadImage(imagepath, userid, path: "/api/uploadavatar");
-
-  //   if (data[0] == false) {
-  //     erroralert(
-  //       context,
-  //       "Error",
-  //       data[1].toString(),
-  //     );
-  //   } else if (data[0]["status"] == false) {
-  //     erroralert(
-  //       context,
-  //       "Error",
-  //       data[0]["message"],
-  //     );
-  //   } else {
-  //     notifyListeners();
-  //     return true;
-  //   }
-
-  //   notifyListeners();
-  //   return false;
-  // }
-
   Future<bool> userUpdate2(BuildContext context, String userid) async {
     if (currencyVal.isEmpty) {
       erroralert(context, "Empty Field", "Please select a currecny");
@@ -438,11 +418,11 @@ class InfluencerInputState extends ChangeNotifier {
     return res;
   }
 
-  Future<bool> addHandal(BuildContext context, String userid, String platformid,
+  Future<bool> addHandal(BuildContext context, String userid, 
       String handal) async {
     final req = {
       "userId": userid,
-      "platformId": platformid,
+      "platformId": platfromId,
       "handleName": handal
     };
 
@@ -544,35 +524,4 @@ class InfluencerInputState extends ChangeNotifier {
     notifyListeners();
     return false;
   }
-
-  // void clear() {
-  //   currencyList = [];
-  //   selectedCurrency = [];
-  //   currencyVal = [];
-
-  //   categoryList = [];
-  //   selectedCategory = [];
-  //   categoryVal = [];
-
-  //   languageList = [];
-  //   selectedLanguage = [];
-  //   languageVal = [];
-
-  //   selectedGender = [false, false, false];
-  //   genderVal = [];
-
-  //   countryList = [];
-  //   selectedCountry = [];
-  //   countryVal = [];
-
-  //   cityList = [];
-  //   selectedCity = [];
-  //   cityVal = [];
-
-  //   platforms = [];
-  //   imgUrls = [];
-  //   isCompleted = [];
-  //   selectedPlatform = null;
-  //   cont = [];
-  // }
 }

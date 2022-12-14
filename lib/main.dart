@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'database/database.dart';
+import 'services/firebase.dart';
 import 'view/login.dart';
 
 //removing scroll grow effect
@@ -24,10 +24,11 @@ Future<void> main() async {
   runApp(const ProviderScope(child: SWRV()));
 }
 
-class SWRV extends HookWidget {
+class SWRV extends HookConsumerWidget {
   const SWRV({super.key});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final firebaseAppW = ref.watch(firebaseApp);
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -43,7 +44,18 @@ class SWRV extends HookWidget {
           child: child!,
         );
       },
-      home: const Login(),
+      home: firebaseAppW.when(
+        data: (data) {
+          return const Login();
+        },
+        error: (err, stack) => Center(
+          child: Center(child: Text("Error: $err")),
+        ),
+        loading: () => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      // home: const Login(),
     );
   }
 }

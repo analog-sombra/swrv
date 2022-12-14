@@ -16,6 +16,7 @@ import '../../utils/utilthemes.dart';
 import '../../widgets/alerts.dart';
 import '../../widgets/componets.dart';
 import '../home/help.dart';
+import '../home/home.dart';
 import '../navigation/bottomnavbar.dart';
 import '../navigation/drawer.dart';
 import 'brandedit/brandeditone.dart';
@@ -171,6 +172,13 @@ class Profile extends HookConsumerWidget {
                                 );
                               }
                             } else {
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const HomePage(),
+                                ),
+                                (route) => false,
+                              );
                               erroralert(
                                 context,
                                 "Uncomplete Profile",
@@ -369,6 +377,13 @@ class Profile extends HookConsumerWidget {
                             ),
                           );
                         } else {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HomePage(),
+                            ),
+                            (route) => false,
+                          );
                           erroralert(
                             context,
                             "Uncompleted",

@@ -32,7 +32,6 @@ class MyCampaings extends HookConsumerWidget {
 
       dynamic data =
           await apiReq.postApi(jsonEncode(req), path: "/api/get-my-campaigns");
-
       champ.value = data[0]["data"]["campaigns"];
     }
 

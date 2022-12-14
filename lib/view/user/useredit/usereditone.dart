@@ -7,7 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
-import 'package:swrv/view/user/useredit/usereditthree.dart';
+import 'package:swrv/view/user/useredit/useredittwo.dart';
 
 import '../../../state/user/influenceredit.dart';
 import '../../../widgets/componets.dart';
@@ -651,7 +651,7 @@ class UserEditOne extends HookConsumerWidget {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      const UserEditThree()),
+                                                      const UserEditTwo()),
                                             );
                                           }
                                           isLoading.value = false;

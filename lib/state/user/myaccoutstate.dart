@@ -8,7 +8,7 @@ final myAccountState = ChangeNotifierProvider.autoDispose<MyAccountState>(
 class MyAccountState extends ChangeNotifier {
   List<String> tabName = [
     "Channels",
-    "Persnal info",
+    "Personal Info",
     "Past associations",
     "Reviews",
   ];
