@@ -134,6 +134,34 @@ class UserState extends ChangeNotifier {
     return getBio;
   }
 
+  // "personalHistory":"","careerHistory":"","externalLinks
+  Future<String> getUserPersonalHis() async {
+    String personalHistory = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    personalHistory = jsonDecode(userdata!)[0]["personalHistory"].toString();
+    notifyListeners();
+    return personalHistory;
+  }
+
+  Future<String> getUserCareerHis() async {
+    String careerHistory = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    careerHistory = jsonDecode(userdata!)[0]["careerHistory"].toString();
+    notifyListeners();
+    return careerHistory;
+  }
+
+  Future<String> getUserExternalLinks() async {
+    String externalLinks = "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final userdata = prefs.getString("user");
+    externalLinks = jsonDecode(userdata!)[0]["externalLinks"].toString();
+    notifyListeners();
+    return externalLinks;
+  }
+
   Future<String> getUserInfo() async {
     String getInfo = "";
     SharedPreferences prefs = await SharedPreferences.getInstance();

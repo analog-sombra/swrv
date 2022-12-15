@@ -18,6 +18,7 @@ class Login extends HookConsumerWidget {
     ValueNotifier<bool> isLoading = useState(true);
     TextEditingController email = useTextEditingController();
     TextEditingController password = useTextEditingController();
+    TextEditingController resetpass = useTextEditingController();
 
     final loginStateW = ref.watch(loginStatus);
 
@@ -320,21 +321,34 @@ class Login extends HookConsumerWidget {
                                   const SizedBox(
                                     height: 20,
                                   ),
-                                  RichText(
-                                    text: const TextSpan(
-                                      text: "CAN'T LOGIN",
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w400,
-                                          color: Colors.black),
-                                      children: <TextSpan>[
-                                        TextSpan(
-                                          text: ' RESTORE PASSWORD',
+                                  Row(
+                                    children: [
+                                      const Text(
+                                        "CAN'T LOGIN",
+                                        textScaleFactor: 1,
+                                        style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black),
+                                      ),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          resetPassAlert(
+                                              context, resetpass, ref);
+                                        },
+                                        child: const Text(
+                                          "RESTORE PASSWORD",
+                                          textScaleFactor: 1,
                                           style: TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                   const Padding(
                                     padding:

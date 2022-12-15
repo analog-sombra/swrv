@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:developer';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -56,27 +55,24 @@ class HomePage extends HookConsumerWidget {
     ValueNotifier<String> userName = useState("loading..");
 
     void init() async {
-      try {
-        FirebaseMessaging messaging = FirebaseMessaging.instance;
+      FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-        NotificationSettings settings = await messaging.requestPermission(
-          alert: true,
-          announcement: false,
-          badge: true,
-          carPlay: false,
-          criticalAlert: false,
-          provisional: false,
-          sound: true,
-        );
-        String? token = await messaging.getToken();
+      NotificationSettings settings = await messaging.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: false,
+        sound: true,
+      );
+      String? token = await messaging.getToken();
 
-        // log('User granted permission: ${settings.authorizationStatus}');
-        // String? token = await FirebaseMessaging.instance.getToken();
-        // log("Token = $token");
-        await messageStateW.saveToken(token!);
-      } catch (e) {
-        log(e.toString());
-      }
+      // log('User granted permission: ${settings.authorizationStatus}');
+      // String? token = await FirebaseMessaging.instance.getToken();
+      // log("Token = $token");
+      await messageStateW.saveToken(token!);
+
       drawerIndexW.setIndex(0);
       bottomIndexW.setIndex(0);
       if (isWelcomeAlert) {

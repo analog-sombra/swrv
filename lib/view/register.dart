@@ -455,7 +455,7 @@ class Register extends HookConsumerWidget {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            SizedBox(
+                                            SizedBox( 
                                               height: 20,
                                               width: 20,
                                               child: Checkbox(

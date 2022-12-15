@@ -60,7 +60,8 @@ dependencies:
   firebase_core: ^2.4.0
   firebase_messaging: ^14.1.4
   flutter_local_notifications: ^12.0.4
-  
+  file_picker: ^5.2.4
+  syncfusion_flutter_pdfviewer: ^20.3.59
   
 
 dev_dependencies:

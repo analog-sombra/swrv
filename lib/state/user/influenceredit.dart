@@ -159,15 +159,15 @@ class UserProfileEditState extends ChangeNotifier {
   }
 
   //section two
-  String? userInfo;
+  // String? userInfo;
   String? personalHistory;
   String? careerHistory;
   String? website;
 
-  void setUserInfo(String value) {
-    userInfo = value;
-    notifyListeners();
-  }
+  // void setUserInfo(String value) {
+  //   userInfo = value;
+  //   notifyListeners();
+  // }
 
   void setPersonalHistory(String value) {
     personalHistory = value;
@@ -182,6 +182,12 @@ class UserProfileEditState extends ChangeNotifier {
   void setWebsite(String value) {
     website = value;
     notifyListeners();
+  }
+
+  Future<void> initSectionTwo(BuildContext context) async {
+    personalHistory = await userState.getUserPersonalHis();
+    careerHistory = await userState.getUserCareerHis();
+    website = await userState.getWebsite();
   }
 
   Future<void> sectionTwoUpdate(BuildContext context) async {

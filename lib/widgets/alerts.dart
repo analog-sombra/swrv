@@ -9,12 +9,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swrv/database/models/favoritebrand.dart';
 import 'package:swrv/database/models/favoritechamp.dart';
+import 'package:swrv/state/loginstate.dart';
 import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/view/home/home.dart';
 import 'package:swrv/widgets/buttons.dart';
 
 import '../database/database.dart';
+import '../state/compaign/campaigninfostate.dart';
 import '../state/compaign/createcampaignstate.dart';
 import '../state/compaign/findcompaignstate.dart';
 import '../state/influencer/findinfluencerstate.dart';
@@ -209,8 +211,9 @@ void cusAlertTwo(BuildContext context) {
   );
 }
 
-void connectAlert(BuildContext context, TextEditingController sub,
-    TextEditingController msg) {
+void connectAlert(BuildContext context, WidgetRef ref,
+    TextEditingController msg, String champId, String toUserId) {
+  final formKey = GlobalKey<FormState>();
   showDialog(
     context: context,
     barrierDismissible: false,
@@ -224,125 +227,110 @@ void connectAlert(BuildContext context, TextEditingController sub,
         content: Container(
           width: MediaQuery.of(context).size.width - 50,
           padding: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  const Spacer(),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: FaIcon(
-                      FontAwesomeIcons.xmark,
-                      color: blackC.withOpacity(0.65),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                "Connect",
-                textScaleFactor: 1,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    color: secondaryC,
-                    fontSize: 25,
-                    fontWeight: FontWeight.w500),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: TextField(
-                    controller: sub,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color(0xfff3f4f6),
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      hintText: "Subject",
-                      hintStyle: TextStyle(
-                        color: Colors.black.withOpacity(0.45),
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: TextField(
-                    controller: msg,
-                    minLines: 5,
-                    maxLines: 5,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: const Color(0xfff3f4f6),
-                      border: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      disabledBorder: InputBorder.none,
-                      hintText: "Message",
-                      hintStyle: TextStyle(
-                        color: Colors.black.withOpacity(0.45),
-                        fontSize: 20,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: [
-                  const Spacer(),
-                  SizedBox(
-                    width: 100,
-                    child: CusBtn(
-                      btnColor: secondaryC,
-                      btnText: "sent",
-                      textSize: 16,
-                      textColor: whiteC,
-                      btnFunction: () {
-                        if (sub.text.isEmpty) {
-                          Navigator.pop(context);
-
-                          erroralert(
-                              context, "Error", "Please fill the subject");
-                        } else if (msg.text.isEmpty) {
-                          Navigator.pop(context);
-
-                          erroralert(
-                              context, "Error", "Please fill the message");
-                        } else {
-                          Navigator.pop(context);
-                          susalert(
-                              context, "Sent", "Your request has been sent");
-                        }
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
                       },
+                      child: FaIcon(
+                        FontAwesomeIcons.xmark,
+                        color: blackC.withOpacity(0.65),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                  "Connect",
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: secondaryC,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w500),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 5),
+                  child: Text(
+                    "Subject - Apply for campaign",
+                    textScaleFactor: 1,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: blackC,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
                     ),
                   ),
-                ],
-              )
-            ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return 'Enter some messages..';
+                        }
+                        return null;
+                      },
+                      controller: msg,
+                      minLines: 5,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        hintText: "Message",
+                        hintStyle: TextStyle(
+                          color: Colors.black.withOpacity(0.45),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    const Spacer(),
+                    SizedBox(
+                      width: 100,
+                      child: CusBtn(
+                        btnColor: secondaryC,
+                        btnText: "sent",
+                        textSize: 16,
+                        textColor: whiteC,
+                        btnFunction: () async {
+                          if (formKey.currentState!.validate()) {
+                            await ref.watch(campaignInfoState).applyForChamp(
+                                context, msg.text, champId, toUserId);
+                            msg.clear();
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -1323,6 +1311,117 @@ void saveIFilterAlert(
                           }
                           filter.clear();
                           await ref.watch(findInfState).loadFilter();
+                        },
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void resetPassAlert(
+    BuildContext context, TextEditingController email, WidgetRef ref) async {
+  final formKey = GlobalKey<FormState>();
+  return await showDialog(
+    context: context,
+    builder: (context) => BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: AlertDialog(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        contentPadding: const EdgeInsets.all(5),
+        backgroundColor: whiteC,
+        content: Container(
+          padding: const EdgeInsets.all(10),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  "Restore Password",
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: blackC, fontSize: 25, fontWeight: FontWeight.w500),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      controller: email,
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return 'Please enter email address';
+                        } else if (!RegExp(
+                                r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,253}[a-zA-Z0-9])?)*$")
+                            .hasMatch(value)) {
+                          return "Enter a valid email.";
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        hintText: "Enter email..",
+                        hintStyle: TextStyle(
+                          color: Colors.black.withOpacity(0.45),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CusBtn(
+                        btnColor: redC,
+                        btnText: "Cencel",
+                        textSize: 18,
+                        btnFunction: () {
+                          Navigator.pop(context);
+                          email.clear();
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Expanded(
+                      child: CusBtn(
+                        btnColor: greenC,
+                        btnText: "Send",
+                        textSize: 18,
+                        btnFunction: () async {
+                          if (formKey.currentState!.validate()) {
+                            final res = await ref
+                                .watch(loginStatus)
+                                .forgetPass(context, email.text);
+                            Navigator.pop(context);
+                            if (res) {
+                              susalert(context, "Sent",
+                                  "Check your email for further information");
+                            } else {
+                              erroralert(context, "Error",
+                                  "Unable to send email, Try again..");
+                            }
+                            email.clear();
+                          }
                         },
                       ),
                     ),

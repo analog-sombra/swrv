@@ -1141,41 +1141,47 @@ class CreateCampaings extends HookConsumerWidget {
                       ),
                     ],
                     cusTitle("You should"),
-                    Container(
-                      decoration: BoxDecoration(
+                    InkWell(
+                      onTap: () {
+                        addDosAlert(context, dos, ref);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
                           color: backgroundC,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Row(
-                        children: [
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          const Icon(Icons.done, color: Colors.green),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          const Text(
-                            "Do",
-                            textScaleFactor: 1,
-                            style: TextStyle(
-                                color: blackC,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          const Spacer(),
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            child: InkWell(
-                              onTap: () {
-                                addDosAlert(context, dos, ref);
-                              },
-                              child: const Icon(
-                                Icons.add,
-                                color: blackC,
-                              ),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 5,
                             ),
-                          )
-                        ],
+                            const Icon(Icons.done, color: Colors.green),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            const Text(
+                              "Do",
+                              textScaleFactor: 1,
+                              style: TextStyle(
+                                  color: blackC,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            const Spacer(),
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              child: InkWell(
+                                onTap: () {
+                                  addDosAlert(context, dos, ref);
+                                },
+                                child: const Icon(
+                                  Icons.add,
+                                  color: blackC,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -1242,41 +1248,46 @@ class CreateCampaings extends HookConsumerWidget {
                     const SizedBox(
                       height: 10,
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: backgroundC,
-                          borderRadius: BorderRadius.circular(10)),
-                      child: Row(
-                        children: [
-                          const SizedBox(
-                            width: 5,
-                          ),
-                          const Icon(Icons.close, color: Colors.red),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          const Text(
-                            "Don't",
-                            textScaleFactor: 1,
-                            style: TextStyle(
-                                color: blackC,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500),
-                          ),
-                          const Spacer(),
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            child: InkWell(
-                              onTap: () {
-                                addDontAlert(context, dont, ref);
-                              },
-                              child: const Icon(
-                                Icons.add,
-                                color: blackC,
-                              ),
+                    InkWell(
+                      onTap: () {
+                        addDontAlert(context, dont, ref);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: backgroundC,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 5,
                             ),
-                          )
-                        ],
+                            const Icon(Icons.close, color: Colors.red),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            const Text(
+                              "Don't",
+                              textScaleFactor: 1,
+                              style: TextStyle(
+                                  color: blackC,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                            const Spacer(),
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              child: InkWell(
+                                onTap: () {
+                                  addDontAlert(context, dont, ref);
+                                },
+                                child: const Icon(
+                                  Icons.add,
+                                  color: blackC,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -1401,18 +1412,20 @@ class CreateCampaings extends HookConsumerWidget {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: InkWell(
-                                onTap: () {
-                                  createCmpSW.addImage();
+                                onTap: () async {
+                                  await createCmpSW.addImage(context);
                                 },
                                 child: Container(
                                   margin:
                                       const EdgeInsets.symmetric(horizontal: 6),
-                                  decoration:
-                                      BoxDecoration(color: whiteC, boxShadow: [
-                                    BoxShadow(
-                                      color: blackC.withOpacity(0.15),
-                                    )
-                                  ]),
+                                  decoration: BoxDecoration(
+                                    color: whiteC,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: blackC.withOpacity(0.15),
+                                      )
+                                    ],
+                                  ),
                                   width: 80,
                                   height: 80,
                                   child: const Center(
@@ -1425,6 +1438,57 @@ class CreateCampaings extends HookConsumerWidget {
                         ),
                       ),
                     ),
+                    cusTitle("Attachments"),
+                    InkWell(
+                      onTap: () {
+                        createCmpSW.addAttachment(context);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: backgroundC,
+                            borderRadius: BorderRadius.circular(10)),
+                        child: Row(
+                          children: [
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            const Icon(
+                              Icons.attachment,
+                              color: blackC,
+                            ),
+                            const SizedBox(
+                              width: 8,
+                            ),
+                            Text(
+                              (createCmpSW.attachments == null)
+                                  ? "Attachments"
+                                  : createCmpSW.attachments!.path
+                                      .split("/")
+                                      .last,
+                              textScaleFactor: 1,
+                              style: const TextStyle(
+                                  color: blackC,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w400),
+                            ),
+                            const Spacer(),
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              child: InkWell(
+                                onTap: () {
+                                  createCmpSW.addAttachment(context);
+                                },
+                                child: const Icon(
+                                  Icons.add,
+                                  color: blackC,
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+
                     const SizedBox(
                       height: 20,
                     ),

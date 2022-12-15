@@ -97,6 +97,31 @@ class LoginState extends ChangeNotifier {
     return false;
   }
 
+  Future<bool> forgetPass(BuildContext context, String email) async {
+    final req = {"user": email};
+
+    List data = await apiReq.postApi(jsonEncode(req),
+        path: "/api/send-forgot-password");
+    if (data[0] == false) {
+      erroralert(
+        context,
+        "Error",
+        data[1].toString(),
+      );
+    } else if (data[0]["status"] == false) {
+      erroralert(
+        context,
+        "Error",
+        data[0]["message"],
+      );
+    } else {
+      notifyListeners();
+      return true;
+    }
+    notifyListeners();
+    return false;
+  }
+
   Future<void> setLogPref() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool("login", true);

@@ -7,35 +7,6 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:752107645094:android:f86c62d0613a962f012c67",
-        "android_client_info": {
-          "package_name": "com.example.swrv"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "752107645094-nq89sfusavjbd82progg7svb7ik4kvjv.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCE2I254Gc8jUjzOSla4ECe9VcuqjAcpuo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "752107645094-nq89sfusavjbd82progg7svb7ik4kvjv.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
         "mobilesdk_app_id": "1:752107645094:android:8f011d425dddbaf9012c67",
         "android_client_info": {
           "package_name": "com.smartechwebworks.cs.swrv"
@@ -58,6 +29,13 @@
             {
               "client_id": "752107645094-nq89sfusavjbd82progg7svb7ik4kvjv.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "752107645094-e6iesugkv4igj6sul9ncq71865vsasvl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.swrv"
+              }
             }
           ]
         }

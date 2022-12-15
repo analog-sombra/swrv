@@ -23,6 +23,7 @@ class MyAccount extends HookConsumerWidget {
     final GlobalKey<ScaffoldState> scaffoldKey =
         useMemoized(() => GlobalKey<ScaffoldState>());
     final width = MediaQuery.of(context).size.width;
+    ValueNotifier<bool> isLoading = useState(true);
 
     ValueNotifier<bool> isBrand = useState(false);
     final userStateW = ref.watch(userState);
@@ -37,6 +38,7 @@ class MyAccount extends HookConsumerWidget {
       username.value = await userStateW.getUserName();
       bio.value = await userStateW.getUserBio();
       rating.value = await userStateW.getUserRating();
+      isLoading.value = false;
     }
 
     useEffect(() {
@@ -54,302 +56,318 @@ class MyAccount extends HookConsumerWidget {
       bottomNavigationBar: BotttomBar(
         scaffoldKey: scaffoldKey,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const Header(),
-              const SizedBox(
-                height: 20,
+      body: isLoading.value
+          ? const Padding(
+              padding: EdgeInsets.all(20),
+              child: Center(
+                child: CircularProgressIndicator(),
               ),
-              Container(
-                width: width,
-                margin: const EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: whiteC,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: shadowC,
-                      blurRadius: 5,
-                      offset: Offset(0, 6),
-                    ),
-                  ],
-                ),
+            )
+          : SafeArea(
+              child: SingleChildScrollView(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(10),
-                      ),
-                      child: Image.asset("assets/images/car.jpg"),
-                    ),
+                    const Header(),
                     const SizedBox(
                       height: 20,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                username.value!,
-                                textScaleFactor: 1,
-                                textAlign: TextAlign.start,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  color: blackC,
-                                ),
-                              ),
-                              Row(
-                                children: [
-                                  for (int i = 0;
-                                      i < double.parse(rating.value!).toInt();
-                                      i++) ...[
-                                    const Icon(
-                                      Icons.star,
-                                      color: primaryC,
-                                      size: 25,
-                                    ),
-                                  ],
-                                  for (int i = 0;
-                                      i <
-                                          5 -
-                                              double.parse(rating.value!)
-                                                  .toInt();
-                                      i++) ...[
-                                    const Icon(
-                                      Icons.star,
-                                      color: backgroundC,
-                                      size: 25,
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ],
+                    Container(
+                      width: width,
+                      margin: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: whiteC,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: shadowC,
+                            blurRadius: 5,
+                            offset: Offset(0, 6),
                           ),
-                          Expanded(
-                            child: Container(
-                              margin:
-                                  const EdgeInsets.symmetric(horizontal: 10),
-                              // width: 200,
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: backgroundC,
-                                borderRadius: BorderRadius.circular(8),
-                                boxShadow: const [
-                                  BoxShadow(
-                                      color: shadowC,
-                                      blurRadius: 5,
-                                      offset: Offset(0, 6))
-                                ],
-                              ),
-                              child: IntrinsicHeight(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(10),
+                            ),
+                            child: Image.asset("assets/images/car.jpg"),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Row(
+                              children: [
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
                                   crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: const [
-                                          Text(
-                                            "2 00 5887",
-                                            textScaleFactor: 1,
-                                            textAlign: TextAlign.left,
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: blackC),
-                                          ),
-                                          Text(
-                                            "Reach",
-                                            textScaleFactor: 1,
-                                            textAlign: TextAlign.left,
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w400,
-                                                color: blackC),
-                                          ),
-                                        ],
+                                    Text(
+                                      username.value!,
+                                      textScaleFactor: 1,
+                                      textAlign: TextAlign.start,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        color: blackC,
                                       ),
                                     ),
-                                    VerticalDivider(
-                                      color: blackC.withOpacity(0.55),
-                                    ),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: const [
-                                          Text(
-                                            "1 34 9887",
-                                            textScaleFactor: 1,
-                                            textAlign: TextAlign.left,
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                fontWeight: FontWeight.w500,
-                                                color: blackC),
-                                          ),
-                                          Text(
-                                            "impression",
-                                            textScaleFactor: 1,
-                                            textAlign: TextAlign.left,
-                                            style: TextStyle(
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w400,
-                                                color: blackC),
+                                    Row(
+                                      children: [
+                                        for (int i = 0;
+                                            i <
+                                                double.parse(rating.value!)
+                                                    .toInt();
+                                            i++) ...[
+                                          const Icon(
+                                            Icons.star,
+                                            color: primaryC,
+                                            size: 25,
                                           ),
                                         ],
-                                      ),
+                                        for (int i = 0;
+                                            i <
+                                                5 -
+                                                    double.parse(rating.value!)
+                                                        .toInt();
+                                            i++) ...[
+                                          const Icon(
+                                            Icons.star,
+                                            color: backgroundC,
+                                            size: 25,
+                                          ),
+                                        ],
+                                      ],
                                     ),
                                   ],
                                 ),
-                              ),
+                                Expanded(
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    // width: 200,
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: backgroundC,
+                                      borderRadius: BorderRadius.circular(8),
+                                      boxShadow: const [
+                                        BoxShadow(
+                                            color: shadowC,
+                                            blurRadius: 5,
+                                            offset: Offset(0, 6))
+                                      ],
+                                    ),
+                                    child: IntrinsicHeight(
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: const [
+                                                Text(
+                                                  "2 00 5887",
+                                                  textScaleFactor: 1,
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: blackC),
+                                                ),
+                                                Text(
+                                                  "Reach",
+                                                  textScaleFactor: 1,
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: blackC),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          VerticalDivider(
+                                            color: blackC.withOpacity(0.55),
+                                          ),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisSize: MainAxisSize.min,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: const [
+                                                Text(
+                                                  "1 34 9887",
+                                                  textScaleFactor: 1,
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: blackC),
+                                                ),
+                                                Text(
+                                                  "impression",
+                                                  textScaleFactor: 1,
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w400,
+                                                      color: blackC),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 10),
+                            child: Text(
+                              "Bio",
+                              textScaleFactor: 1,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w500,
+                                  color: blackC),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: Text(
+                              bio.value!,
+                              textScaleFactor: 1,
+                              textAlign: TextAlign.start,
+                              style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                  color: blackC),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 20),
+                            child: CusBtn(
+                              btnColor: secondaryC,
+                              btnText: "Sent Message",
+                              textSize: 18,
+                              btnFunction: () {
+                                comingalert(context);
+                              },
+                              elevation: 1,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const Padding(
-                      padding:
-                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                      child: Text(
-                        "Bio",
-                        textScaleFactor: 1,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500,
-                            color: blackC),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        bio.value!,
-                        textScaleFactor: 1,
-                        textAlign: TextAlign.start,
-                        style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: blackC),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10, vertical: 20),
-                      child: CusBtn(
-                        btnColor: secondaryC,
-                        btnText: "Sent Message",
-                        textSize: 18,
-                        btnFunction: () {
-                          comingalert(context);
-                        },
-                        elevation: 1,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (isBrand.value) ...[
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 35, vertical: 20),
-                  width: width,
-                  margin: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: whiteC,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: shadowC,
-                        blurRadius: 5,
-                        offset: Offset(0, 6),
+                    if (isBrand.value) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 35, vertical: 20),
+                        width: width,
+                        margin: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: whiteC,
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: shadowC,
+                              blurRadius: 5,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text(
+                              "Would yo like to collaorate ?",
+                              textScaleFactor: 1,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: blackC),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            CusBtn(
+                              btnColor: primaryC,
+                              btnText: "Create campaign",
+                              textSize: 18,
+                              btnFunction: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const CreateCampaignsPage(),
+                                  ),
+                                );
+                              },
+                              elevation: 1,
+                            ),
+                            CusBtn(
+                              btnColor: const Color(0xFF10BCE2),
+                              btnText: "Invite to a campaign",
+                              textSize: 18,
+                              btnFunction: () {
+                                comingalert(context);
+                                // ref.read(pageIndex.state).state = 32;
+                              },
+                              elevation: 1,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        "Would yo like to collaorate ?",
-                        textScaleFactor: 1,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                            color: blackC),
-                      ),
+                    const ProfileTabs(),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    if (myAccountStateW.curTab == 0) ...[
+                      const PostInfo(),
                       const SizedBox(
                         height: 10,
                       ),
-                      CusBtn(
-                        btnColor: primaryC,
-                        btnText: "Create campaign",
-                        textSize: 18,
-                        btnFunction: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const CreateCampaignsPage(),
-                            ),
-                          );
-                        },
-                        elevation: 1,
-                      ),
-                      CusBtn(
-                        btnColor: const Color(0xFF10BCE2),
-                        btnText: "Invite to a campaign",
-                        textSize: 18,
-                        btnFunction: () {
-                          comingalert(context);
-                          // ref.read(pageIndex.state).state = 32;
-                        },
-                        elevation: 1,
-                      ),
+                      const AverageResult(),
                     ],
-                  ),
+                    const SizedBox(
+                      height: 80,
+                    )
+                  ],
                 ),
-              ],
-              const ProfileTabs(),
-              const SizedBox(
-                height: 10,
               ),
-              if (myAccountStateW.curTab == 0) ...[
-                const PostInfo(),
-                const SizedBox(
-                  height: 10,
-                ),
-                const AverageResult(),
-              ],
-              const SizedBox(
-                height: 80,
-              )
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
@@ -431,8 +449,8 @@ class ProfileTabs extends HookConsumerWidget {
             height: 10,
           ),
           if (myAccountStateW.curTab == 1) ...[const PersnalInfo()],
-          if (myAccountStateW.curTab == 2) ...[const AccountReviews()],
-          if (myAccountStateW.curTab == 3) ...[const PastAssociations()],
+          if (myAccountStateW.curTab == 2) ...[const PastAssociations()],
+          if (myAccountStateW.curTab == 3) ...[const AccountReviews()],
         ],
       ),
     );

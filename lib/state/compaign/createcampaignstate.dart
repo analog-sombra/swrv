@@ -1,8 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,18 +24,62 @@ class CreateCampState extends ChangeNotifier {
 
   List<File> images = [];
 
+  File? attachments;
+
+  bool isChampCreated = false;
+  String? champId;
+
+  void setChampCreated(bool val) {
+    isChampCreated = val;
+    notifyListeners();
+  }
+
+  void setChampId(String id) {
+    champId = id;
+    notifyListeners();
+  }
+
   List data = [];
   void setdata(List dataval) {
     data = dataval;
     notifyListeners();
   }
 
-  void addImage() async {
+  Future<void> addImage(BuildContext context) async {
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (image == null) return;
-    final imageTemp = File(image.path);
 
-    images.add(imageTemp);
+    final imageTemp = File(image.path);
+    int sizeInBytes = imageTemp.lengthSync();
+    double sizeInMb = sizeInBytes / (1024 * 1024);
+    if (sizeInMb > 2) {
+      erroralert(context, "Error", "Image file Size should be less then 2 MB");
+      return;
+    } else {
+      images.add(imageTemp);
+    }
+    notifyListeners();
+  }
+
+  Future<void> addAttachment(BuildContext context) async {
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['pdf', 'doc'],
+      );
+      if (result == null) return;
+      final att = File(result.files.single.path!);
+      int sizeInBytes = att.lengthSync();
+      double sizeInMb = sizeInBytes / (1024 * 1024);
+      if (sizeInMb > 2) {
+        erroralert(context, "Error", "File Size should be less then 2 MB");
+        return;
+      } else {
+        attachments = att;
+      }
+    } catch (e) {
+      log(e.toString());
+    }
     notifyListeners();
   }
 
@@ -204,7 +250,7 @@ class CreateCampState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> createCamp(BuildContext context, List fields) async {
+  Future<List> createCamp(BuildContext context, List fields) async {
     bool testcase = false;
 
     for (int i = 0; i < fields.length; i++) {
@@ -279,6 +325,18 @@ class CreateCampState extends ChangeNotifier {
         "Empty Field",
         "Please write at leat one don't",
       );
+    } else if (images.isEmpty) {
+      erroralert(
+        context,
+        "Empty Field",
+        "Please Select atleast one Mood",
+      );
+    } else if (attachments == null) {
+      erroralert(
+        context,
+        "Empty Field",
+        "Please Attach a file",
+      );
     } else {
       final req = {
         "userId": await userState.getUserId(),
@@ -312,8 +370,6 @@ class CreateCampState extends ChangeNotifier {
         "donts": seletedText(dont)
       };
 
-      // List data =
-      //     await apiReq.postApi(jsonEncode(req), path: "/api/createchampaign");
       List data =
           await apiReq.postApi(jsonEncode(req), path: "/api/add-campaign");
 
@@ -331,11 +387,45 @@ class CreateCampState extends ChangeNotifier {
         );
       } else {
         notifyListeners();
-        return true;
+        return [data[0]["data"]];
       }
     }
     notifyListeners();
-    return false;
+    return [false];
+  }
+
+  Future<void> addMoodBorad(BuildContext context) async {
+    for (int i = 0; i < images.length; i++) {
+      String? imgFilePath;
+      dynamic res = await apiReq.uploadFile(images[i].path);
+      if (res["status"] == false) {
+        erroralert(context, "error", res["status"].toString());
+      }
+      imgFilePath = res["data"]["filePath"];
+      final req = {
+        "campaignId": champId,
+        "title": "moodboard$champId$i",
+        "url": imgFilePath
+      };
+
+      await apiReq.postApi(jsonEncode(req), path: "/api/add-campaign-mood");
+    }
+  }
+
+  Future<void> addAttachmentUrl(BuildContext context) async {
+    String? attFilePath;
+    dynamic res = await apiReq.uploadFile(attachments!.path);
+    if (res["status"] == false) {
+      erroralert(context, "error", res["status"].toString());
+    }
+    attFilePath = res["data"]["filePath"];
+    final req = {
+      "campaignId": champId,
+      "title": "attachemtn$champId",
+      "url": attFilePath
+    };
+
+    await apiReq.postApi(jsonEncode(req), path: "/api/add-campaign-attachment");
   }
 
   bool nextPage(BuildContext context, List fields) {
@@ -419,6 +509,12 @@ class CreateCampState extends ChangeNotifier {
         context,
         "Empty Field",
         "Please Select atleast one Mood",
+      );
+    } else if (attachments == null) {
+      erroralert(
+        context,
+        "Empty Field",
+        "Please Attach a file",
       );
     } else {
       res = true;

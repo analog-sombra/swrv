@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -13,8 +12,8 @@ import '../../../widgets/componets.dart';
 import '../../navigation/bottomnavbar.dart';
 import '../../navigation/drawer.dart';
 
-class UserEditTwo extends HookConsumerWidget {
-  const UserEditTwo({super.key});
+class UserEditFour extends HookConsumerWidget {
+  const UserEditFour({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,10 +33,9 @@ class UserEditTwo extends HookConsumerWidget {
     final userProfileEditW = ref.watch(userProfileEditState);
 
     void init() async {
-      await userProfileEditW.initSectionTwo(context);
-      personalHistory.text = userProfileEditW.personalHistory!;
-      careerHistory.text = userProfileEditW.careerHistory!;
-      website.text = userProfileEditW.website!;
+      // final userdata = await userStateW.getUserData(context);
+      // log(userdata.toString());
+      // await userProfileEditW.initSectionOne(context);
 
       isLoading.value = false;
     }
