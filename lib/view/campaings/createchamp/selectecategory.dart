@@ -15,7 +15,7 @@ import '../../../widgets/buttons.dart';
 import '../../../widgets/componets.dart';
 import '../../navigation/bottomnavbar.dart';
 import '../../navigation/drawer.dart';
-import '../createcampaign.dart';
+import 'createcampone.dart';
 
 class CreateCampaignsPage extends HookConsumerWidget {
   const CreateCampaignsPage({super.key});
@@ -65,7 +65,7 @@ class CreateCampaignsPage extends HookConsumerWidget {
               const Header(),
               Container(
                   width: width,
-                  margin: const EdgeInsets.all(20),
+                  margin: const EdgeInsets.all(15),
                   decoration: BoxDecoration(
                     color: whiteC,
                     borderRadius: BorderRadius.circular(16),
@@ -74,7 +74,8 @@ class CreateCampaignsPage extends HookConsumerWidget {
                           color: shadowC, blurRadius: 5, offset: Offset(0, 6))
                     ],
                   ),
-                  padding: const EdgeInsets.all(15),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,7 +110,7 @@ class CreateCampaignsPage extends HookConsumerWidget {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const CreateCampaings(),
+                                              const CreateCampOne(),
                                         ),
                                       );
                                     }
@@ -127,17 +128,18 @@ class CreateCampaignsPage extends HookConsumerWidget {
                             gridDelegate:
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
-                              crossAxisSpacing: 8,
+                              crossAxisSpacing: 5,
                               mainAxisSpacing: 10,
-                              mainAxisExtent: 250,
+                              mainAxisExtent: 240,
                             ),
                             itemCount: createCmpSW.categoryList.length,
                             physics: const NeverScrollableScrollPhysics(),
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
-                              return GestureDetector(
+                              return InkWell(
                                 onTap: () {
                                   createCmpSW.setCategoryId(index);
+                                  createCmpSW.setCampType(index);
                                 },
                                 child: Container(
                                   padding: const EdgeInsets.only(bottom: 8),
@@ -178,7 +180,7 @@ class CreateCampaignsPage extends HookConsumerWidget {
                                               const BorderRadius.vertical(
                                                   top: Radius.circular(8)),
                                           child: SizedBox(
-                                            height: 120,
+                                            height: 100,
                                             child: CachedNetworkImage(
                                               imageUrl: createCmpSW
                                                       .categoryList[index]

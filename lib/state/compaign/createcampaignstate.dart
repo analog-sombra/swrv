@@ -13,52 +13,94 @@ import 'package:swrv/state/userstate.dart';
 import '../../services/apirequest.dart';
 import '../../utils/alerts.dart';
 
+enum CampaingType {
+  none,
+  sponsoredPosts,
+  unboxingOrReviewPosts,
+  discountCodes,
+  giveawaysContest
+}
+
+enum Approval { none, yes, no }
+
 //login state start here
 final createCampState = ChangeNotifierProvider.autoDispose<CreateCampState>(
     (ref) => CreateCampState());
 
 class CreateCampState extends ChangeNotifier {
-  double rating = 3;
+  //base setup
   UserState userState = UserState();
+  CusApiReq apiReq = CusApiReq();
 
-  List<File> images = [];
+//page one
+  CampaingType campType = CampaingType.none;
+  String? categoryValue;
+  String? categoryId;
+  List categoryList = [];
 
-  File? attachments;
-
-  bool isChampCreated = false;
-  String? champId;
-
-  void setChampCreated(bool val) {
-    isChampCreated = val;
+  void setCategory(List data) {
+    categoryList = data;
     notifyListeners();
   }
 
-  void setChampId(String id) {
-    champId = id;
+  void setCategoryId(int id) {
+    categoryId = categoryList[id]["id"];
+    setCatValue(categoryList[id]["categoryName"]);
     notifyListeners();
   }
 
-  List data = [];
-  void setdata(List dataval) {
-    data = dataval;
+  void setCatValue(String val) {
+    categoryValue = val;
     notifyListeners();
   }
 
-  Future<void> addImage(BuildContext context) async {
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (image == null) return;
-
-    final imageTemp = File(image.path);
-    int sizeInBytes = imageTemp.lengthSync();
-    double sizeInMb = sizeInBytes / (1024 * 1024);
-    if (sizeInMb > 2) {
-      erroralert(context, "Error", "Image file Size should be less then 2 MB");
-      return;
-    } else {
-      images.add(imageTemp);
+  void setCampType(int val) {
+    if (val == 0) {
+      campType = CampaingType.sponsoredPosts;
+    } else if (val == 1) {
+      campType = CampaingType.unboxingOrReviewPosts;
+    } else if (val == 2) {
+      campType = CampaingType.discountCodes;
+    } else if (val == 3) {
+      campType = CampaingType.giveawaysContest;
     }
     notifyListeners();
   }
+
+  //page two
+  List platforms = [];
+  List selectedPlatfomrs = [];
+  List selectedPlatfomrsList = [];
+
+  Future<void> setPlatforms() async {
+    final req1 = {};
+    List data =
+        await apiReq.postApi(jsonEncode(req1), path: "/api/getplatform");
+    platforms = data[0]["data"];
+    for (int i = 0; i < platforms.length; i++) {
+      selectedPlatfomrs.add(false);
+    }
+    notifyListeners();
+  }
+
+  void togglePlatfroms(int val) {
+    selectedPlatfomrs[val] = !selectedPlatfomrs[val];
+    if (selectedPlatfomrsList.contains(platforms[val]["id"])) {
+      selectedPlatfomrsList.remove(platforms[val]["id"]);
+    } else {
+      selectedPlatfomrsList.add(platforms[val]["id"]);
+    }
+    notifyListeners();
+  }
+
+  List<String> mediaType = ["Post", "Story", "Reel", "Video", "Audio"];
+  int selectedMediaType = -1;
+  void setMediaType(int val) {
+    selectedMediaType = val;
+    notifyListeners();
+  }
+
+  File? attachments;
 
   Future<void> addAttachment(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -76,11 +118,6 @@ class CreateCampState extends ChangeNotifier {
       attachments = att;
     }
 
-    notifyListeners();
-  }
-
-  void removeImage(File file) {
-    images.remove(file);
     notifyListeners();
   }
 
@@ -132,8 +169,78 @@ class CreateCampState extends ChangeNotifier {
     notifyListeners();
   }
 
+  Approval approval = Approval.none;
+  void setApproval(Approval val) {
+    approval = val;
+    notifyListeners();
+  }
+
+  String? campInfo;
+  void setCampInfo(String val) {
+    campInfo = val;
+    notifyListeners();
+  }
+
+  String? affiliatedLinks;
+  void setAffiliatedLinks(String val) {
+    affiliatedLinks = val;
+    notifyListeners();
+  }
+
+  String? discountCoupons;
+  void setDiscountCoupons(String val) {
+    discountCoupons = val;
+    notifyListeners();
+  }
+
+  double rating = 3;
+
   void setRating(double val) {
     rating = val;
+    notifyListeners();
+  }
+
+  // ####################################
+
+  List<File> images = [];
+
+  bool isChampCreated = false;
+  String? champId;
+
+  void setChampCreated(bool val) {
+    isChampCreated = val;
+    notifyListeners();
+  }
+
+  void setChampId(String id) {
+    champId = id;
+    notifyListeners();
+  }
+
+  List data = [];
+  void setdata(List dataval) {
+    data = dataval;
+    notifyListeners();
+  }
+
+  Future<void> addImage(BuildContext context) async {
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (image == null) return;
+
+    final imageTemp = File(image.path);
+    int sizeInBytes = imageTemp.lengthSync();
+    double sizeInMb = sizeInBytes / (1024 * 1024);
+    if (sizeInMb > 2) {
+      erroralert(context, "Error", "Image file Size should be less then 2 MB");
+      return;
+    } else {
+      images.add(imageTemp);
+    }
+    notifyListeners();
+  }
+
+  void removeImage(File file) {
+    images.remove(file);
     notifyListeners();
   }
 
@@ -141,20 +248,6 @@ class CreateCampState extends ChangeNotifier {
 
   void setCampData(List data) {
     campData = data;
-    notifyListeners();
-  }
-
-  CusApiReq apiReq = CusApiReq();
-
-  List platforms = [];
-  List selectedPlatfomrs = [];
-  List selectedPlatfomrsList = [];
-
-  void setPlatforms(List data) {
-    platforms = data;
-    for (int i = 0; i < data.length; i++) {
-      selectedPlatfomrs.add(false);
-    }
     notifyListeners();
   }
 
@@ -196,27 +289,6 @@ class CreateCampState extends ChangeNotifier {
     notifyListeners();
   }
 
-  String? categoryValue;
-  String? categoryId;
-  List categoryList = [];
-
-  void setCategory(List data) {
-    categoryList = data;
-    notifyListeners();
-  }
-
-  void setCategoryId(int id) {
-    categoryId = categoryList[id]["id"];
-    setCatValue(categoryList[id]["categoryName"]);
-
-    notifyListeners();
-  }
-
-  void setCatValue(String val) {
-    categoryValue = val;
-    notifyListeners();
-  }
-
   String? cityValue;
   String? cityId;
   List cityList = [];
@@ -233,16 +305,6 @@ class CreateCampState extends ChangeNotifier {
 
   void setCityValue(String val) {
     cityValue = val;
-    notifyListeners();
-  }
-
-  void togglePlatfroms(int val) {
-    selectedPlatfomrs[val] = !selectedPlatfomrs[val];
-    if (selectedPlatfomrsList.contains(platforms[val]["id"])) {
-      selectedPlatfomrsList.remove(platforms[val]["id"]);
-    } else {
-      selectedPlatfomrsList.add(platforms[val]["id"]);
-    }
     notifyListeners();
   }
 

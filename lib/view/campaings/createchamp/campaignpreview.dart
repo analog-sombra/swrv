@@ -7,12 +7,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
 
-import '../../state/compaign/createcampaignstate.dart';
-import '../../state/userstate.dart';
-import '../../widgets/componets.dart';
-import '../home/home.dart';
-import '../navigation/bottomnavbar.dart';
-import '../navigation/drawer.dart';
+import '../../../state/compaign/createcampaignstate.dart';
+import '../../../state/userstate.dart';
+import '../../../widgets/componets.dart';
+import '../../home/home.dart';
+import '../../navigation/bottomnavbar.dart';
+import '../../navigation/drawer.dart';
 
 class CampaignsPreview extends HookConsumerWidget {
   const CampaignsPreview({super.key});
