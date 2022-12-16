@@ -10,7 +10,7 @@ import '../../state/user/myaccoutstate.dart';
 import '../../state/userstate.dart';
 import '../../utils/alerts.dart';
 import '../../widgets/componets.dart';
-import '../campaings/createcampaign.dart';
+import '../campaings/createchamp/selectecategory.dart';
 import '../home/home.dart';
 import '../navigation/bottomnavbar.dart';
 import '../navigation/drawer.dart';

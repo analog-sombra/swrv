@@ -259,6 +259,9 @@ class InvitePage extends HookConsumerWidget {
                         btnFunction: () async {
                           if (formKey.currentState!.validate()) {
                             await referStateW.sendRefer(context);
+                            name.clear();
+                            email.clear();
+                            contact.clear();
                           }
                         },
                         textColor: secondaryC,

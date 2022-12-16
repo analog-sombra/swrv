@@ -209,6 +209,7 @@ class CampaignInfoState extends ChangeNotifier {
 
     List data =
         await apiReq.postApi(jsonEncode(req), path: "/api/update-invite");
+
     if (data[0] == false) {
       Navigator.pop(context);
       erroralert(
@@ -242,10 +243,9 @@ class CampaignInfoState extends ChangeNotifier {
 
     List data =
         await apiReq.postApi2(jsonEncode(req), path: "/api/search-invite");
-    if (data[0]["status"] == false) {
-    } else {
-      acceptRequest = data[0]["data"];
-    }
+
+    acceptRequest = data[0]["data"];
+
     notifyListeners();
   }
 
@@ -261,10 +261,62 @@ class CampaignInfoState extends ChangeNotifier {
 
     List data =
         await apiReq.postApi2(jsonEncode(req), path: "/api/search-draft");
-    if (data[0]["status"] == false) {
-    } else {
-      draftRequest = data[0]["data"];
-    }
+
+    draftRequest = data[0]["data"];
+
     notifyListeners();
+  }
+
+  Future<void> acceptDraft(BuildContext context, String id) async {
+    final req = {"id": id, "status": "3"};
+
+    List data =
+        await apiReq.postApi(jsonEncode(req), path: "/api/update-draft");
+    if (data[0] == false) {
+      Navigator.pop(context);
+      erroralert(
+        context,
+        "Error",
+        data[1].toString(),
+      );
+    } else if (data[0]["status"] == false) {
+      Navigator.pop(context);
+
+      erroralert(
+        context,
+        "Error",
+        data[0]["message"],
+      );
+    } else {
+      Navigator.pop(context);
+      susalert(context, "Sent", "Successfully accepted the draft request.");
+    }
+  }
+
+  Future<void> rejectDraft(
+      BuildContext context, String id, String reason) async {
+    final req = {"id": id, "status": "5", "rejectReason": reason};
+
+    List data =
+        await apiReq.postApi(jsonEncode(req), path: "/api/update-draft");
+    if (data[0] == false) {
+      Navigator.pop(context);
+      erroralert(
+        context,
+        "Error",
+        data[1].toString(),
+      );
+    } else if (data[0]["status"] == false) {
+      Navigator.pop(context);
+
+      erroralert(
+        context,
+        "Error",
+        data[0]["message"],
+      );
+    } else {
+      Navigator.pop(context);
+      susalert(context, "Sent", "Successfully rejected the draft request.");
+    }
   }
 }

@@ -78,9 +78,10 @@ class HomeCard extends HookConsumerWidget {
                         ? CachedNetworkImage(
                             imageUrl: imgUrl,
                             progressIndicatorBuilder:
-                                (context, url, downloadProgress) =>
-                                    CircularProgressIndicator(
-                                        value: downloadProgress.progress),
+                                (context, url, downloadProgress) => Center(
+                              child: CircularProgressIndicator(
+                                  value: downloadProgress.progress),
+                            ),
                             errorWidget: (context, url, error) => Image.asset(
                               "assets/images/user.png",
                               fit: BoxFit.cover,

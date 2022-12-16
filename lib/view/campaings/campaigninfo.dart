@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +26,8 @@ import '../../widgets/componets.dart';
 import '../navigation/bottomnavbar.dart';
 import '../navigation/drawer.dart';
 
+enum AcceptReq { none, panding, accepted, rejected }
+
 class ChampignInfo extends HookConsumerWidget {
   final String id;
   const ChampignInfo({super.key, required this.id});
@@ -46,8 +47,12 @@ class ChampignInfo extends HookConsumerWidget {
     ValueNotifier<bool> isFav = useState(false);
 
     ValueNotifier<bool> isBrand = useState(false);
+    ValueNotifier<AcceptReq> acceptReq = useState<AcceptReq>(AcceptReq.none);
+
+    ValueNotifier<List> acceptRequestData = useState<List>([]);
 
     void init() async {
+      //fav section
       isBrand.value = await userStateW.isBrand();
       final getfav =
           await isarDB.favoriteChamps.filter().champidEqualTo(id).findAll();
@@ -59,6 +64,7 @@ class ChampignInfo extends HookConsumerWidget {
         isFav.value = true;
       }
 
+      //campaigns info section
       final req = {
         "id": id,
       };
@@ -70,6 +76,30 @@ class ChampignInfo extends HookConsumerWidget {
       } else {
         erroralert(context, "Error", "No Data found");
       }
+
+      //accept section
+      final req2 = {
+        "search": {
+          "campaign": id,
+          "influencer": await userStateW.getUserId(),
+          "fromUser": await userStateW.getUserId(),
+        }
+      };
+
+      List reqdata =
+          await apiReq.postApi2(jsonEncode(req2), path: "/api/search-invite");
+      acceptRequestData.value = reqdata[0]["data"];
+
+      if (reqdata[0]["status"] == false) {
+        acceptReq.value = AcceptReq.none;
+      } else if (acceptRequestData.value.first["status"]["code"] == "1") {
+        acceptReq.value = AcceptReq.panding;
+      } else if (acceptRequestData.value.first["status"]["code"] == "3") {
+        acceptReq.value = AcceptReq.accepted;
+      } else if (acceptRequestData.value.first["status"]["code"] == "5") {
+        acceptReq.value = AcceptReq.rejected;
+      }
+
       isLoading.value = false;
     }
 
@@ -748,23 +778,37 @@ class ChampignInfo extends HookConsumerWidget {
                       startDate: champdata.value[0]["startAt"],
                       endDate: champdata.value[0]["endAt"],
                     ),
-                    // if (isBrand.value) ...[
-                    PandingAcceptRequest(
-                      id: id,
-                    ),
-                    PandingDraftRequest(
-                      id: id,
-                    ),
-                    // ] else ...[
-                    InviteToCampaign(
-                      id: id,
-                      toUserId: champdata.value[0]["brandUserId"],
-                    ),
-
-                    // ],
-                    CampaignsTabs(
-                      id: id,
-                    ),
+                    if (isBrand.value) ...[
+                      PandingAcceptRequest(
+                        id: id,
+                      ),
+                      PandingDraftRequest(
+                        id: id,
+                      ),
+                    ] else ...[
+                      if (acceptReq.value == AcceptReq.none) ...[
+                        InviteToCampaign(
+                          id: id,
+                          toUserId: champdata.value[0]["brandUserId"],
+                        ),
+                      ] else if (acceptReq.value == AcceptReq.accepted) ...[
+                        CampaignsTabs(
+                          id: id,
+                        ),
+                        UserDrafts(
+                          id: id,
+                        ),
+                      ] else if (acceptReq.value == AcceptReq.panding) ...[
+                        const InviteToCampaignPanding(),
+                      ] else if (acceptReq.value == AcceptReq.rejected) ...[
+                        InviteToCampaignRejected(
+                          id: id,
+                          toUserId: champdata.value[0]["brandUserId"],
+                          reason: acceptRequestData.value.first["status"]
+                              ["message"],
+                        )
+                      ],
+                    ],
                     const SizedBox(
                       height: 80,
                     ),
@@ -1153,6 +1197,128 @@ class InviteToCampaign extends HookConsumerWidget {
   }
 }
 
+class InviteToCampaignPanding extends HookConsumerWidget {
+  const InviteToCampaignPanding({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final width = MediaQuery.of(context).size.width;
+    return Container(
+      width: width,
+      margin: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: secondaryC,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: shadowC, blurRadius: 5, offset: Offset(0, 6))
+        ],
+      ),
+      padding: const EdgeInsets.all(15),
+      child: Column(
+        children: const [
+          Text(
+            "Your request progress.. ",
+            textScaleFactor: 1,
+            style: TextStyle(
+              color: whiteC,
+              fontSize: 22,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class InviteToCampaignRejected extends HookConsumerWidget {
+  const InviteToCampaignRejected({
+    super.key,
+    required this.id,
+    required this.toUserId,
+    required this.reason,
+  });
+  final String id;
+  final String toUserId;
+  final String reason;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final width = MediaQuery.of(context).size.width;
+    TextEditingController msg = useTextEditingController();
+    return Container(
+      width: width,
+      margin: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: secondaryC,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(color: shadowC, blurRadius: 5, offset: Offset(0, 6))
+        ],
+      ),
+      padding: const EdgeInsets.all(15),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const Text(
+            "Your request has been rejected..",
+            textScaleFactor: 1,
+            style: TextStyle(
+              color: whiteC,
+              fontSize: 22,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          const Text(
+            "Reason",
+            textScaleFactor: 1,
+            style: TextStyle(
+              color: whiteC,
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const Divider(
+            color: whiteC,
+          ),
+          Text(
+            reason,
+            textScaleFactor: 1,
+            style: const TextStyle(
+              color: whiteC,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Center(
+            child: SizedBox(
+              width: 200,
+              child: CusBtn(
+                btnColor: primaryC,
+                btnText: "Apply Again",
+                textSize: 18,
+                btnFunction: () {
+                  connectAlert(context, ref, msg, id, toUserId);
+                },
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
 class PdfViewer extends HookConsumerWidget {
   final String link;
   const PdfViewer({Key? key, required this.link}) : super(key: key);
@@ -1326,7 +1492,7 @@ class CampaignsTabs extends HookConsumerWidget {
             )
           ],
           if (chamInfoState.curTab == 1) ...[],
-          if (chamInfoState.curTab == 2) ...[],
+          if (chamInfoState.curTab == 2) ...[const CampPayments()],
         ],
       ),
     );
@@ -1338,7 +1504,10 @@ class CampPayments extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final GlobalKey<FormState> formKey =
+        useMemoized(() => GlobalKey<FormState>());
     final width = MediaQuery.of(context).size.width;
+    TextEditingController amount = useTextEditingController();
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1351,11 +1520,10 @@ class CampPayments extends HookWidget {
           decoration: BoxDecoration(
             color: whiteC,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: const [
+            boxShadow: [
               BoxShadow(
-                color: shadowC,
+                color: blackC.withOpacity(0.2),
                 blurRadius: 5,
-                offset: Offset(0, 6),
               ),
             ],
           ),
@@ -1369,7 +1537,7 @@ class CampPayments extends HookWidget {
                     style: TextStyle(
                       color: blackC,
                       fontSize: 18,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   Spacer(),
@@ -1384,13 +1552,16 @@ class CampPayments extends HookWidget {
                   ),
                 ],
               ),
+              const Divider(
+                color: blackC,
+              ),
               const SizedBox(
                 height: 20,
               ),
               Row(
                 children: const [
                   Text(
-                    "Total Budget",
+                    "Received",
                     textScaleFactor: 1,
                     style: TextStyle(
                       color: blackC,
@@ -1400,7 +1571,7 @@ class CampPayments extends HookWidget {
                   ),
                   Spacer(),
                   Text(
-                    "adf",
+                    "1200 USD",
                     textScaleFactor: 1,
                     style: TextStyle(
                       color: blackC,
@@ -1416,7 +1587,7 @@ class CampPayments extends HookWidget {
               Row(
                 children: const [
                   Text(
-                    "Remaining",
+                    "Panding",
                     textScaleFactor: 1,
                     style: TextStyle(
                       color: blackC,
@@ -1426,7 +1597,7 @@ class CampPayments extends HookWidget {
                   ),
                   Spacer(),
                   Text(
-                    "1400 usd",
+                    "5200 USD",
                     textScaleFactor: 1,
                     style: TextStyle(
                       color: blackC,
@@ -1438,7 +1609,99 @@ class CampPayments extends HookWidget {
               ),
             ],
           ),
-        )
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+          width: width,
+          margin: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: whiteC,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: blackC.withOpacity(0.2),
+                blurRadius: 5,
+              ),
+            ],
+          ),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Text(
+                  "Payment request",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: secondaryC,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Row(
+                  children: [
+                    const Text(
+                      "Enter Amount",
+                      textScaleFactor: 1,
+                      style: TextStyle(
+                        color: blackC,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 10,
+                    ),
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: TextFormField(
+                          controller: amount,
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {},
+                          validator: (value) {
+                            if (value == null || value.isEmpty || value == "") {
+                              return 'Enter the amount description.';
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(
+                            filled: true,
+                            fillColor: backgroundC,
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                CusBtn(
+                  btnColor: const Color(0xff01FFF4),
+                  btnText: "Request",
+                  textSize: 18,
+                  btnFunction: () {
+                    if (formKey.currentState!.validate()) {
+                      comingalert(context);
+                    }
+                  },
+                  textColor: blackC,
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -1731,11 +1994,7 @@ class CreateDraft extends HookConsumerWidget {
                   textSize: 18,
                   btnFunction: () async {
                     if (formKey.currentState!.validate()) {
-                      try {
-                        await campaignInfoStateW.createcmapDraft(context, id);
-                      } catch (e) {
-                        log(e.toString());
-                      }
+                      await campaignInfoStateW.createcmapDraft(context, id);
                     }
                   },
                 ),
@@ -1899,8 +2158,18 @@ class PandingAcceptRequest extends HookConsumerWidget {
                           ],
                         ),
                         const Divider(),
+                        const Text(
+                          "Message",
+                          textAlign: TextAlign.left,
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                              color: blackC,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
                         Text(
-                          "Message : ${campaignInfoStateW.acceptRequest[i]["status"]["message"]}",
+                          campaignInfoStateW.acceptRequest[i]["status"]
+                              ["message"],
                           textAlign: TextAlign.left,
                           textScaleFactor: 1,
                           style: const TextStyle(
@@ -2129,8 +2398,29 @@ class PandingDraftRequest extends HookConsumerWidget {
                           ],
                         ),
                         const Divider(),
+                        const Text(
+                          "Message",
+                          textAlign: TextAlign.left,
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                              color: blackC,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
                         Text(
-                          "Message : ${campaignInfoStateW.draftRequest[i]["status"]["message"]}",
+                          campaignInfoStateW.draftRequest[i]["description"],
+                          textAlign: TextAlign.left,
+                          textScaleFactor: 1,
+                          style: const TextStyle(
+                              color: blackC,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "Publish Date : ${campaignInfoStateW.draftRequest[i]["publishAt"].toString().split("-")[2].split(" ")[0]}-${campaignInfoStateW.draftRequest[i]["publishAt"].toString().split("-")[1]}-${campaignInfoStateW.draftRequest[i]["publishAt"].toString().split("-")[0]}",
                           textAlign: TextAlign.left,
                           textScaleFactor: 1,
                           style: const TextStyle(
@@ -2147,7 +2437,7 @@ class PandingDraftRequest extends HookConsumerWidget {
                                     const BorderSide(width: 2.0, color: greenC),
                               ),
                               onPressed: () {
-                                champAccecptInvite(
+                                champAccecptDraft(
                                   context,
                                   ref,
                                   campaignInfoStateW.draftRequest[i]["id"],
@@ -2175,7 +2465,7 @@ class PandingDraftRequest extends HookConsumerWidget {
                                 side: const BorderSide(width: 2.0, color: redC),
                               ),
                               onPressed: () {
-                                champRejectInvite(
+                                champRejectDraft(
                                   context,
                                   ref,
                                   rejectDraft,
@@ -2194,6 +2484,237 @@ class PandingDraftRequest extends HookConsumerWidget {
                               ),
                             ),
                           ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class UserDrafts extends HookConsumerWidget {
+  const UserDrafts({super.key, required this.id});
+  final String id;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    ValueNotifier<List> userDrafts = useState([]);
+    CusApiReq apiReq = CusApiReq();
+    UserState userState = UserState();
+
+    void init() async {
+      final req1 = {
+        "search": {
+          "fromUser": await userState.getUserId(),
+          "influencer": await userState.getUserId(),
+          "campaign": id
+        }
+      };
+      List drafts =
+          await apiReq.postApi2(jsonEncode(req1), path: "/api/search-draft");
+      if (drafts[0]["status"]) {
+        userDrafts.value = drafts[0]["data"];
+      }
+    }
+
+    useEffect(() {
+      init();
+      return null;
+    }, []);
+    final width = MediaQuery.of(context).size.width;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+      width: width,
+      margin: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: whiteC,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: const [
+          BoxShadow(
+            color: shadowC,
+            blurRadius: 5,
+            offset: Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const Text(
+            "Requested Drafts",
+            textScaleFactor: 1,
+            style: TextStyle(
+              color: blackC,
+              fontSize: 20,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          if (userDrafts.value.isEmpty) ...[
+            const SizedBox(
+              height: 20,
+            ),
+            const Center(
+              child: Text(
+                "No drafts created..",
+                textScaleFactor: 1,
+                style: TextStyle(
+                  color: blackC,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+          ],
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                for (int i = 0; i < userDrafts.value.length; i++) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 10),
+                    margin: const EdgeInsets.all(15),
+                    decoration: BoxDecoration(
+                      color: whiteC,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 5,
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(6),
+                              child: SizedBox(
+                                width: 60,
+                                height: 60,
+                                child: CachedNetworkImage(
+                                  imageUrl: userDrafts.value[i]["influencer"]
+                                      ["pic"],
+                                  progressIndicatorBuilder:
+                                      (context, url, downloadProgress) =>
+                                          CircularProgressIndicator(
+                                              value: downloadProgress.progress),
+                                  errorWidget: (context, url, error) =>
+                                      Image.asset(
+                                    "assets/images/user.png",
+                                    fit: BoxFit.cover,
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 15,
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Text(
+                                  userDrafts.value[i]["influencer"]["name"],
+                                  textAlign: TextAlign.left,
+                                  textScaleFactor: 1,
+                                  style: const TextStyle(
+                                      color: blackC,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                                Text(
+                                  userDrafts.value[i]["influencer"]["email"],
+                                  textAlign: TextAlign.left,
+                                  textScaleFactor: 1,
+                                  style: const TextStyle(
+                                      color: blackC,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const Divider(),
+                        const Text(
+                          "Message",
+                          textAlign: TextAlign.left,
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                              color: blackC,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        Text(
+                          userDrafts.value[i]["description"],
+                          textAlign: TextAlign.left,
+                          textScaleFactor: 1,
+                          style: const TextStyle(
+                              color: blackC,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "Publish Date : ${userDrafts.value[i]["publishAt"].toString().split("-")[2].split(" ")[0]}-${userDrafts.value[i]["publishAt"].toString().split("-")[1]}-${userDrafts.value[i]["publishAt"].toString().split("-")[0]}",
+                          textAlign: TextAlign.left,
+                          textScaleFactor: 1,
+                          style: const TextStyle(
+                              color: blackC,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        const Divider(),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                  color: blackC.withOpacity(0.2), blurRadius: 5)
+                            ],
+                            borderRadius: BorderRadius.circular(5),
+                            color: (userDrafts.value[i]["status"]["name"] ==
+                                    "PANDING")
+                                ? primaryC
+                                : (userDrafts.value[i]["status"]["name"] ==
+                                        "REJECTED")
+                                    ? redC
+                                    : greenC,
+                          ),
+                          child: Text(
+                            userDrafts.value[i]["status"]["name"],
+                            textAlign: TextAlign.left,
+                            textScaleFactor: 1,
+                            style: const TextStyle(
+                              color: whiteC,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
                         ),
                       ],
                     ),

@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -62,24 +61,21 @@ class CreateCampState extends ChangeNotifier {
   }
 
   Future<void> addAttachment(BuildContext context) async {
-    try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['pdf', 'doc'],
-      );
-      if (result == null) return;
-      final att = File(result.files.single.path!);
-      int sizeInBytes = att.lengthSync();
-      double sizeInMb = sizeInBytes / (1024 * 1024);
-      if (sizeInMb > 2) {
-        erroralert(context, "Error", "File Size should be less then 2 MB");
-        return;
-      } else {
-        attachments = att;
-      }
-    } catch (e) {
-      log(e.toString());
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc'],
+    );
+    if (result == null) return;
+    final att = File(result.files.single.path!);
+    int sizeInBytes = att.lengthSync();
+    double sizeInMb = sizeInBytes / (1024 * 1024);
+    if (sizeInMb > 2) {
+      erroralert(context, "Error", "File Size should be less then 2 MB");
+      return;
+    } else {
+      attachments = att;
     }
+
     notifyListeners();
   }
 
@@ -426,101 +422,6 @@ class CreateCampState extends ChangeNotifier {
     };
 
     await apiReq.postApi(jsonEncode(req), path: "/api/add-campaign-attachment");
-  }
-
-  bool nextPage(BuildContext context, List fields) {
-    bool res = false;
-    bool testcase = false;
-
-    for (int i = 0; i < fields.length; i++) {
-      if (fields[i] == "") {
-        testcase = true;
-      }
-    }
-
-    if (testcase) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please fill all the fields",
-      );
-    } else if (int.parse(fields[4]) >= int.parse(fields[5])) {
-      erroralert(
-        context,
-        "Error",
-        "Min reach should be lower then max reach",
-      );
-    } else if (cmpId == null) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please select the category",
-      );
-    } else if (categoryId == null) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please select the category",
-      );
-    } else if (currencyValue == null) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please select the currency",
-      );
-    } else if (cityValue == null) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please select the city",
-      );
-    } else if (selectedPlatfomrsList.isEmpty) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please Select some platforms",
-      );
-    } else if (mention.isEmpty) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please mention at leat one person",
-      );
-    } else if (hashtag.isEmpty) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please Please write at leat one hashtag",
-      );
-    } else if (dos.isEmpty) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please write at leat one do's",
-      );
-    } else if (dont.isEmpty) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please write at leat one don't",
-      );
-    } else if (images.isEmpty) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please Select atleast one Mood",
-      );
-    } else if (attachments == null) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please Attach a file",
-      );
-    } else {
-      res = true;
-    }
-
-    return res;
   }
 
   Future<String> getBrandId() async {

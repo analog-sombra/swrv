@@ -535,13 +535,15 @@ class BrandInputState extends ChangeNotifier {
   Future<bool> inviteUser(
       BuildContext context, String name, String email, String number) async {
     final req = {
-      "invitedUserId": await userState.getUserId(),
+      "userId": await userState.getUserId(),
+      "brandId": await userState.getBrandId(),
       "name": name,
       "email": email,
-      "number": number
+      "contact": number
     };
 
-    List data = await apiReq.postApi(jsonEncode(req), path: "/api/send-otp");
+    List data =
+        await apiReq.postApi(jsonEncode(req), path: "/api/send-brand-invite");
     if (data[0] == false) {
       erroralert(
         context,
