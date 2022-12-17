@@ -636,6 +636,121 @@ void addHashTagAlert(
   );
 }
 
+void addAudienceLocation(BuildContext context,
+    TextEditingController audienceLocation, WidgetRef ref) {
+  final createCmpSW = ref.watch(createCampState);
+
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: AlertDialog(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        contentPadding: const EdgeInsets.all(5),
+        backgroundColor: whiteC,
+        content: Container(
+          width: MediaQuery.of(context).size.width - 50,
+          padding: const EdgeInsets.all(10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Align(
+                alignment: Alignment.center,
+                child: Text(
+                  "Add Audience Location",
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: secondaryC,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w500),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: audienceLocation,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      hintText: "Audience Location",
+                      hintStyle: TextStyle(
+                        color: Colors.black.withOpacity(0.45),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: redC,
+                      btnText: "Cancel",
+                      textSize: 18,
+                      btnFunction: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: greenC,
+                      btnText: "Add",
+                      textSize: 18,
+                      btnFunction: () {
+                        if (audienceLocation.text.isEmpty) {
+                          audienceLocation.clear();
+                          Navigator.pop(context);
+                          erroralert(context, "Error", "Please fill the field");
+                        } else if (createCmpSW.audienceLocation
+                            .contains(audienceLocation.text)) {
+                          Navigator.pop(context);
+                          erroralert(context, "Error",
+                              "Alredy exist, Try different one");
+                        } else if (audienceLocation.text.contains(" ")) {
+                          audienceLocation.clear();
+                          Navigator.pop(context);
+                          erroralert(
+                              context, "Error", "Please don't use space");
+                        } else {
+                          createCmpSW
+                              .addAudienceLocation(audienceLocation.text);
+                          audienceLocation.clear();
+                          Navigator.pop(context);
+                        }
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
 void addDosAlert(
     BuildContext context, TextEditingController dos, WidgetRef ref) {
   final createCmpSW = ref.watch(createCampState);

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:swrv/utils/alerts.dart';
+import 'package:swrv/view/campaings/createchamp/createcamptwo.dart';
 import 'package:swrv/widgets/buttons.dart';
 
 import '../../../state/compaign/createcampaignstate.dart';
@@ -30,12 +32,16 @@ class CreateCampOne extends HookConsumerWidget {
     TextEditingController info = useTextEditingController();
     TextEditingController affiliatedLinks = useTextEditingController();
     TextEditingController discountCoupons = useTextEditingController();
+    TextEditingController target = useTextEditingController();
+    TextEditingController minTarget = useTextEditingController();
 
     final createCmpSW = ref.watch(createCampState);
     void init() async {
       info.text = createCmpSW.campInfo ?? "";
       affiliatedLinks.text = createCmpSW.affiliatedLinks ?? "";
       discountCoupons.text = createCmpSW.discountCoupons ?? "";
+      target.text = createCmpSW.target ?? "";
+      minTarget.text = createCmpSW.minTarget ?? "";
       await createCmpSW.setPlatforms();
     }
 
@@ -62,26 +68,6 @@ class CreateCampOne extends HookConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               const Header(),
-              const Padding(
-                padding: EdgeInsets.only(left: 25, top: 20),
-                child: Text(
-                  "Create campaign",
-                  textScaleFactor: 1,
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w600, color: blackC),
-                ),
-              ),
-              const Padding(
-                padding: EdgeInsets.only(left: 25, top: 10),
-                child: Text(
-                  "Here you can create campaign that you are like.",
-                  textScaleFactor: 1,
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w400, color: blackC),
-                ),
-              ),
               Container(
                 width: width,
                 margin: const EdgeInsets.all(25),
@@ -101,7 +87,25 @@ class CreateCampOne extends HookConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      cusTitle("Sponsored post"),
+                      if (createCmpSW.campType ==
+                          CampaingType.sponsoredPosts) ...[
+                        cusTitle("Sponsored post"),
+                      ] else if (createCmpSW.campType ==
+                          CampaingType.unboxingOrReviewPosts) ...[
+                        cusTitle("Review post"),
+                      ] else if (createCmpSW.campType ==
+                          CampaingType.discountCodes) ...[
+                        cusTitle("Discount and Affiliated post"),
+                      ] else if (createCmpSW.campType ==
+                          CampaingType.giveawaysContest) ...[
+                        cusTitle("Contest post"),
+                      ],
+                      const Divider(
+                        color: Colors.black,
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
                       if (createCmpSW.platforms.isEmpty ||
                           createCmpSW.selectedPlatfomrs.isEmpty) ...[
                         const CircularProgressIndicator()
@@ -154,7 +158,7 @@ class CreateCampOne extends HookConsumerWidget {
                         ),
                       ],
                       const SizedBox(
-                        height: 10,
+                        height: 15,
                       ),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
@@ -199,6 +203,9 @@ class CreateCampOne extends HookConsumerWidget {
                           ],
                         ),
                       ),
+                      const SizedBox(
+                        height: 15,
+                      ),
                       if (createCmpSW.campType ==
                           CampaingType.unboxingOrReviewPosts) ...[
                         cusTitle("Campaign Eligible Rating"),
@@ -219,6 +226,9 @@ class CreateCampOne extends HookConsumerWidget {
                           },
                         ),
                       ],
+                      const SizedBox(
+                        height: 15,
+                      ),
                       if (createCmpSW.campType ==
                           CampaingType.discountCodes) ...[
                         cusTitle("Affiliated links"),
@@ -251,6 +261,9 @@ class CreateCampOne extends HookConsumerWidget {
                             ),
                           ),
                         ),
+                        const SizedBox(
+                          height: 15,
+                        ),
                         cusTitle("Discount coupons"),
                         Padding(
                           padding: const EdgeInsets.only(top: 5),
@@ -280,6 +293,9 @@ class CreateCampOne extends HookConsumerWidget {
                               ),
                             ),
                           ),
+                        ),
+                        const SizedBox(
+                          height: 15,
                         ),
                       ],
                       cusTitle("Mentions"),
@@ -360,6 +376,9 @@ class CreateCampOne extends HookConsumerWidget {
                           ),
                         ),
                       ),
+                      const SizedBox(
+                        height: 15,
+                      ),
                       cusTitle("HashTag"),
                       InkWell(
                         onTap: () {
@@ -437,7 +456,94 @@ class CreateCampOne extends HookConsumerWidget {
                           ),
                         ),
                       ),
-                      cusTitle("Campaign info"),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      if (createCmpSW.campType ==
+                          CampaingType.giveawaysContest) ...[
+                        cusTitle("Target"),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: TextFormField(
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null ||
+                                    value == "" ||
+                                    value.isEmpty) {
+                                  return "Please Select the target";
+                                } else if (int.parse(createCmpSW.target!) <=
+                                    int.parse(createCmpSW.minTarget!)) {
+                                  return "Target should be greter then target";
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                createCmpSW.setTarget(value);
+                              },
+                              controller: target,
+                              decoration: const InputDecoration(
+                                filled: true,
+                                fillColor: Color(0xfff3f4f6),
+                                border: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                errorBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        cusTitle("Min Target"),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: TextFormField(
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null ||
+                                    value == "" ||
+                                    value.isEmpty) {
+                                  return "Please Select the min target";
+                                } else if (int.parse(createCmpSW.target!) <=
+                                    int.parse(createCmpSW.minTarget!)) {
+                                  return "Min target should be less then target";
+                                }
+                                return null;
+                              },
+                              onChanged: (value) {
+                                createCmpSW.setMinTarget(value);
+                              },
+                              controller: minTarget,
+                              decoration: const InputDecoration(
+                                filled: true,
+                                fillColor: Color(0xfff3f4f6),
+                                border: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                errorBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      if (createCmpSW.campType ==
+                              CampaingType.unboxingOrReviewPosts ||
+                          createCmpSW.campType ==
+                              CampaingType.giveawaysContest) ...[
+                        cusTitle("Features or info need to be highlighted")
+                      ] else ...[
+                        cusTitle("Campaign info"),
+                      ],
                       Padding(
                         padding: const EdgeInsets.only(top: 5),
                         child: ClipRRect(
@@ -468,6 +574,9 @@ class CreateCampOne extends HookConsumerWidget {
                             ),
                           ),
                         ),
+                      ),
+                      const SizedBox(
+                        height: 15,
                       ),
                       cusTitle("Attachments"),
                       InkWell(
@@ -518,6 +627,9 @@ class CreateCampOne extends HookConsumerWidget {
                             ],
                           ),
                         ),
+                      ),
+                      const SizedBox(
+                        height: 15,
                       ),
                       cusTitle("You should"),
                       InkWell(
@@ -623,7 +735,7 @@ class CreateCampOne extends HookConsumerWidget {
                         ],
                       ),
                       const SizedBox(
-                        height: 10,
+                        height: 15,
                       ),
                       InkWell(
                         onTap: () {
@@ -725,7 +837,7 @@ class CreateCampOne extends HookConsumerWidget {
                         ],
                       ),
                       const SizedBox(
-                        width: 20,
+                        height: 20,
                       ),
                       const Center(
                         child: Text(
@@ -845,7 +957,41 @@ class CreateCampOne extends HookConsumerWidget {
                               btnText: "Next",
                               textSize: 18,
                               btnFunction: () {
-                                if (formKey.currentState!.validate()) {}
+                                if (createCmpSW.selectedPlatfomrsList.isEmpty) {
+                                  erroralert(context, "Error",
+                                      "Please select a platform");
+                                } else if (createCmpSW.selectedMediaType ==
+                                    -1) {
+                                  erroralert(context, "Error",
+                                      "Please select a media type");
+                                } else if (createCmpSW.mention.isEmpty) {
+                                  erroralert(context, "Error",
+                                      "Add at lest one mendtion");
+                                } else if (createCmpSW.hashtag.isEmpty) {
+                                  erroralert(context, "Error",
+                                      "Add at lset one hashtag");
+                                } else if (createCmpSW.dos.isEmpty) {
+                                  erroralert(
+                                      context, "Error", "At at lest one do's");
+                                } else if (createCmpSW.dont.isEmpty) {
+                                  erroralert(context, "Error",
+                                      "Add at lest one don't");
+                                } else if (createCmpSW.attachments == null) {
+                                  erroralert(
+                                      context, "Error", "Add one attachment");
+                                } else if (createCmpSW.approval ==
+                                    Approval.none) {
+                                  erroralert(context, "Error",
+                                      "Please select approveal yes either no");
+                                } else if (formKey.currentState!.validate()) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const CreateCampTwo(),
+                                    ),
+                                  );
+                                }
                               },
                             ),
                           ),
@@ -870,7 +1016,7 @@ class CreateCampOne extends HookConsumerWidget {
         textScaleFactor: 1,
         textAlign: TextAlign.left,
         style: const TextStyle(
-            fontSize: 18, fontWeight: FontWeight.w500, color: secondaryC),
+            fontSize: 16, fontWeight: FontWeight.w500, color: secondaryC),
       ),
     );
   }

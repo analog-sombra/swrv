@@ -7,7 +7,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swrv/state/userstate.dart';
 
 import '../../services/apirequest.dart';
@@ -20,6 +19,8 @@ enum CampaingType {
   discountCodes,
   giveawaysContest
 }
+
+enum RevType { none, cash, product, revenue, discount }
 
 enum Approval { none, yes, no }
 
@@ -73,9 +74,7 @@ class CreateCampState extends ChangeNotifier {
   List selectedPlatfomrsList = [];
 
   Future<void> setPlatforms() async {
-    final req1 = {};
-    List data =
-        await apiReq.postApi(jsonEncode(req1), path: "/api/getplatform");
+    List data = await apiReq.postApi(jsonEncode({}), path: "/api/getplatform");
     platforms = data[0]["data"];
     for (int i = 0; i < platforms.length; i++) {
       selectedPlatfomrs.add(false);
@@ -193,6 +192,18 @@ class CreateCampState extends ChangeNotifier {
     notifyListeners();
   }
 
+  String? target;
+  void setTarget(String val) {
+    target = val;
+    notifyListeners();
+  }
+
+  String? minTarget;
+  void setMinTarget(String val) {
+    minTarget = val;
+    notifyListeners();
+  }
+
   double rating = 3;
 
   void setRating(double val) {
@@ -200,28 +211,165 @@ class CreateCampState extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ####################################
+  //page 3
+  List<String> audienceLocation = [];
+
+  void addAudienceLocation(String data) {
+    audienceLocation.add(data);
+    notifyListeners();
+  }
+
+  void removeAudienceLocation(String data) {
+    audienceLocation.remove(data);
+    notifyListeners();
+  }
+
+  String? minInf;
+  void setMinInf(String val) {
+    minInf = val;
+    notifyListeners();
+  }
+
+  String? tillDate;
+  void setTillDate(String val) {
+    tillDate = val;
+    notifyListeners();
+  }
+
+  String? cmpValue;
+  String? cmpId;
+  List cmpList = [];
+
+  Future<void> setCmp() async {
+    List data = await apiReq.postApi(jsonEncode({}), path: "/api/getcategory");
+    cmpList = data[0]["data"];
+    notifyListeners();
+  }
+
+  void setCmpId(int id) {
+    cmpId = cmpList[id]["id"];
+    notifyListeners();
+  }
+
+  void setCmpValue(String val) {
+    cmpValue = val;
+    notifyListeners();
+  }
+
+  List<String> remuneration = ["Cash", "Product", "Revenue", "Discount"];
+  String? remunerationValue;
+  RevType revType = RevType.none;
+  void setRemuneration(String val) {
+    remunerationValue = val;
+    notifyListeners();
+  }
+
+  void setRevVal(int index) {
+    if (index == 0) {
+      revType = RevType.cash;
+    } else if (index == 1) {
+      revType = RevType.product;
+    } else if (index == 2) {
+      revType = RevType.revenue;
+    } else if (index == 3) {
+      revType = RevType.discount;
+    }
+  }
+
+  String? currencyValue;
+  String? currencyId;
+  List currencyList = [];
+
+  Future<void> setCurrecny() async {
+    List data = await apiReq.postApi(jsonEncode({}), path: "/api/getcurrency");
+
+    currencyList = data[0]["data"];
+    notifyListeners();
+  }
+
+  void setCurrencyId(int id) {
+    currencyId = currencyList[id]["id"];
+    notifyListeners();
+  }
+
+  void setCurrencyValue(String val) {
+    currencyValue = val;
+    notifyListeners();
+  }
+
+  //  cashText
+//  productText
+//  revenueText
+//  discountText
+
+  String? cashText;
+  void setCashText(String val) {
+    cashText = val;
+    notifyListeners();
+  }
+
+  String? productText;
+  void setProductText(String val) {
+    productText = val;
+    notifyListeners();
+  }
+
+  String? revenueText;
+  void setRevenueText(String val) {
+    revenueText = val;
+    notifyListeners();
+  }
+
+  String? discountText;
+  void setDiscountText(String val) {
+    discountText = val;
+    notifyListeners();
+  }
+
+  //page four
+  String? name;
+  void setName(String val) {
+    name = val;
+    notifyListeners();
+  }
+
+  String? startDate;
+  void setStartDate(String val) {
+    startDate = val;
+    notifyListeners();
+  }
+
+  String? endDate;
+  void setEndDate(String val) {
+    endDate = val;
+    notifyListeners();
+  }
+
+  String? minReach;
+  void setMinReach(String val) {
+    minReach = val;
+    notifyListeners();
+  }
+
+  String? maxReach;
+  void setMaxreach(String val) {
+    maxReach = val;
+    notifyListeners();
+  }
+
+  String? costPerPost;
+  void setCostPerPost(String val) {
+    costPerPost = val;
+    notifyListeners();
+  }
+
+  String? totalBudget;
+  void setTotalBudget(String val) {
+    totalBudget = val;
+    notifyListeners();
+  }
 
   List<File> images = [];
-
-  bool isChampCreated = false;
-  String? champId;
-
-  void setChampCreated(bool val) {
-    isChampCreated = val;
-    notifyListeners();
-  }
-
-  void setChampId(String id) {
-    champId = id;
-    notifyListeners();
-  }
-
-  List data = [];
-  void setdata(List dataval) {
-    data = dataval;
-    notifyListeners();
-  }
 
   Future<void> addImage(BuildContext context) async {
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -244,51 +392,6 @@ class CreateCampState extends ChangeNotifier {
     notifyListeners();
   }
 
-  List campData = [];
-
-  void setCampData(List data) {
-    campData = data;
-    notifyListeners();
-  }
-
-  String? currencyValue;
-  String? currencyId;
-  List currencyList = [];
-
-  void setCurrecny(List data) {
-    currencyList = data;
-    notifyListeners();
-  }
-
-  void setCurrencyId(int id) {
-    currencyId = currencyList[id]["id"];
-    notifyListeners();
-  }
-
-  void setCurrencyValue(String val) {
-    currencyValue = val;
-    notifyListeners();
-  }
-
-  String? cmpValue;
-  String? cmpId;
-  List cmpList = [];
-
-  void setCmp(List data) {
-    cmpList = data;
-    notifyListeners();
-  }
-
-  void setCmpId(int id) {
-    cmpId = cmpList[id]["id"];
-    notifyListeners();
-  }
-
-  void setCmpValue(String val) {
-    cmpValue = val;
-    notifyListeners();
-  }
-
   String? cityValue;
   String? cityId;
   List cityList = [];
@@ -308,146 +411,108 @@ class CreateCampState extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List> createCamp(BuildContext context, List fields) async {
-    bool testcase = false;
+  // ####################################
 
-    for (int i = 0; i < fields.length; i++) {
-      if (fields[i] == "") {
-        testcase = true;
-      }
+  String? champId;
+
+  void setChampId(String id) {
+    champId = id;
+    notifyListeners();
+  }
+
+  List campData = [];
+
+  void setCampData(List data) {
+    campData = data;
+    notifyListeners();
+  }
+
+  Future<List> createCamp(BuildContext context) async {
+    final req = {
+      "userId": await userState.getUserId(),
+      "brandUserId": await userState.getUserId(),
+      "brandId": await userState.getBrandId(),
+      "cityId": cityId,
+      "campaignTypeId": categoryId,
+      "campaignName": name,
+      "campaignInfo": campInfo,
+      "startAt": DateTime(
+              int.parse(startDate.toString().split("-")[2]),
+              int.parse(startDate.toString().split("-")[1]),
+              int.parse(startDate.toString().split("-")[0]))
+          .toString(),
+      "endAt": DateTime(
+              int.parse(endDate.toString().split("-")[2]),
+              int.parse(endDate.toString().split("-")[1]),
+              int.parse(endDate.toString().split("-")[0]))
+          .toString(),
+      "minReach": minReach,
+      "maxReach": maxReach,
+      "costPerPost": costPerPost,
+      "totalBudget": totalBudget,
+      "minEligibleRating": rating.toString(),
+      "currencyId": currencyId,
+      "categories": cmpId.toString(),
+      "platforms": seletedText(selectedPlatfomrsList),
+      "mentions": seletedText(mention),
+      "hashtags": seletedText(hashtag),
+      "dos": seletedText(dos),
+      "donts": seletedText(dont),
+      "totalParticipants": minInf,
+      "remuneration": (revType == RevType.cash)
+          ? "1"
+          : (revType == RevType.product)
+              ? "2"
+              : (revType == RevType.revenue)
+                  ? "3"
+                  : "4",
+      "postApproval": approval == Approval.yes ? "1" : "0",
+      "inviteStartAt": startDate,
+      "inviteEndAt": tillDate,
+      "geoLat": "0",
+      "geoLng": "0",
+      "georadiusKm": "3",
+      "audienceLocations": seletedText(audienceLocation)
+    };
+    if (cashText != null) {
+      req["remunerationCash"] = cashText;
+    }
+    if (productText != null) {
+      req["remunerationProductDetail"] = productText;
+    }
+    if (revenueText != null) {
+      req["remunerationRevenuePer"] = revenueText;
+    }
+    if (discountText != null) {
+      req["dicountCoupon"] = discountText;
+    }
+    if (minTarget != null) {
+      req["minTarget"] = minTarget;
+    }
+    if (target != null) {
+      req["maxTarget"] = target;
     }
 
-    if (testcase) {
+    List data =
+        await apiReq.postApi(jsonEncode(req), path: "/api/add-campaign");
+
+    if (data[0] == false) {
       erroralert(
         context,
-        "Empty Field",
-        "Please fill all the fields",
+        "Error1",
+        data[1].toString(),
       );
-    } else if (int.parse(fields[4]) >= int.parse(fields[5])) {
+    } else if (data[0]["status"] == false) {
       erroralert(
         context,
-        "Error",
-        "Min reach should be lower then max reach",
-      );
-    } else if (cmpId == null) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please select the category",
-      );
-    } else if (categoryId == null) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please select the category",
-      );
-    } else if (currencyValue == null) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please select the currency",
-      );
-    } else if (cityValue == null) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please select the city",
-      );
-    } else if (selectedPlatfomrsList.isEmpty) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please Select some platforms",
-      );
-    } else if (mention.isEmpty) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please mention at leat one person",
-      );
-    } else if (hashtag.isEmpty) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please Please write at leat one hashtag",
-      );
-    } else if (dos.isEmpty) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please write at leat one do's",
-      );
-    } else if (dont.isEmpty) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please write at leat one don't",
-      );
-    } else if (images.isEmpty) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please Select atleast one Mood",
-      );
-    } else if (attachments == null) {
-      erroralert(
-        context,
-        "Empty Field",
-        "Please Attach a file",
+        "Error2",
+        data[0]["message"],
       );
     } else {
-      final req = {
-        "userId": await userState.getUserId(),
-        "brandUserId": await userState.getUserId(),
-        "brandId": await userState.getBrandId(),
-        "cityId": cityId,
-        "campaignTypeId": categoryId,
-        "campaignName": fields[0],
-        "campaignInfo": fields[1],
-        "startAt": DateTime(
-                int.parse(fields[2].toString().split("-")[2]),
-                int.parse(fields[2].toString().split("-")[1]),
-                int.parse(fields[2].toString().split("-")[0]))
-            .toString(),
-        "endAt": DateTime(
-                int.parse(fields[3].toString().split("-")[2]),
-                int.parse(fields[3].toString().split("-")[1]),
-                int.parse(fields[3].toString().split("-")[0]))
-            .toString(),
-        "minReach": fields[4],
-        "maxReach": fields[5],
-        "costPerPost": fields[6],
-        "totalBudget": fields[7],
-        "minEligibleRating": rating.toString(),
-        "currencyId": currencyId,
-        "categories": cmpId.toString(),
-        "platforms": seletedText(selectedPlatfomrsList),
-        "mentions": seletedText(mention),
-        "hashtags": seletedText(hashtag),
-        "dos": seletedText(dos),
-        "donts": seletedText(dont)
-      };
-
-      List data =
-          await apiReq.postApi(jsonEncode(req), path: "/api/add-campaign");
-
-      if (data[0] == false) {
-        erroralert(
-          context,
-          "Error1",
-          data[1].toString(),
-        );
-      } else if (data[0]["status"] == false) {
-        erroralert(
-          context,
-          "Error2",
-          data[0]["message"],
-        );
-      } else {
-        notifyListeners();
-        return [data[0]["data"]];
-      }
+      notifyListeners();
+      return [data[0]["data"]];
     }
+
     notifyListeners();
     return [false];
   }
@@ -457,7 +522,7 @@ class CreateCampState extends ChangeNotifier {
       String? imgFilePath;
       dynamic res = await apiReq.uploadFile(images[i].path);
       if (res["status"] == false) {
-        erroralert(context, "error", res["status"].toString());
+        erroralert(context, "error", res["messages"].toString());
       }
       imgFilePath = res["data"]["filePath"];
       final req = {
@@ -474,7 +539,7 @@ class CreateCampState extends ChangeNotifier {
     String? attFilePath;
     dynamic res = await apiReq.uploadFile(attachments!.path);
     if (res["status"] == false) {
-      erroralert(context, "error", res["status"].toString());
+      erroralert(context, "error", res["messages"].toString());
     }
     attFilePath = res["data"]["filePath"];
     final req = {
@@ -484,15 +549,6 @@ class CreateCampState extends ChangeNotifier {
     };
 
     await apiReq.postApi(jsonEncode(req), path: "/api/add-campaign-attachment");
-  }
-
-  Future<String> getBrandId() async {
-    String userId = "";
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final userdata = prefs.getString("user");
-    userId = jsonDecode(userdata!)[0]["brandId"].toString();
-    notifyListeners();
-    return userId;
   }
 
   String seletedText(List data) {

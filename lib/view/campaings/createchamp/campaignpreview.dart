@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -122,7 +124,7 @@ class CampaignsPreview extends HookConsumerWidget {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Text(
-                                      createCmpSW.data[0],
+                                      createCmpSW.name!,
                                       textAlign: TextAlign.left,
                                       textScaleFactor: 1,
                                       style: const TextStyle(
@@ -286,7 +288,7 @@ class CampaignsPreview extends HookConsumerWidget {
                             ),
                           ),
                           Text(
-                            createCmpSW.data[1],
+                            createCmpSW.campInfo!,
                             textScaleFactor: 1,
                             textAlign: TextAlign.start,
                             style: const TextStyle(
@@ -710,15 +712,18 @@ class CampaignsPreview extends HookConsumerWidget {
                                     ),
                                     onPressed: () async {
                                       isLoading.value = true;
-                                      final res = await createCmpSW.createCamp(
-                                          context, createCmpSW.data);
+                                      final res =
+                                          await createCmpSW.createCamp(context);
+
                                       if (res[0] == false) {
                                         erroralert(context, "Error",
                                             "Unable to create, Try again");
                                       } else {
                                         createCmpSW.setChampId(
                                             res[0]["campaign"]["id"]);
+
                                         await createCmpSW.addMoodBorad(context);
+                                        log(res[0]["campaign"]["id"]);
                                         await createCmpSW
                                             .addAttachmentUrl(context);
 
