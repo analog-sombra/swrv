@@ -6,7 +6,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swrv/view/campaings/mycompaign.dart';
-import 'package:swrv/view/login.dart';
 import 'package:swrv/view/user/myaccount.dart';
 import 'package:swrv/view/user/useredit/usereditone.dart';
 
@@ -35,6 +34,8 @@ class Profile extends HookConsumerWidget {
     ValueNotifier<String> userAvatar = useState("");
     ValueNotifier<bool> isBrand = useState(false);
     ValueNotifier<bool> isProfileCompleted = useState(false);
+
+    TextEditingController resetpass = useTextEditingController();
 
     void init() async {
       prefs.value = await SharedPreferences.getInstance();
@@ -403,35 +404,40 @@ class Profile extends HookConsumerWidget {
                         ),
                       ),
                     ),
-                    GestureDetector(
+                    InkWell(
                       onTap: () async {
-                        bool? success = await prefs.value?.remove('isLogin');
-                        bool? userDel = await prefs.value?.remove('isLogin');
-                        if (success! && userDel!) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const Login()));
-                        }
+                        resetPassAlert(context, resetpass, ref);
                       },
-                      child: GestureDetector(
-                        onTap: () {
-                          comingalert(context);
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 5),
-                          child: Text(
-                            "Switch to Other Account",
-                            textScaleFactor: 1,
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.blue.withOpacity(0.75)),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: Text(
+                          "Chnage Password",
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.black.withOpacity(0.75),
                           ),
                         ),
                       ),
                     ),
-                    GestureDetector(
+                    InkWell(
+                      onTap: () {
+                        comingalert(context);
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        child: Text(
+                          "Switch to Other Account",
+                          textScaleFactor: 1,
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.blue.withOpacity(0.75)),
+                        ),
+                      ),
+                    ),
+                    InkWell(
                       onTap: () async {
                         logoutAlert(context);
                       },

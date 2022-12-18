@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
@@ -35,6 +34,8 @@ class HomePage extends HookConsumerWidget {
 
     CusApiReq apiReq = CusApiReq();
     final messageStateW = ref.watch(messageState);
+
+    ValueNotifier<bool> isLoading = useState(true);
 
     List postImg = [
       "user1.jpg",
@@ -84,6 +85,7 @@ class HomePage extends HookConsumerWidget {
       userName.value = username;
       isBrand.value = await userStateW.isBrand();
       isCompleted.value = await userStateW.isProfileCompleted();
+      isLoading.value = false;
     }
 
     useEffect(() {
@@ -106,173 +108,181 @@ class HomePage extends HookConsumerWidget {
         bottomNavigationBar: BotttomBar(
           scaffoldKey: scaffoldKey,
         ),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Header(),
-                  if (isCompleted.value == false) ...[
-                    Container(
-                      width: width,
-                      margin: const EdgeInsets.all(25),
-                      decoration: BoxDecoration(
-                        color: primaryC,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: const [
-                          BoxShadow(
-                              color: shadowC,
-                              blurRadius: 5,
-                              offset: Offset(0, 6))
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(15),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Text(
-                                "Please Complete Your Profile",
-                                textScaleFactor: 1,
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  color: whiteC,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w500,
+        body: isLoading.value
+            ? const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(20),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            : SafeArea(
+                child: SingleChildScrollView(
+                  child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Header(),
+                        if (isCompleted.value == false) ...[
+                          Container(
+                            width: width,
+                            margin: const EdgeInsets.all(25),
+                            decoration: BoxDecoration(
+                              color: primaryC,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: const [
+                                BoxShadow(
+                                    color: shadowC,
+                                    blurRadius: 5,
+                                    offset: Offset(0, 6))
+                              ],
+                            ),
+                            padding: const EdgeInsets.all(15),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Text(
+                                      "Please Complete Your Profile",
+                                      textScaleFactor: 1,
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        color: whiteC,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    GestureDetector(
+                                      onTap: () {
+                                        isCompleted.value = true;
+                                      },
+                                      child: const FaIcon(
+                                        FontAwesomeIcons.xmark,
+                                        color: whiteC,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              const Spacer(),
-                              GestureDetector(
-                                onTap: () {
-                                  isCompleted.value = true;
-                                },
-                                child: const FaIcon(
-                                  FontAwesomeIcons.xmark,
-                                  color: whiteC,
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 8),
+                                  child: Text(
+                                    "Your linked social media accounts are under\nverification, you'll be not notified withen 14 hours.",
+                                    textScaleFactor: 1,
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(
+                                      color: whiteC,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8),
-                            child: Text(
-                              "Your linked social media accounts are under\nverification, you'll be not notified withen 14 hours.",
-                              textScaleFactor: 1,
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                color: whiteC,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w400,
-                              ),
+                                CusBtn(
+                                  btnColor: secondaryC,
+                                  btnText: "Click here to complete",
+                                  textSize: 16,
+                                  btnFunction: () {
+                                    if (isBrand.value) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: ((context) =>
+                                              const BrandInput()),
+                                        ),
+                                      );
+                                    } else {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: ((context) =>
+                                              const InfluencerInput()),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                )
+                              ],
                             ),
                           ),
-                          CusBtn(
-                            btnColor: secondaryC,
-                            btnText: "Click here to complete",
-                            textSize: 16,
-                            btnFunction: () {
-                              if (isBrand.value) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: ((context) => const BrandInput()),
-                                  ),
-                                );
-                              } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: ((context) =>
-                                        const InfluencerInput()),
-                                  ),
-                                );
-                              }
-                            },
-                          )
                         ],
-                      ),
-                    ),
-                  ],
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const FittedBox(
-                    child: Text(
-                      "Welcome to SWRV",
-                      textAlign: TextAlign.center,
-                      textScaleFactor: 1,
-                      style: TextStyle(
-                          color: secondaryC,
-                          fontSize: 40,
-                          fontWeight: FontWeight.w900),
-                    ),
-                  ),
-                  const Text(
-                    "Reach the next billion",
-                    textScaleFactor: 1,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        color: secondaryC,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(vertical: 25),
-                    child: CarouselSlider(
-                      options: CarouselOptions(
-                          height: 200.0,
-                          autoPlay: true,
-                          viewportFraction: 0.5,
-                          enlargeCenterPage: true),
-                      items: postImg.map((i) {
-                        return Builder(
-                          builder: (BuildContext context) {
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
-                              child: Container(
-                                width: MediaQuery.of(context).size.width,
-                                decoration:
-                                    const BoxDecoration(color: Colors.amber),
-                                child: Image.asset(
-                                  "assets/images/$i",
-                                  fit: BoxFit.cover,
-                                  alignment: Alignment.topCenter,
-                                ),
-                              ),
-                            );
-                          },
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                  if (isBrand.value) ...[
-                    const AdvanceInfSearch(
-                      isTextSearch: false,
-                    ),
-                    const UserList(),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const TopInflunderList(),
-                  ] else ...[
-                    const WelcomeBanner(),
-                    const CampaingList(),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    const TopBrandsList(),
-                  ],
-                  const SizedBox(
-                    height: 80,
-                  ),
-                ]),
-          ),
-        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const FittedBox(
+                          child: Text(
+                            "Welcome to SWRV",
+                            textAlign: TextAlign.center,
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                                color: secondaryC,
+                                fontSize: 40,
+                                fontWeight: FontWeight.w900),
+                          ),
+                        ),
+                        const Text(
+                          "Reach the next billion",
+                          textScaleFactor: 1,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              color: secondaryC,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w400),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 25),
+                          child: CarouselSlider(
+                            options: CarouselOptions(
+                                height: 200.0,
+                                autoPlay: true,
+                                viewportFraction: 0.5,
+                                enlargeCenterPage: true),
+                            items: postImg.map((i) {
+                              return Builder(
+                                builder: (BuildContext context) {
+                                  return ClipRRect(
+                                    borderRadius: BorderRadius.circular(16),
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      decoration: const BoxDecoration(
+                                          color: Colors.amber),
+                                      child: Image.asset(
+                                        "assets/images/$i",
+                                        fit: BoxFit.cover,
+                                        alignment: Alignment.topCenter,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                        if (isBrand.value) ...[
+                          const AdvanceInfSearch(
+                            isTextSearch: false,
+                          ),
+                          const UserList(),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          const TopInflunderList(),
+                        ] else ...[
+                          const WelcomeBanner(),
+                          const CampaingList(),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          const TopBrandsList(),
+                        ],
+                        const SizedBox(
+                          height: 80,
+                        ),
+                      ]),
+                ),
+              ),
       ),
     );
   }

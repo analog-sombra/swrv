@@ -81,8 +81,10 @@ class CreateBrandPage extends HookConsumerWidget {
                           ),
                         ),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(left: 25, top: 20),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const Center(
                         child: Text(
                           "Create brand",
                           textScaleFactor: 1,
@@ -93,8 +95,7 @@ class CreateBrandPage extends HookConsumerWidget {
                               color: blackC),
                         ),
                       ),
-                      const Padding(
-                        padding: EdgeInsets.only(left: 25, top: 10),
+                      const Center(
                         child: Text(
                           "Here you can create brand that you are like.",
                           textScaleFactor: 1,
@@ -124,6 +125,17 @@ class CreateBrandPage extends HookConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
+                            const Text(
+                              "Fill the details",
+                              textScaleFactor: 1,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                color: blackC,
+                              ),
+                            ),
+                            const Divider(),
                             cusTitle("Brand logo"),
                             Container(
                               margin: const EdgeInsets.symmetric(vertical: 10),
