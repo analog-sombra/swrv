@@ -11,7 +11,7 @@ late Isar isarDB;
 
 Future<void> isarInit() async {
   final dir = await getApplicationSupportDirectory();
-  isarDB = await Isar.open(
+  isarDB = await Isar.open( 
     [
       FavoriteChampSchema,
       FavoriteBrandSchema,
