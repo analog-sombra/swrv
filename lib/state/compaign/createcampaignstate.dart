@@ -550,6 +550,7 @@ class CreateCampState extends ChangeNotifier {
 
     await apiReq.postApi(jsonEncode(req), path: "/api/add-campaign-attachment");
   }
+  
 
   String seletedText(List data) {
     String res = "";
