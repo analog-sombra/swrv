@@ -220,8 +220,9 @@ class UserEditOne extends HookConsumerWidget {
                                 children: [
                                   Align(
                                     child: InkWell(
-                                      onTap: () {
-                                        userProfileEditW.uploadImage(context);
+                                      onTap: () async {
+                                        await userProfileEditW
+                                            .uploadImage(context);
                                       },
                                       child: SizedBox(
                                         width: 100,

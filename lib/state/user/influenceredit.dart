@@ -194,7 +194,7 @@ class UserProfileEditState extends ChangeNotifier {
       "id": await userState.getUserId(),
       "personalHistory": personalHistory,
       "careerHistory": careerHistory,
-      "userWebUrl": website
+      "externalLinks": website
     };
 
     await cusApiReq.postApi(jsonEncode(req), path: "/api/updateuser");

@@ -369,12 +369,15 @@ class Profile extends HookConsumerWidget {
                       height: 20,
                     ),
                     InkWell(
-                      onTap: () {
+                      onTap: () async {
+                        final userId = await userStateW.getUserId();
                         if (isProfileCompleted.value) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: ((context) => const MyAccount()),
+                              builder: ((context) => MyAccount(
+                                    id: userId,
+                                  )),
                             ),
                           );
                         } else {

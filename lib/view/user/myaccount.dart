@@ -1,10 +1,17 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:convert';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:swrv/services/apirequest.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/widgets/buttons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../state/user/myaccoutstate.dart';
 import '../../state/userstate.dart';
@@ -16,7 +23,11 @@ import '../navigation/bottomnavbar.dart';
 import '../navigation/drawer.dart';
 
 class MyAccount extends HookConsumerWidget {
-  const MyAccount({super.key});
+  final String id;
+  const MyAccount({
+    super.key,
+    required this.id,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,18 +37,36 @@ class MyAccount extends HookConsumerWidget {
     ValueNotifier<bool> isLoading = useState(true);
 
     ValueNotifier<bool> isBrand = useState(false);
-    final userStateW = ref.watch(userState);
+    // final userStateW = ref.watch(userState);
     final myAccountStateW = ref.watch(myAccountState);
+    CusApiReq cusApiReq = CusApiReq();
 
     ValueNotifier<String?> username = useState(null);
     ValueNotifier<String?> bio = useState(null);
     ValueNotifier<String?> rating = useState(null);
+    ValueNotifier<String?> avatar = useState(null);
+    ValueNotifier<String?> personalHistory = useState(null);
+    ValueNotifier<String?> careerHistory = useState(null);
+    ValueNotifier<String?> externalLinks = useState(null);
 
     void init() async {
-      isBrand.value = await userStateW.isBrand();
-      username.value = await userStateW.getUserName();
-      bio.value = await userStateW.getUserBio();
-      rating.value = await userStateW.getUserRating();
+      final req = {"id": id};
+      final data =
+          await cusApiReq.postApi(jsonEncode(req), path: "/api/getuser");
+      if (data[0]["status"] == false) {
+        erroralert(context, "User not found", "This user not exist");
+      } else {
+        final userdata = data[0]["data"];
+        isBrand.value = userdata[0]["role"]["code"] == "50" ? true : false;
+        username.value = userdata[0]["userName"];
+        bio.value = userdata[0]["bio"];
+        rating.value = userdata[0]["rating"];
+        avatar.value = userdata[0]["pic"];
+        personalHistory.value = userdata[0]["personalHistory"];
+        careerHistory.value = userdata[0]["careerHistory"];
+        externalLinks.value = userdata[0]["externalLinks"];
+      }
+
       isLoading.value = false;
     }
 
@@ -93,11 +122,27 @@ class MyAccount extends HookConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(10),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 200,
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(10),
+                              ),
+                              child: CachedNetworkImage(
+                                imageUrl: avatar.value!,
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                errorWidget: (context, url, error) =>
+                                    Image.asset(
+                                  "assets/images/car.jpg",
+                                  fit: BoxFit.cover,
+                                ),
+                                fit: BoxFit.cover,
+                              ),
                             ),
-                            child: Image.asset("assets/images/car.jpg"),
                           ),
                           const SizedBox(
                             height: 20,
@@ -350,7 +395,12 @@ class MyAccount extends HookConsumerWidget {
                         ),
                       ),
                     ],
-                    const ProfileTabs(),
+                    ProfileTabs(
+                      info: bio.value!,
+                      careerHistory: careerHistory.value!,
+                      personalHistory: personalHistory.value!,
+                      externalLinks: externalLinks.value!,
+                    ),
                     const SizedBox(
                       height: 10,
                     ),
@@ -373,7 +423,17 @@ class MyAccount extends HookConsumerWidget {
 }
 
 class ProfileTabs extends HookConsumerWidget {
-  const ProfileTabs({super.key});
+  const ProfileTabs({
+    super.key,
+    required this.info,
+    required this.careerHistory,
+    required this.externalLinks,
+    required this.personalHistory,
+  });
+  final String personalHistory;
+  final String careerHistory;
+  final String info;
+  final String externalLinks;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -448,7 +508,14 @@ class ProfileTabs extends HookConsumerWidget {
           const SizedBox(
             height: 10,
           ),
-          if (myAccountStateW.curTab == 1) ...[const PersnalInfo()],
+          if (myAccountStateW.curTab == 1) ...[
+            PersnalInfo(
+              info: info,
+              careerHistory: careerHistory,
+              personalHistory: personalHistory,
+              externalLinks: externalLinks,
+            )
+          ],
           if (myAccountStateW.curTab == 2) ...[const PastAssociations()],
           if (myAccountStateW.curTab == 3) ...[const AccountReviews()],
         ],
@@ -644,7 +711,17 @@ class AverageResult extends HookWidget {
 }
 
 class PersnalInfo extends HookConsumerWidget {
-  const PersnalInfo({super.key});
+  const PersnalInfo({
+    super.key,
+    required this.info,
+    required this.careerHistory,
+    required this.externalLinks,
+    required this.personalHistory,
+  });
+  final String personalHistory;
+  final String careerHistory;
+  final String info;
+  final String externalLinks;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -689,11 +766,11 @@ class PersnalInfo extends HookConsumerWidget {
           const SizedBox(
             height: 10,
           ),
-          const Text(
-            "Alexandra Mary 'Alex' Hirschi (née Darvall; born 21 September 1985), known online as Supercar Blondie, is an Australian social media celebrity, presenter, and vlogger based in Dubai, United Arab Emirates. She is best known for her automotive videos, which she posts on a regular basis on Facebook, Instagram and YouTube. Her Facebook page has more than 43 million followers,[1] her Instagram over 9.4 million followers,[2] and she has over 8 million subscribers on YouTube. According to Socialbakers, her Facebook page was globally the fastest growing auto page in 2018.[3]",
+          Text(
+            info,
             textScaleFactor: 1,
             textAlign: TextAlign.left,
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 12, fontWeight: FontWeight.w400, color: blackC),
           ),
           const SizedBox(
@@ -709,11 +786,11 @@ class PersnalInfo extends HookConsumerWidget {
           const SizedBox(
             height: 10,
           ),
-          const Text(
-            "Born in Brisbane, Australia, Hirschi had a passion for cars at an early age. The first car she owned was a Mitsubishi Lancer.[4] Hirschi studied Journalism & Business at Queensland University of Technology before moving to Dubai in 2008. For 9 years, she was a newsreader and presenter for a talk radio show on Dubai Eye 103.8,[5] where she interviewed many celebrities including John Travolta, Jake Gyllenhaal and Liam Neeson.[6][7] In 2018, she left the radio show and became a full-time video creator on social media.",
+          Text(
+            personalHistory,
             textScaleFactor: 1,
             textAlign: TextAlign.left,
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 12, fontWeight: FontWeight.w400, color: blackC),
           ),
           const SizedBox(
@@ -729,11 +806,11 @@ class PersnalInfo extends HookConsumerWidget {
           const SizedBox(
             height: 10,
           ),
-          const Text(
-            "Hirschi's social media presence allows automotive brands like Bugatti and Ferrari to advertise their products through her. Instead of being an automotive journalist, she states that she provides 'insight into the supercar culture and what it`s like to drive these incredible cars in a light, fun way.'[4] Being one of the few women in supercar culture, she also opens up the demographic for these vehicles. In March 2018, Arabian Business listed her as one of the 50 Most Influential Women In The Arab World,[8] and it nominated her in 2019 as one of Top 30 most influential women in the Arab world.[9] Also in March 2018, Esquire Magazine Middle East named her Influencer of the Year.[10] She appeared on Germany's free to air TV RTL II on the car show GRIP Das Automagazin on 10 June 2018, co-presenting the one-off Bugatti L'Or Blanc and the La Ferrari Aperta.[11] In January 2019, Broadcasting & Cable announced Hirschi will be hosting their new car TV show Car Crews.[12] The show is released on Insight TV and focuses on uncovering different car cultures across the United States.[13] She drove the official Batmobile from the feature film Batman (1989).[4] In 2020 Hirschi won a Shorty Award for Breakout YouTuber.[14]",
+          Text(
+            careerHistory,
             textScaleFactor: 1,
             textAlign: TextAlign.left,
-            style: TextStyle(
+            style: const TextStyle(
                 fontSize: 12, fontWeight: FontWeight.w400, color: blackC),
           ),
           const SizedBox(
@@ -749,12 +826,25 @@ class PersnalInfo extends HookConsumerWidget {
           const SizedBox(
             height: 10,
           ),
-          const Text(
-            "Official website",
-            textScaleFactor: 1,
-            textAlign: TextAlign.left,
-            style: TextStyle(
-                fontSize: 12, fontWeight: FontWeight.w400, color: Colors.blue),
+          InkWell(
+            onTap: () async {
+              try {
+                if (!await launchUrl(Uri.parse(externalLinks))) {
+                  erroralert(context, "Error", 'Could not open $externalLinks');
+                }
+              } catch (e) {
+                erroralert(context, "Error", 'Could not opne $externalLinks');
+              }
+            },
+            child: const Text(
+              "Official website",
+              textScaleFactor: 1,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: Colors.blue),
+            ),
           ),
           const SizedBox(
             height: 20,
