@@ -28,8 +28,14 @@ class InfluencerInputState extends ChangeNotifier {
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (image == null) return;
       final imageTemp = File(image.path);
-
-      imageFile = imageTemp;
+      int sizeInBytes = imageTemp.lengthSync();
+      double sizeInMb = sizeInBytes / (1024 * 1024);
+      if (sizeInMb > 1) {
+        erroralert(context, "Error", "File size should be less then 1 MB");
+        return;
+      } else {
+        imageFile = imageTemp;
+      }
     } on PlatformException catch (e) {
       erroralert(context, "Error", 'Failed to pick image: $e');
     }
@@ -418,8 +424,8 @@ class InfluencerInputState extends ChangeNotifier {
     return res;
   }
 
-  Future<bool> addHandal(BuildContext context, String userid, 
-      String handal) async {
+  Future<bool> addHandal(
+      BuildContext context, String userid, String handal) async {
     final req = {
       "userId": userid,
       "platformId": platfromId,

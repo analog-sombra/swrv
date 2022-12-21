@@ -301,7 +301,14 @@ class BrandInputState extends ChangeNotifier {
       if (image == null) return;
       final imageTemp = File(image.path);
 
-      imageFile = imageTemp;
+      int sizeInBytes = imageTemp.lengthSync();
+      double sizeInMb = sizeInBytes / (1024 * 1024);
+      if (sizeInMb > 1) {
+        erroralert(context, "Error", "File size should be less then 1 MB");
+        return;
+      } else {
+        imageFile = imageTemp;
+      }
     } on PlatformException catch (e) {
       erroralert(context, "Error", 'Failed to pick image: $e');
     }

@@ -260,6 +260,7 @@ class UInput1 extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final GlobalKey<FormState> formKey =
         useMemoized(() => GlobalKey<FormState>());
+    ValueNotifier<bool> isLoading = useState(true);
 
     TextEditingController email = useTextEditingController();
     TextEditingController username = useTextEditingController();
@@ -272,7 +273,9 @@ class UInput1 extends HookConsumerWidget {
 
     void init() async {
       username.text = await userStateW.getUserName();
+
       email.text = await userStateW.getUserEmail();
+      isLoading.value = false;
     }
 
     useEffect(() {
@@ -280,347 +283,356 @@ class UInput1 extends HookConsumerWidget {
       return null;
     }, []);
 
-    return Form(
-      key: formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xffe5e7eb),
-              borderRadius: BorderRadius.circular(10),
+    return isLoading.value
+        ? const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
             ),
-            child: Row(
+          )
+        : Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  flex: 1,
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffe5e7eb),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: SizedBox(
+                            width: 80,
+                            height: 80,
+                            child: (userInputStateW.imageFile == null)
+                                ? Image.asset("assets/images/user.png")
+                                : Image.file(
+                                    userInputStateW.imageFile!,
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: const Size.fromHeight(40),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  elevation: 0,
+                                  backgroundColor: const Color(0xff9ca3af),
+                                ),
+                                onPressed: () async {
+                                  userInputStateW.pickImage(context);
+                                },
+                                child: const Text(
+                                  "Upload",
+                                  textAlign: TextAlign.center,
+                                  textScaleFactor: 1,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5),
+                                child: Text(
+                                  "Upload profile photo here.",
+                                  textScaleFactor: 1,
+                                  style: TextStyle(
+                                    color: Colors.black.withOpacity(0.5),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: Text(
+                                  "The image should either be jpg or jpeg or png format and be a maximum seixe of 10 MB.",
+                                  textScaleFactor: 1,
+                                  style: TextStyle(
+                                    color: Colors.black.withOpacity(0.5),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text(
+                    "Email",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: SizedBox(
-                      width: 80,
-                      height: 80,
-                      child: (userInputStateW.imageFile == null)
-                          ? Image.asset("assets/images/user.png")
-                          : Image.file(
-                              userInputStateW.imageFile!,
-                              fit: BoxFit.cover,
-                            ),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return "Please enter the email";
+                        }
+                        return null;
+                      },
+                      readOnly: true,
+                      controller: email,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      ),
                     ),
                   ),
                 ),
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(40),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            elevation: 0,
-                            backgroundColor: const Color(0xff9ca3af),
-                          ),
-                          onPressed: () async {
-                            userInputStateW.pickImage(context);
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text(
+                    "Username",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return "Please enter the username";
+                        }
+                        return null;
+                      },
+                      controller: username,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text(
+                    "Nickname",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return "Please enter the nickname";
+                        }
+                        return null;
+                      },
+                      controller: nickname,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text(
+                    "Date of birth",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return "Please select the date of birth";
+                        }
+                        return null;
+                      },
+                      readOnly: true,
+                      controller: dob,
+                      decoration: InputDecoration(
+                        suffixIcon: Icon(
+                          Icons.calendar_month,
+                          color: Colors.black.withOpacity(0.8),
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      ),
+                      onTap: () async {
+                        var date = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime(DateTime.now().year - 18,
+                              DateTime.now().month, DateTime.now().day),
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime(DateTime.now().year - 18,
+                              DateTime.now().month, DateTime.now().day),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: const ColorScheme.light(
+                                  primary: Colors.pink,
+                                  onSurface: Colors.pink,
+                                ),
+                                textButtonTheme: TextButtonThemeData(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.pink,
+                                  ),
+                                ),
+                              ),
+                              child: child!,
+                            );
                           },
-                          child: const Text(
-                            "Upload",
-                            textAlign: TextAlign.center,
-                            textScaleFactor: 1,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5),
-                          child: Text(
-                            "Upload profile photo here.",
-                            textScaleFactor: 1,
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(0.5),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: Text(
-                            "The image should either be jpg or jpeg or png format and be a maximum seixe of 10 MB.",
-                            textScaleFactor: 1,
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(0.5),
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                      ],
+                        );
+                        dob.text = DateFormat("dd-MM-yyyy").format(date!);
+                      },
                     ),
                   ),
                 ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text(
+                    "Bio",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return "Please enter the bio";
+                        }
+                        return null;
+                      },
+                      minLines: 4,
+                      maxLines: 8,
+                      controller: bio,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                CusBtn(
+                    btnColor: primaryC,
+                    btnText: "Next",
+                    textSize: 18,
+                    btnFunction: () async {
+                      isLoading.value = true;
+
+                      if (userInputStateW.imageFile == null) {
+                        erroralert(context, "Image", "Please select one image");
+                      } else if (formKey.currentState!.validate()) {
+                        final result = await userInputStateW.userUpdate1(
+                          context,
+                          [
+                            email.text,
+                            username.text,
+                            nickname.text,
+                            dob.text,
+                            bio.text
+                          ],
+                        );
+
+                        if (result) {
+                          userInputStateW
+                              .setCurInput(userInputStateW.curInput + 1);
+                        }
+                      }
+
+                      isLoading.value = false;
+                    }),
               ],
             ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Text(
-              "Email",
-              textScaleFactor: 1,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty || value == "") {
-                    return "Please enter the email";
-                  }
-                  return null;
-                },
-                readOnly: true,
-                controller: email,
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xfff3f4f6),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Text(
-              "Username",
-              textScaleFactor: 1,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty || value == "") {
-                    return "Please enter the username";
-                  }
-                  return null;
-                },
-                controller: username,
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xfff3f4f6),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Text(
-              "Nickname",
-              textScaleFactor: 1,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty || value == "") {
-                    return "Please enter the nickname";
-                  }
-                  return null;
-                },
-                controller: nickname,
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xfff3f4f6),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Text(
-              "Date of birth",
-              textScaleFactor: 1,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty || value == "") {
-                    return "Please select the date of birth";
-                  }
-                  return null;
-                },
-                readOnly: true,
-                controller: dob,
-                decoration: InputDecoration(
-                  suffixIcon: Icon(
-                    Icons.calendar_month,
-                    color: Colors.black.withOpacity(0.8),
-                  ),
-                  filled: true,
-                  fillColor: const Color(0xfff3f4f6),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                ),
-                onTap: () async {
-                  var date = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime(DateTime.now().year - 18,
-                        DateTime.now().month, DateTime.now().day),
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime(DateTime.now().year - 18,
-                        DateTime.now().month, DateTime.now().day),
-                    builder: (context, child) {
-                      return Theme(
-                        data: Theme.of(context).copyWith(
-                          colorScheme: const ColorScheme.light(
-                            primary: Colors.pink,
-                            onSurface: Colors.pink,
-                          ),
-                          textButtonTheme: TextButtonThemeData(
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.pink,
-                            ),
-                          ),
-                        ),
-                        child: child!,
-                      );
-                    },
-                  );
-                  dob.text = DateFormat("dd-MM-yyyy").format(date!);
-                },
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Text(
-              "Bio",
-              textScaleFactor: 1,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty || value == "") {
-                    return "Please enter the bio";
-                  }
-                  return null;
-                },
-                minLines: 4,
-                maxLines: 8,
-                controller: bio,
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xfff3f4f6),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          CusBtn(
-              btnColor: primaryC,
-              btnText: "Next",
-              textSize: 18,
-              btnFunction: () async {
-                if (userInputStateW.imageFile == null) {
-                  erroralert(context, "Image", "Please select one image");
-                } else if (formKey.currentState!.validate()) {
-                  // final res = await userInputStateW.uloadAvatar(
-                  //     context, userInputStateW.imageFile!.path, userId.value);
-
-                  final result = await userInputStateW.userUpdate1(
-                    context,
-                    [
-                      email.text,
-                      username.text,
-                      nickname.text,
-                      dob.text,
-                      bio.text
-                    ],
-                  );
-
-                  if (result) {
-                    userInputStateW.setCurInput(userInputStateW.curInput + 1);
-                  }
-                }
-              }),
-        ],
-      ),
-    );
+          );
   }
 }
 
@@ -631,6 +643,7 @@ class UInput2 extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final userInputStateW = ref.watch(influencerInputState);
     final userStateW = ref.watch(userState);
+    ValueNotifier<bool> isLoading = useState(true);
 
     ValueNotifier<String> userId = useState("0");
 
@@ -678,6 +691,8 @@ class UInput2 extends HookConsumerWidget {
       } else {
         erroralert(context, "error", "No Record Fount");
       }
+
+      isLoading.value = false;
     }
 
     useEffect(() {
@@ -1259,243 +1274,254 @@ class UInput2 extends HookConsumerWidget {
       );
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Main Market",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
+    return isLoading.value
+        ? const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: mainmarket,
-              readOnly: true,
-              onTap: () {
-                mainMarketBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Main Market",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Other Market",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: othermarket,
-              readOnly: true,
-              onTap: () {
-                othermarketBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: mainmarket,
+                    readOnly: true,
+                    onTap: () {
+                      mainMarketBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Account currency",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: account,
-              readOnly: true,
-              onTap: () {
-                accountBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Other Market",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Category",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: category,
-              readOnly: true,
-              onTap: () {
-                categoryBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: othermarket,
+                    readOnly: true,
+                    onTap: () {
+                      othermarketBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Languages",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: languages,
-              readOnly: true,
-              onTap: () {
-                languagesBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Account currency",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: CusBtn(
-                btnColor: backgroundC,
-                btnText: "Back",
-                textSize: 18,
-                btnFunction: () {
-                  // userInputStateW.clear();
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: account,
+                    readOnly: true,
+                    onTap: () {
+                      accountBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Category",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: category,
+                    readOnly: true,
+                    onTap: () {
+                      categoryBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Languages",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: languages,
+                    readOnly: true,
+                    onTap: () {
+                      languagesBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: backgroundC,
+                      btnText: "Back",
+                      textSize: 18,
+                      btnFunction: () {
+                        // userInputStateW.clear();
 
-                  userInputStateW.setCurInput(userInputStateW.curInput - 1);
-                },
-                textColor: blackC,
-              ),
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            Expanded(
-              child: CusBtn(
-                btnColor: primaryC,
-                btnText: "Next",
-                textSize: 18,
-                btnFunction: () async {
-                  final restult = await userInputStateW.userUpdate2(
-                    context,
-                    userId.value,
-                  );
+                        userInputStateW
+                            .setCurInput(userInputStateW.curInput - 1);
+                      },
+                      textColor: blackC,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: primaryC,
+                      btnText: "Next",
+                      textSize: 18,
+                      btnFunction: () async {
+                        isLoading.value = true;
+                        final restult = await userInputStateW.userUpdate2(
+                          context,
+                          userId.value,
+                        );
 
-                  if (restult) {
-                    userInputStateW.setCurInput(userInputStateW.curInput + 1);
-                  }
-                },
-              ),
-            ),
-          ],
-        )
-      ],
-    );
+                        if (restult) {
+                          userInputStateW
+                              .setCurInput(userInputStateW.curInput + 1);
+                        }
+                        isLoading.value = false;
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
   }
 }
 
@@ -1507,6 +1533,7 @@ class UInput3 extends HookConsumerWidget {
     final userInputStateW = ref.watch(influencerInputState);
 
     CusApiReq apiReq = CusApiReq();
+    ValueNotifier<bool> isLoading = useState(true);
 
     void init() async {
       final req = {};
@@ -1521,6 +1548,7 @@ class UInput3 extends HookConsumerWidget {
           "Oops something went wrong please try again",
         );
       }
+      isLoading.value = false;
     }
 
     useEffect(() {
@@ -1528,178 +1556,193 @@ class UInput3 extends HookConsumerWidget {
       return;
     }, []);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Channels",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
+    return isLoading.value
+        ? const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
             ),
-          ),
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              for (int i = 0; i < userInputStateW.platforms.length; i++) ...[
-                InkWell(
-                  onTap: () {
-                    userInputStateW.setSelectPlatform(i);
-                    userInputStateW
-                        .setPlatfromId(userInputStateW.platforms[i]["id"]);
-                  },
-                  child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: (userInputStateW.selectedPlatform == i)
-                            ? Colors.pink
-                            : Colors.transparent,
-                        width: 2,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withOpacity(0.2), blurRadius: 3)
-                      ],
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    width: 50,
-                    height: 50,
-                    padding: const EdgeInsets.all(10),
-                    child: Center(
-                      child: CachedNetworkImage(
-                        imageUrl: userInputStateW.platforms[i]
-                            ["platformLogoUrl"],
-                        placeholder: (context, url) =>
-                            const CircularProgressIndicator(),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Channels",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              ],
-            ],
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size.fromHeight(40),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            elevation: 0,
-            backgroundColor: Colors.pink,
-          ),
-          onPressed: () {
-            if (userInputStateW.cont.isEmpty) {
-              if (userInputStateW.selectedPlatform != null) {
-                userInputStateW.addControler();
-                userInputStateW.addIsCompleted(false);
-                userInputStateW.addImgUrl(
-                    userInputStateW.platforms[userInputStateW.selectedPlatform!]
-                        ["platformLogoUrl"]);
-                userInputStateW.setNullPlatform();
-              } else {
-                erroralert(
-                  context,
-                  "Error",
-                  "Please select any platform first",
-                );
-              }
-            } else if (userInputStateW.cont.last.text == "") {
-              erroralert(
-                context,
-                "Error",
-                "Please fill the last field first",
-              );
-            } else {
-              if (userInputStateW.selectedPlatform != null) {
-                userInputStateW.addControler();
-
-                userInputStateW.addIsCompleted(false);
-                userInputStateW.addImgUrl(
-                    userInputStateW.platforms[userInputStateW.selectedPlatform!]
-                        ["platformLogoUrl"]);
-                userInputStateW.setNullPlatform();
-              } else {
-                erroralert(
-                    context, "Error", "Please select any platform first");
-              }
-            }
-          },
-          child: const Text(
-            "Add new Channel",
-            textScaleFactor: 1,
-            style: TextStyle(fontSize: 18, color: Colors.white),
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        for (int i = 0; i < userInputStateW.cont.length; i++) ...[
-          CusFiels(
-            cont: userInputStateW.cont[i],
-            index: i,
-            imgUrl: userInputStateW.imgUrls[i],
-          )
-        ],
-        const SizedBox(
-          height: 15,
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: CusBtn(
-                btnColor: backgroundC,
-                btnText: "Back",
-                textSize: 18,
-                btnFunction: () {
-                  userInputStateW.setCurInput(userInputStateW.curInput - 1);
-                },
-                textColor: blackC,
               ),
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            Expanded(
-              child: CusBtn(
-                btnColor: primaryC,
-                btnText: "Next",
-                textSize: 18,
-                btnFunction: () async {
-                  if (userInputStateW.imgUrls.isEmpty) {
-                    erroralert(context, "Error", "Atleast add one platform");
+              const SizedBox(
+                height: 15,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    for (int i = 0;
+                        i < userInputStateW.platforms.length;
+                        i++) ...[
+                      InkWell(
+                        onTap: () {
+                          userInputStateW.setSelectPlatform(i);
+                          userInputStateW.setPlatfromId(
+                              userInputStateW.platforms[i]["id"]);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 5),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: (userInputStateW.selectedPlatform == i)
+                                  ? Colors.pink
+                                  : Colors.transparent,
+                              width: 2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 3)
+                            ],
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          width: 50,
+                          height: 50,
+                          padding: const EdgeInsets.all(10),
+                          child: Center(
+                            child: CachedNetworkImage(
+                              imageUrl: userInputStateW.platforms[i]
+                                  ["platformLogoUrl"],
+                              placeholder: (context, url) =>
+                                  const CircularProgressIndicator(),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(40),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 0,
+                  backgroundColor: Colors.pink,
+                ),
+                onPressed: () {
+                  if (userInputStateW.cont.isEmpty) {
+                    if (userInputStateW.selectedPlatform != null) {
+                      userInputStateW.addControler();
+                      userInputStateW.addIsCompleted(false);
+                      userInputStateW.addImgUrl(userInputStateW
+                              .platforms[userInputStateW.selectedPlatform!]
+                          ["platformLogoUrl"]);
+                      userInputStateW.setNullPlatform();
+                    } else {
+                      erroralert(
+                        context,
+                        "Error",
+                        "Please select any platform first",
+                      );
+                    }
+                  } else if (userInputStateW.cont.last.text == "") {
+                    erroralert(
+                      context,
+                      "Error",
+                      "Please fill the last field first",
+                    );
                   } else {
-                    // userInputStateW.clear();
-                    userInputStateW.setCurInput(userInputStateW.curInput + 1);
+                    if (userInputStateW.selectedPlatform != null) {
+                      userInputStateW.addControler();
+
+                      userInputStateW.addIsCompleted(false);
+                      userInputStateW.addImgUrl(userInputStateW
+                              .platforms[userInputStateW.selectedPlatform!]
+                          ["platformLogoUrl"]);
+                      userInputStateW.setNullPlatform();
+                    } else {
+                      erroralert(
+                          context, "Error", "Please select any platform first");
+                    }
                   }
                 },
+                child: const Text(
+                  "Add new Channel",
+                  textScaleFactor: 1,
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
-            ),
-          ],
-        )
-      ],
-    );
+              const SizedBox(
+                height: 20,
+              ),
+              for (int i = 0; i < userInputStateW.cont.length; i++) ...[
+                CusFiels(
+                  cont: userInputStateW.cont[i],
+                  index: i,
+                  imgUrl: userInputStateW.imgUrls[i],
+                )
+              ],
+              const SizedBox(
+                height: 15,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: backgroundC,
+                      btnText: "Back",
+                      textSize: 18,
+                      btnFunction: () {
+                        userInputStateW
+                            .setCurInput(userInputStateW.curInput - 1);
+                      },
+                      textColor: blackC,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: primaryC,
+                      btnText: "Next",
+                      textSize: 18,
+                      btnFunction: () async {
+                        isLoading.value = true;
+                        if (userInputStateW.imgUrls.isEmpty) {
+                          erroralert(
+                              context, "Error", "Atleast add one platform");
+                        } else {
+                          // userInputStateW.clear();
+                          userInputStateW
+                              .setCurInput(userInputStateW.curInput + 1);
+                        }
+                        isLoading.value = false;
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
   }
 }
 
@@ -1719,7 +1762,6 @@ class CusFiels extends HookConsumerWidget {
     final userInputStateW = ref.watch(influencerInputState);
     ValueNotifier<String> userId = useState("0");
     final userStateW = ref.watch(userState);
-
     void init() async {
       userId.value = await userStateW.getUserId();
     }
@@ -1834,6 +1876,7 @@ class UInput4 extends HookConsumerWidget {
     TextEditingController number = useTextEditingController();
     TextEditingController gender = useTextEditingController();
     TextEditingController city = useTextEditingController();
+    ValueNotifier<bool> isLoading = useState(true);
 
     CusApiReq apiReq = CusApiReq();
     void init() async {
@@ -1853,6 +1896,7 @@ class UInput4 extends HookConsumerWidget {
       } else {
         erroralert(context, "error", "No Record Fount");
       }
+      isLoading.value = false;
     }
 
     useEffect(() {
@@ -2204,215 +2248,225 @@ class UInput4 extends HookConsumerWidget {
       );
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Country",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
+    return isLoading.value
+        ? const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: country,
-              readOnly: true,
-              onTap: () {
-                countryBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Country",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Phone number",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              maxLength: 10,
-              keyboardType: TextInputType.number,
-              controller: number,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                counterText: "",
-                prefixText: userInputStateW.countryVal.isEmpty
-                    ? "0 - "
-                    : "${userInputStateW.countryVal[0]["isd"]} - ",
-                prefixStyle: const TextStyle(color: blackC, fontSize: 16),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-              ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Gender",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              onTap: () {
-                genderBox();
-              },
-              readOnly: true,
-              controller: gender,
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
-                ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-              ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "City",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: city,
-              readOnly: true,
-              onTap: () {
-                cityBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
-                ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: CusBtn(
-                btnColor: backgroundC,
-                btnText: "Back",
-                textSize: 18,
-                btnFunction: () {
-                  // userInputStateW.clear();
-
-                  userInputStateW.setCurInput(userInputStateW.curInput - 1);
-                },
-                textColor: blackC,
-              ),
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            Expanded(
-              child: CusBtn(
-                btnColor: primaryC,
-                btnText: "Next",
-                textSize: 18,
-                btnFunction: () async {
-                  final result = await userInputStateW.userUpdate4(
-                    context,
-                    userId.value,
-                    [number.text, gender.text],
-                  );
-
-                  final newuser =
-                      await userStateW.setNewUserData(context, userId.value);
-
-                  if (result && newuser) {
-                    userInputStateW.setCurInput(0);
-
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomePage(),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: country,
+                    readOnly: true,
+                    onTap: () {
+                      countryBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
                       ),
-                      (Route<dynamic> route) => false,
-                    );
-                  }
-                },
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ],
-        )
-      ],
-    );
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Phone number",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    maxLength: 10,
+                    keyboardType: TextInputType.number,
+                    controller: number,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      counterText: "",
+                      prefixText: userInputStateW.countryVal.isEmpty
+                          ? "0 - "
+                          : "${userInputStateW.countryVal[0]["isd"]} - ",
+                      prefixStyle: const TextStyle(color: blackC, fontSize: 16),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Gender",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    onTap: () {
+                      genderBox();
+                    },
+                    readOnly: true,
+                    controller: gender,
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "City",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: city,
+                    readOnly: true,
+                    onTap: () {
+                      cityBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: backgroundC,
+                      btnText: "Back",
+                      textSize: 18,
+                      btnFunction: () {
+                        // userInputStateW.clear();
+
+                        userInputStateW
+                            .setCurInput(userInputStateW.curInput - 1);
+                      },
+                      textColor: blackC,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: primaryC,
+                      btnText: "Next",
+                      textSize: 18,
+                      btnFunction: () async {
+                        isLoading.value = true;
+                        final result = await userInputStateW.userUpdate4(
+                          context,
+                          userId.value,
+                          [number.text, gender.text],
+                        );
+
+                        final newuser = await userStateW.setNewUserData(
+                            context, userId.value);
+
+                        if (result && newuser) {
+                          userInputStateW.setCurInput(0);
+
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HomePage(),
+                            ),
+                            (Route<dynamic> route) => false,
+                          );
+                        }
+                        isLoading.value = false;
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
   }
 }

@@ -323,11 +323,13 @@ class BInput1 extends HookConsumerWidget {
     TextEditingController bio = useTextEditingController();
 
     final brandInputStateW = ref.watch(brandInputState);
+    ValueNotifier<bool> isLoading = useState(true);
 
     // ValueNotifier<String> userId = useState("0");
 
     void init() async {
       // userId.value = await userStateW.getUserId();
+      isLoading.value = false;
     }
 
     useEffect(() {
@@ -335,306 +337,317 @@ class BInput1 extends HookConsumerWidget {
       return null;
     }, []);
 
-    return Form(
-      key: formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: const Color(0xffe5e7eb),
-              borderRadius: BorderRadius.circular(10),
+    return isLoading.value
+        ? const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
             ),
-            child: Row(
+          )
+        : Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Expanded(
-                  flex: 1,
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: const Color(0xffe5e7eb),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: SizedBox(
+                            width: 80,
+                            height: 80,
+                            child: (brandInputStateW.imageFile == null)
+                                ? Image.asset("assets/images/user.png")
+                                : Image.file(
+                                    brandInputStateW.imageFile!,
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: const Size.fromHeight(40),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  elevation: 0,
+                                  backgroundColor: const Color(0xff9ca3af),
+                                ),
+                                onPressed: () async {
+                                  await brandInputStateW.pickImage(context);
+                                },
+                                child: const Text(
+                                  "Upload",
+                                  textAlign: TextAlign.center,
+                                  textScaleFactor: 1,
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 5),
+                                child: Text(
+                                  "Upload profile photo here.",
+                                  textScaleFactor: 1,
+                                  style: TextStyle(
+                                    color: Colors.black.withOpacity(0.5),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 2),
+                                child: Text(
+                                  "The image shoudl either be jpg or jpeg or png format and be a maximum seixe of 10 MB.",
+                                  textScaleFactor: 1,
+                                  style: TextStyle(
+                                    color: Colors.black.withOpacity(0.5),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text(
+                    "Username",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: SizedBox(
-                      width: 80,
-                      height: 80,
-                      child: (brandInputStateW.imageFile == null)
-                          ? Image.asset("assets/images/user.png")
-                          : Image.file(
-                              brandInputStateW.imageFile!,
-                              fit: BoxFit.cover,
-                            ),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return "Please enter the username";
+                        }
+                        return null;
+                      },
+                      controller: name,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      ),
                     ),
                   ),
                 ),
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size.fromHeight(40),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            elevation: 0,
-                            backgroundColor: const Color(0xff9ca3af),
-                          ),
-                          onPressed: () async {
-                            await brandInputStateW.pickImage(context);
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text(
+                    "Website",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return "Please enter the website";
+                        }
+                        return null;
+                      },
+                      controller: website,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text(
+                    "Date of birth",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return "Please enter the date of birth";
+                        }
+                        return null;
+                      },
+                      readOnly: true,
+                      controller: dob,
+                      decoration: InputDecoration(
+                        suffixIcon: Icon(
+                          Icons.calendar_month,
+                          color: Colors.black.withOpacity(0.8),
+                        ),
+                        filled: true,
+                        fillColor: const Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      ),
+                      onTap: () async {
+                        var date = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime(DateTime.now().year - 18,
+                              DateTime.now().month, DateTime.now().day),
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime(DateTime.now().year - 18,
+                              DateTime.now().month, DateTime.now().day),
+                          builder: (context, child) {
+                            return Theme(
+                              data: Theme.of(context).copyWith(
+                                colorScheme: const ColorScheme.light(
+                                  primary: Colors.pink,
+                                  onSurface: Colors.pink,
+                                ),
+                                textButtonTheme: TextButtonThemeData(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: Colors.pink,
+                                  ),
+                                ),
+                              ),
+                              child: child!,
+                            );
                           },
-                          child: const Text(
-                            "Upload",
-                            textAlign: TextAlign.center,
-                            textScaleFactor: 1,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 5),
-                          child: Text(
-                            "Upload profile photo here.",
-                            textScaleFactor: 1,
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(0.5),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: Text(
-                            "The image shoudl either be jpg or jpeg or png format and be a maximum seixe of 10 MB.",
-                            textScaleFactor: 1,
-                            style: TextStyle(
-                              color: Colors.black.withOpacity(0.5),
-                              fontSize: 10,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                      ],
+                        );
+                        dob.text = DateFormat("dd-MM-yyyy").format(date!);
+                      },
                     ),
                   ),
                 ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text(
+                    "Company info",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return "Please enter the bio";
+                        }
+                        return null;
+                      },
+                      maxLines: 6,
+                      minLines: 4,
+                      controller: bio,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                CusBtn(
+                    btnColor: primaryC,
+                    btnText: "Next",
+                    textSize: 18,
+                    btnFunction: () async {
+                      isLoading.value = true;
+                        if (brandInputStateW.imageFile == null) {
+                          erroralert(
+                              context, "Image", "Please select one image");
+                        } else if (formKey.currentState!.validate()) {
+                          final result = await brandInputStateW.userUpdate1(
+                            context,
+                            [
+                              name.text,
+                              website.text,
+                              dob.text,
+                              bio.text,
+                            ],
+                          );
+
+                          if (result) {
+                            brandInputStateW
+                                .setCurInput(brandInputStateW.curInput + 1);
+                          }
+                        }
+                      isLoading.value = false;
+                    }),
               ],
             ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Text(
-              "Username",
-              textScaleFactor: 1,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty || value == "") {
-                    return "Please enter the username";
-                  }
-                  return null;
-                },
-                controller: name,
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xfff3f4f6),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Text(
-              "Website",
-              textScaleFactor: 1,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty || value == "") {
-                    return "Please enter the website";
-                  }
-                  return null;
-                },
-                controller: website,
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xfff3f4f6),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Text(
-              "Date of birth",
-              textScaleFactor: 1,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty || value == "") {
-                    return "Please enter the date of birth";
-                  }
-                  return null;
-                },
-                readOnly: true,
-                controller: dob,
-                decoration: InputDecoration(
-                  suffixIcon: Icon(
-                    Icons.calendar_month,
-                    color: Colors.black.withOpacity(0.8),
-                  ),
-                  filled: true,
-                  fillColor: const Color(0xfff3f4f6),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                ),
-                onTap: () async {
-                  var date = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime(DateTime.now().year - 18,
-                        DateTime.now().month, DateTime.now().day),
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime(DateTime.now().year - 18,
-                        DateTime.now().month, DateTime.now().day),
-                    builder: (context, child) {
-                      return Theme(
-                        data: Theme.of(context).copyWith(
-                          colorScheme: const ColorScheme.light(
-                            primary: Colors.pink,
-                            onSurface: Colors.pink,
-                          ),
-                          textButtonTheme: TextButtonThemeData(
-                            style: TextButton.styleFrom(
-                              foregroundColor: Colors.pink,
-                            ),
-                          ),
-                        ),
-                        child: child!,
-                      );
-                    },
-                  );
-                  dob.text = DateFormat("dd-MM-yyyy").format(date!);
-                },
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Text(
-              "Company info",
-              textScaleFactor: 1,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty || value == "") {
-                    return "Please enter the bio";
-                  }
-                  return null;
-                },
-                maxLines: 6,
-                minLines: 4,
-                controller: bio,
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xfff3f4f6),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          CusBtn(
-              btnColor: primaryC,
-              btnText: "Next",
-              textSize: 18,
-              btnFunction: () async {
-                if (brandInputStateW.imageFile == null) {
-                  erroralert(context, "Image", "Please select one image");
-                } else if (formKey.currentState!.validate()) {
-                  final result = await brandInputStateW.userUpdate1(
-                    context,
-                    [
-                      name.text,
-                      website.text,
-                      dob.text,
-                      bio.text,
-                    ],
-                  );
-
-                  if (result) {
-                    brandInputStateW.setCurInput(brandInputStateW.curInput + 1);
-                  }
-                }
-              }),
-        ],
-      ),
-    );
+          );
   }
 }
 
@@ -651,6 +664,7 @@ class BInput2 extends HookConsumerWidget {
     TextEditingController account = useTextEditingController();
     TextEditingController category = useTextEditingController();
     TextEditingController languages = useTextEditingController();
+    ValueNotifier<bool> isLoading = useState(true);
 
     CusApiReq apiReq = CusApiReq();
     void init() async {
@@ -686,6 +700,7 @@ class BInput2 extends HookConsumerWidget {
       } else {
         erroralert(context, "error", "No Record Fount");
       }
+      isLoading.value = false;
     }
 
     useEffect(() {
@@ -1267,241 +1282,252 @@ class BInput2 extends HookConsumerWidget {
       );
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Main Market",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
+    return isLoading.value
+        ? const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: mainmarket,
-              readOnly: true,
-              onTap: () {
-                mainMarketBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Main Market",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Other Market",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: othermarket,
-              readOnly: true,
-              onTap: () {
-                othermarketBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: mainmarket,
+                    readOnly: true,
+                    onTap: () {
+                      mainMarketBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Account currency",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: account,
-              readOnly: true,
-              onTap: () {
-                accountBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Other Market",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Category",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: category,
-              readOnly: true,
-              onTap: () {
-                categoryBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: othermarket,
+                    readOnly: true,
+                    onTap: () {
+                      othermarketBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Languages",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: languages,
-              readOnly: true,
-              onTap: () {
-                languagesBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Account currency",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: CusBtn(
-                btnColor: backgroundC,
-                btnText: "Back",
-                textSize: 18,
-                btnFunction: () {
-                  brandInputStateW.setCurInput(brandInputStateW.curInput - 1);
-                },
-                textColor: blackC,
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: account,
+                    readOnly: true,
+                    onTap: () {
+                      accountBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            Expanded(
-              child: CusBtn(
-                btnColor: primaryC,
-                btnText: "Next",
-                textSize: 18,
-                btnFunction: () async {
-                  final restult = await brandInputStateW.userUpdate2(
-                    context,
-                    // userId.value,
-                  );
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Category",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: category,
+                    readOnly: true,
+                    onTap: () {
+                      categoryBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Languages",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: languages,
+                    readOnly: true,
+                    onTap: () {
+                      languagesBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: backgroundC,
+                      btnText: "Back",
+                      textSize: 18,
+                      btnFunction: () {
+                        brandInputStateW
+                            .setCurInput(brandInputStateW.curInput - 1);
+                      },
+                      textColor: blackC,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: primaryC,
+                      btnText: "Next",
+                      textSize: 18,
+                      btnFunction: () async {
+                        isLoading.value = true;
+                        final restult = await brandInputStateW.userUpdate2(
+                          context,
+                          // userId.value,
+                        );
 
-                  if (restult) {
-                    brandInputStateW.setCurInput(brandInputStateW.curInput + 1);
-                  }
-                },
-              ),
-            ),
-          ],
-        )
-      ],
-    );
+                        if (restult) {
+                          brandInputStateW
+                              .setCurInput(brandInputStateW.curInput + 1);
+                        }
+                        isLoading.value = false;
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
   }
 }
 
@@ -1513,6 +1539,7 @@ class BInput3 extends HookConsumerWidget {
     final brandInputStateW = ref.watch(brandInputState);
 
     CusApiReq apiReq = CusApiReq();
+    ValueNotifier<bool> isLoading = useState(true);
 
     void init() async {
       final req = {};
@@ -1524,6 +1551,7 @@ class BInput3 extends HookConsumerWidget {
         erroralert(
             context, "Error", "Oops something went wrong please try again");
       }
+      isLoading.value = false;
     }
 
     useEffect(() {
@@ -1531,171 +1559,187 @@ class BInput3 extends HookConsumerWidget {
       return;
     }, []);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Channels",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
+    return isLoading.value
+        ? const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
             ),
-          ),
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              for (int i = 0; i < brandInputStateW.platforms.length; i++) ...[
-                GestureDetector(
-                  onTap: () {
-                    brandInputStateW.setSelectPlatform(i);
-                    brandInputStateW
-                        .setPlatfromId(brandInputStateW.platforms[i]["id"]);
-                  },
-                  child: Container(
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: (brandInputStateW.selectedPlatform == i)
-                            ? Colors.pink
-                            : Colors.transparent,
-                        width: 2,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                            color: Colors.black.withOpacity(0.2), blurRadius: 3)
-                      ],
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    width: 50,
-                    height: 50,
-                    padding: const EdgeInsets.all(10),
-                    child: Center(
-                      child: CachedNetworkImage(
-                        imageUrl: brandInputStateW.platforms[i]
-                            ["platformLogoUrl"],
-                        placeholder: (context, url) =>
-                            const CircularProgressIndicator(),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Channels",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              ],
-            ],
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size.fromHeight(40),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            elevation: 0,
-            backgroundColor: Colors.pink,
-          ),
-          onPressed: () {
-            if (brandInputStateW.cont.isEmpty) {
-              if (brandInputStateW.selectedPlatform != null) {
-                brandInputStateW.addControler();
-                brandInputStateW.addIsCompleted(false);
-                brandInputStateW.addImgUrl(brandInputStateW
-                        .platforms[brandInputStateW.selectedPlatform!]
-                    ["platformLogoUrl"]);
-                brandInputStateW.setNullPlatform();
-              } else {
-                erroralert(
-                    context, "Error", "Please select any platform first");
-              }
-            } else if (brandInputStateW.cont.last.text == "") {
-              erroralert(context, "Error", "Please fill the last field first");
-            } else {
-              if (brandInputStateW.selectedPlatform != null) {
-                brandInputStateW.addControler();
-
-                // cont.value = [...cont.value, TextEditingController()];
-                brandInputStateW.addIsCompleted(false);
-                brandInputStateW.addImgUrl(brandInputStateW
-                        .platforms[brandInputStateW.selectedPlatform!]
-                    ["platformLogoUrl"]);
-                brandInputStateW.setNullPlatform();
-              } else {
-                erroralert(
-                    context, "Error", "Please select any platform first");
-              }
-            }
-          },
-          child: const Text(
-            "Add new Channel",
-            textScaleFactor: 1,
-            style: TextStyle(fontSize: 18, color: Colors.white),
-          ),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        for (int i = 0; i < brandInputStateW.cont.length; i++) ...[
-          CusFiels(
-            cont: brandInputStateW.cont[i],
-            index: i,
-            imgUrl: brandInputStateW.imgUrls[i],
-          )
-        ],
-        const SizedBox(
-          height: 15,
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: CusBtn(
-                btnColor: backgroundC,
-                btnText: "Back",
-                textSize: 18,
-                btnFunction: () {
-                  brandInputStateW.setCurInput(brandInputStateW.curInput - 1);
-                },
-                textColor: blackC,
               ),
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            Expanded(
-              child: CusBtn(
-                btnColor: primaryC,
-                btnText: "Next",
-                textSize: 18,
-                btnFunction: () async {
-                  if (brandInputStateW.imgUrls.isEmpty) {
-                    erroralert(context, "Error", "Atleast add one platform");
+              const SizedBox(
+                height: 15,
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    for (int i = 0;
+                        i < brandInputStateW.platforms.length;
+                        i++) ...[
+                      GestureDetector(
+                        onTap: () {
+                          brandInputStateW.setSelectPlatform(i);
+                          brandInputStateW.setPlatfromId(
+                              brandInputStateW.platforms[i]["id"]);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              horizontal: 5, vertical: 5),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: (brandInputStateW.selectedPlatform == i)
+                                  ? Colors.pink
+                                  : Colors.transparent,
+                              width: 2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 3)
+                            ],
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          width: 50,
+                          height: 50,
+                          padding: const EdgeInsets.all(10),
+                          child: Center(
+                            child: CachedNetworkImage(
+                              imageUrl: brandInputStateW.platforms[i]
+                                  ["platformLogoUrl"],
+                              placeholder: (context, url) =>
+                                  const CircularProgressIndicator(),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(40),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 0,
+                  backgroundColor: Colors.pink,
+                ),
+                onPressed: () {
+                  if (brandInputStateW.cont.isEmpty) {
+                    if (brandInputStateW.selectedPlatform != null) {
+                      brandInputStateW.addControler();
+                      brandInputStateW.addIsCompleted(false);
+                      brandInputStateW.addImgUrl(brandInputStateW
+                              .platforms[brandInputStateW.selectedPlatform!]
+                          ["platformLogoUrl"]);
+                      brandInputStateW.setNullPlatform();
+                    } else {
+                      erroralert(
+                          context, "Error", "Please select any platform first");
+                    }
+                  } else if (brandInputStateW.cont.last.text == "") {
+                    erroralert(
+                        context, "Error", "Please fill the last field first");
                   } else {
-                    brandInputStateW.setCurInput(brandInputStateW.curInput + 1);
+                    if (brandInputStateW.selectedPlatform != null) {
+                      brandInputStateW.addControler();
+
+                      // cont.value = [...cont.value, TextEditingController()];
+                      brandInputStateW.addIsCompleted(false);
+                      brandInputStateW.addImgUrl(brandInputStateW
+                              .platforms[brandInputStateW.selectedPlatform!]
+                          ["platformLogoUrl"]);
+                      brandInputStateW.setNullPlatform();
+                    } else {
+                      erroralert(
+                          context, "Error", "Please select any platform first");
+                    }
                   }
                 },
+                child: const Text(
+                  "Add new Channel",
+                  textScaleFactor: 1,
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
               ),
-            ),
-          ],
-        )
-      ],
-    );
+              const SizedBox(
+                height: 20,
+              ),
+              for (int i = 0; i < brandInputStateW.cont.length; i++) ...[
+                CusFiels(
+                  cont: brandInputStateW.cont[i],
+                  index: i,
+                  imgUrl: brandInputStateW.imgUrls[i],
+                )
+              ],
+              const SizedBox(
+                height: 15,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: backgroundC,
+                      btnText: "Back",
+                      textSize: 18,
+                      btnFunction: () {
+                        brandInputStateW
+                            .setCurInput(brandInputStateW.curInput - 1);
+                      },
+                      textColor: blackC,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: primaryC,
+                      btnText: "Next",
+                      textSize: 18,
+                      btnFunction: () async {
+                        isLoading.value = true;
+                        if (brandInputStateW.imgUrls.isEmpty) {
+                          erroralert(
+                              context, "Error", "Atleast add one platform");
+                        } else {
+                          brandInputStateW
+                              .setCurInput(brandInputStateW.curInput + 1);
+                        }
+                        isLoading.value = false;
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
   }
 }
 
@@ -1833,6 +1877,7 @@ class BInput4 extends HookConsumerWidget {
     TextEditingController gender = useTextEditingController();
     TextEditingController city = useTextEditingController();
     TextEditingController address = useTextEditingController();
+    ValueNotifier<bool> isLoading = useState(true);
 
     CusApiReq apiReq = CusApiReq();
     void init() async {
@@ -1852,6 +1897,7 @@ class BInput4 extends HookConsumerWidget {
       } else {
         erroralert(context, "error", "No Record Fount");
       }
+      isLoading.value = false;
     }
 
     useEffect(() {
@@ -2203,236 +2249,247 @@ class BInput4 extends HookConsumerWidget {
       );
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Country",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
+    return isLoading.value
+        ? const Center(
+            child: Padding(
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
             ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: country,
-              readOnly: true,
-              onTap: () {
-                countryBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+          )
+        : Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Country",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Phone number",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              keyboardType: TextInputType.number,
-              controller: number,
-              maxLength: 10,
-              decoration: InputDecoration(
-                prefixText: brandInputStateW.countryVal.isEmpty
-                    ? "0 - "
-                    : "${brandInputStateW.countryVal[0]["isd"]} - ",
-                prefixStyle: const TextStyle(color: blackC, fontSize: 16),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                counterText: "",
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
-              ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Gender",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              onTap: () {
-                genderBox();
-              },
-              readOnly: true,
-              controller: gender,
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: country,
+                    readOnly: true,
+                    onTap: () {
+                      countryBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "City",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              controller: city,
-              readOnly: true,
-              onTap: () {
-                cityBox();
-              },
-              decoration: InputDecoration(
-                suffixIcon: Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.black.withOpacity(0.8),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Phone number",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
-                filled: true,
-                fillColor: const Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
               ),
-            ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.only(top: 16),
-          child: Text(
-            "Address",
-            textScaleFactor: 1,
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: TextField(
-              keyboardType: TextInputType.text,
-              controller: address,
-              decoration: const InputDecoration(
-                filled: true,
-                fillColor: Color(0xfff3f4f6),
-                border: InputBorder.none,
-                focusedBorder: InputBorder.none,
-                enabledBorder: InputBorder.none,
-                errorBorder: InputBorder.none,
-                disabledBorder: InputBorder.none,
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    keyboardType: TextInputType.number,
+                    controller: number,
+                    maxLength: 10,
+                    decoration: InputDecoration(
+                      prefixText: brandInputStateW.countryVal.isEmpty
+                          ? "0 - "
+                          : "${brandInputStateW.countryVal[0]["isd"]} - ",
+                      prefixStyle: const TextStyle(color: blackC, fontSize: 16),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      counterText: "",
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
-        ),
-        const SizedBox(
-          height: 15,
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: CusBtn(
-                btnColor: backgroundC,
-                btnText: "Back",
-                textSize: 18,
-                btnFunction: () {
-                  // userInputStateW.clear();
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Gender",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    onTap: () {
+                      genderBox();
+                    },
+                    readOnly: true,
+                    controller: gender,
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "City",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    controller: city,
+                    readOnly: true,
+                    onTap: () {
+                      cityBox();
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.black.withOpacity(0.8),
+                      ),
+                      filled: true,
+                      fillColor: const Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(top: 16),
+                child: Text(
+                  "Address",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: TextField(
+                    keyboardType: TextInputType.text,
+                    controller: address,
+                    decoration: const InputDecoration(
+                      filled: true,
+                      fillColor: Color(0xfff3f4f6),
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: backgroundC,
+                      btnText: "Back",
+                      textSize: 18,
+                      btnFunction: () {
+                        // userInputStateW.clear();
 
-                  brandInputStateW.setCurInput(brandInputStateW.curInput - 1);
-                },
-                textColor: blackC,
-              ),
-            ),
-            const SizedBox(
-              width: 20,
-            ),
-            Expanded(
-              child: CusBtn(
-                btnColor: primaryC,
-                btnText: "Next",
-                textSize: 18,
-                btnFunction: () async {
-                  final result = await brandInputStateW.userUpdate4(
-                    context,
-                    userId.value,
-                    [number.text, gender.text, address.text],
-                  );
+                        brandInputStateW
+                            .setCurInput(brandInputStateW.curInput - 1);
+                      },
+                      textColor: blackC,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                  Expanded(
+                    child: CusBtn(
+                      btnColor: primaryC,
+                      btnText: "Next",
+                      textSize: 18,
+                      btnFunction: () async {
+                        isLoading.value = true;
+                        final result = await brandInputStateW.userUpdate4(
+                          context,
+                          userId.value,
+                          [number.text, gender.text, address.text],
+                        );
 
-                  if (result) {
-                    brandInputStateW.setCurInput(brandInputStateW.curInput + 1);
-                  }
-                },
-              ),
-            ),
-          ],
-        )
-      ],
-    );
+                        if (result) {
+                          brandInputStateW
+                              .setCurInput(brandInputStateW.curInput + 1);
+                        }
+                        isLoading.value = false;
+                      },
+                    ),
+                  ),
+                ],
+              )
+            ],
+          );
   }
 }
 
@@ -2446,222 +2503,234 @@ class BInput5 extends HookConsumerWidget {
     TextEditingController name = useTextEditingController();
     TextEditingController email = useTextEditingController();
     TextEditingController number = useTextEditingController();
+    ValueNotifier<bool> isLoading = useState(true);
 
     final brandInputStateW = ref.watch(brandInputState);
     final userStateW = ref.watch(userState);
 
-    void init() async {}
+    void init() async {
+      isLoading.value = false;
+    }
 
     useEffect(() {
       init();
       return;
     }, []);
 
-    return Form(
-      key: formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Center(
+    return isLoading.value
+        ? const Center(
             child: Padding(
-              padding: EdgeInsets.only(top: 16),
-              child: Text(
-                "Invite user to in your company",
-                textScaleFactor: 1,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+              padding: EdgeInsets.all(20),
+              child: CircularProgressIndicator(),
             ),
-          ),
-          const Divider(),
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Text(
-              "Name",
-              textScaleFactor: 1,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty || value == "") {
-                    return "Please enter the name";
-                  }
-                  return null;
-                },
-                controller: name,
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xfff3f4f6),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Text(
-              "Email",
-              textScaleFactor: 1,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty || value == "") {
-                    return "Please enter the email";
-                  }
-                  return null;
-                },
-                controller: email,
-                decoration: const InputDecoration(
-                  filled: true,
-                  fillColor: Color(0xfff3f4f6),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 16),
-            child: Text(
-              "Number",
-              textScaleFactor: 1,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(top: 5),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: TextFormField(
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty || value == "") {
-                    return "Please enter the name";
-                  } else if (value.length < 10) {
-                    return "Please enter 10 degit mobile number";
-                  }
-                  return null;
-                },
-                maxLength: 10,
-                controller: number,
-                decoration: const InputDecoration(
-                  filled: true,
-                  counterText: "",
-                  fillColor: Color(0xfff3f4f6),
-                  border: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  errorBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Align(
-            alignment: Alignment.topRight,
-            child: SizedBox(
-              width: 80,
-              child: CusBtn(
-                btnColor: primaryC,
-                btnText: "Invite",
-                textSize: 18,
-                btnFunction: () async {
-                  if (formKey.currentState!.validate()) {
-                    await brandInputStateW.inviteUser(
-                        context, name.text, email.text, number.text);
-
-                    name.clear();
-                    email.clear();
-                    number.clear();
-                  }
-                },
-              ),
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          Row(
-            children: [
-              Expanded(
-                child: CusBtn(
-                  btnColor: backgroundC,
-                  btnText: "Back",
-                  textSize: 18,
-                  btnFunction: () {
-                    brandInputStateW.setCurInput(brandInputStateW.curInput - 1);
-                  },
-                  textColor: blackC,
-                ),
-              ),
-              const SizedBox(
-                width: 20,
-              ),
-              Expanded(
-                child: CusBtn(
-                  btnColor: primaryC,
-                  btnText: "Submit",
-                  textSize: 18,
-                  btnFunction: () async {
-
-                    final newuser = await userStateW.updateUser(context);
-
-                    if (newuser) {
-                      brandInputStateW.setCurInput(0);
-
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const HomePage(),
-                        ),
-                        (Route<dynamic> route) => false,
-                      );
-                    }
-                  },
-                ),
-              ),
-            ],
           )
-        ],
-      ),
-    );
+        : Form(
+            key: formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: Text(
+                      "Invite user to in your company",
+                      textScaleFactor: 1,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ),
+                ),
+                const Divider(),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text(
+                    "Name",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return "Please enter the name";
+                        }
+                        return null;
+                      },
+                      controller: name,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text(
+                    "Email",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return "Please enter the email";
+                        }
+                        return null;
+                      },
+                      controller: email,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        fillColor: Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Text(
+                    "Number",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return "Please enter the name";
+                        } else if (value.length < 10) {
+                          return "Please enter 10 degit mobile number";
+                        }
+                        return null;
+                      },
+                      maxLength: 10,
+                      controller: number,
+                      decoration: const InputDecoration(
+                        filled: true,
+                        counterText: "",
+                        fillColor: Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: SizedBox(
+                    width: 80,
+                    child: CusBtn(
+                      btnColor: primaryC,
+                      btnText: "Invite",
+                      textSize: 18,
+                      btnFunction: () async {
+                        isLoading.value = true;
+                        if (formKey.currentState!.validate()) {
+                          await brandInputStateW.inviteUser(
+                              context, name.text, email.text, number.text);
+
+                          name.clear();
+                          email.clear();
+                          number.clear();
+                        }
+                        isLoading.value = false;
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CusBtn(
+                        btnColor: backgroundC,
+                        btnText: "Back",
+                        textSize: 18,
+                        btnFunction: () {
+                          brandInputStateW
+                              .setCurInput(brandInputStateW.curInput - 1);
+                        },
+                        textColor: blackC,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Expanded(
+                      child: CusBtn(
+                        btnColor: primaryC,
+                        btnText: "Submit",
+                        textSize: 18,
+                        btnFunction: () async {
+                          final newuser = await userStateW.updateUser(context);
+
+                          if (newuser) {
+                            brandInputStateW.setCurInput(0);
+
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const HomePage(),
+                              ),
+                              (Route<dynamic> route) => false,
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          );
   }
 }
