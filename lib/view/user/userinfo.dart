@@ -95,6 +95,7 @@ class UserInfo extends HookConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.max,
                             children: [
+                            
                               ClipRRect(
                                 borderRadius: BorderRadius.circular(6),
                                 child: SizedBox(

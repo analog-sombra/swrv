@@ -33,6 +33,7 @@ class SWRV extends HookConsumerWidget {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
     return MaterialApp(
       title: "SWRV",
       debugShowCheckedModeBanner: false,

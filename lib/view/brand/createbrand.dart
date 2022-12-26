@@ -2,7 +2,6 @@
 
 import 'dart:convert';
 
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -32,6 +31,7 @@ class CreateBrandPage extends HookConsumerWidget {
     TextEditingController contact = useTextEditingController();
     TextEditingController binfo = useTextEditingController();
     TextEditingController cinfo = useTextEditingController();
+    TextEditingController citySearch = useTextEditingController();
 
     ValueNotifier<bool> isLoading = useState(true);
 
@@ -40,14 +40,6 @@ class CreateBrandPage extends HookConsumerWidget {
     CusApiReq apiReq = CusApiReq();
 
     void init() async {
-      final req4 = {};
-      List city = await apiReq.postApi(jsonEncode(req4), path: "api/getcity");
-
-      if (city[0]["status"]) {
-        createBrandSW.setCity(city[0]["data"]);
-      } else {
-        erroralert(context, "error", "No Record Fount");
-      }
       isLoading.value = false;
     }
 
@@ -55,6 +47,127 @@ class CreateBrandPage extends HookConsumerWidget {
       init();
       return null;
     }, []);
+
+    void cityBox() {
+      showModalBottomSheet(
+        backgroundColor: whiteC,
+        isDismissible: false,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
+        context: context,
+        builder: (context) => StatefulBuilder(builder: (context, setState) {
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: Center(
+                      child: Text(
+                    "City",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black.withOpacity(0.85),
+                    ),
+                  )),
+                ),
+                const Divider(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for (int i = 0;
+                            i < createBrandSW.cityList.length;
+                            i++) ...[
+                          CheckboxListTile(
+                            value: createBrandSW.selectedCity[i],
+                            onChanged: (val) {
+                              createBrandSW.setCity(i, val!);
+                              createBrandSW.setCountryCode(i);
+                              setState(() {});
+                            },
+                            title: Text(
+                              '${createBrandSW.cityList[i]["name"]}   [ ${createBrandSW.cityList[i]["code"]} ]',
+                            ),
+                          )
+                        ]
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            elevation: 0,
+                            backgroundColor: const Color(0xffef4444),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "Clear",
+                            textAlign: TextAlign.center,
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              backgroundColor: const Color(0xff22c55e)),
+                          onPressed: () {
+                            if (createBrandSW.cityVal.isNotEmpty) {
+                              createBrandSW.setCityValue(
+                                  "${createBrandSW.cityVal[0]["name"]} [${createBrandSW.cityVal[0]["code"]}]");
+                            } else {
+                              createBrandSW.setCityValue(null);
+                            }
+
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "confirm",
+                            textAlign: TextAlign.center,
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+        }),
+      );
+    }
 
     return Scaffold(
       backgroundColor: backgroundC,
@@ -218,7 +331,7 @@ class CreateBrandPage extends HookConsumerWidget {
                                             padding:
                                                 const EdgeInsets.only(top: 2),
                                             child: Text(
-                                              "The image should either be jpg or jpeg or png format and be a maximum seixe of 10 MB.",
+                                              "The image should either be jpg or jpeg or png format and be a maximum seixe of 4 MB.",
                                               textScaleFactor: 1,
                                               style: TextStyle(
                                                 color: Colors.black
@@ -344,93 +457,76 @@ class CreateBrandPage extends HookConsumerWidget {
                               ),
                             ),
                             cusTitle("Brand city"),
-                            if (createBrandSW.cityList.isEmpty) ...[
-                              const CircularProgressIndicator(),
-                            ] else ...[
-                              SizedBox(
-                                width: width,
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton2<String>(
-                                    hint: const Text(
-                                      "City",
-                                      textScaleFactor: 1,
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: blackC,
-                                          fontWeight: FontWeight.w400),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 6),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: TextField(
+                                  controller: citySearch,
+                                  decoration: InputDecoration(
+                                    prefixIcon: Icon(
+                                      Icons.search,
+                                      color: blackC.withOpacity(0.65),
                                     ),
-                                    buttonDecoration: BoxDecoration(
-                                      boxShadow: const [],
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: backgroundC,
+                                    suffixIcon: InkWell(
+                                      onTap: () async {
+                                        if (citySearch.text.isEmpty ||
+                                            citySearch.text == "") {
+                                          erroralert(context, "Error",
+                                              "Please fill this filed before searching");
+                                        } else {
+                                          createBrandSW.resetCitySelection();
+                                          final req = {
+                                            "search": citySearch.text
+                                          };
+                                          List city = await apiReq.postApi(
+                                              jsonEncode(req),
+                                              path: "api/get-city");
+                                          if (city[0]["status"] == false) {
+                                            erroralert(context, "Error",
+                                                "No city found with this name");
+                                          } else {
+                                            createBrandSW
+                                                .setCityList(city[0]["data"]);
+                                            cityBox();
+                                          }
+                                        }
+                                      },
+                                      child: const Icon(
+                                        Icons.arrow_forward,
+                                        size: 25,
+                                      ),
                                     ),
-                                    itemPadding: const EdgeInsets.only(
-                                        left: 20, right: 5),
-                                    buttonPadding: const EdgeInsets.only(
-                                        left: 20, right: 5),
-                                    style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w400),
-                                    value: createBrandSW.cityValue,
-                                    icon: const Icon(
-                                      Icons.arrow_drop_down,
-                                      color: Colors.black,
-                                    ),
-                                    items: [
-                                      for (int i = 0;
-                                          i < createBrandSW.cityList.length;
-                                          i++) ...[
-                                        DropdownMenuItem(
-                                          onTap: () {
-                                            createBrandSW.setCountryCode(i);
-                                            createBrandSW.setCityId(i);
-                                          },
-                                          value: createBrandSW.cityList[i]
-                                              ["name"],
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              border: Border(
-                                                bottom: BorderSide(
-                                                  color:
-                                                      blackC.withOpacity(0.25),
-                                                ),
-                                              ),
-                                            ),
-                                            width: 220,
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8),
-                                            child: Text(
-                                              "[${createBrandSW.cityList[i]["code"]}] ${createBrandSW.cityList[i]["name"]}",
-                                              textScaleFactor: 1,
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 16),
-                                            ),
-                                          ),
-                                        ),
-                                      ]
-                                    ],
-                                    onChanged: (newval) {
-                                      createBrandSW.setCityValue(newval!);
-                                    },
-                                    buttonElevation: 2,
-                                    itemHeight: 40,
-                                    dropdownMaxHeight: 250,
-                                    dropdownPadding: null,
-                                    isDense: false,
-                                    dropdownElevation: 8,
-                                    scrollbarRadius: const Radius.circular(40),
-                                    scrollbarThickness: 6,
-                                    scrollbarAlwaysShow: true,
-                                    offset: const Offset(0, 0),
-                                    dropdownDecoration: BoxDecoration(
-                                        color: const Color(0xfffbfbfb),
-                                        borderRadius: BorderRadius.circular(5),
-                                        boxShadow: const []),
+                                    filled: true,
+                                    fillColor: backgroundC,
+                                    errorBorder: InputBorder.none,
+                                    border: InputBorder.none,
+                                    focusedBorder: InputBorder.none,
+                                    enabledBorder: InputBorder.none,
+                                    disabledBorder: InputBorder.none,
+                                    focusedErrorBorder: InputBorder.none,
                                   ),
                                 ),
                               ),
-                            ],
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: Text(
+                                createBrandSW.cityValue ??
+                                    "city is not selected",
+                                textScaleFactor: 1,
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                  color: blackC.withOpacity(
+                                    0.75,
+                                  ),
+                                ),
+                              ),
+                            ),
                             cusTitle("Support Email"),
                             Padding(
                               padding: const EdgeInsets.only(top: 5),

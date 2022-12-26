@@ -1,10 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/view/user/useredit/usereditthree.dart';
 
@@ -30,7 +28,6 @@ class UserEditTwo extends HookConsumerWidget {
     TextEditingController careerHistory = useTextEditingController();
     TextEditingController website = useTextEditingController();
 
-    final userStateW = ref.watch(userState);
     final userProfileEditW = ref.watch(userProfileEditState);
 
     void init() async {
@@ -279,7 +276,7 @@ class UserEditTwo extends HookConsumerWidget {
                                           isLoading.value = true;
                                           if (formKey.currentState!
                                               .validate()) {
-                                            final res = await userProfileEditW
+                                            await userProfileEditW
                                                 .sectionTwoUpdate(context);
 
                                             Navigator.push(

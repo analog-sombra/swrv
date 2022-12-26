@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/utils/utilthemes.dart';
-import 'package:swrv/view/home/home.dart';
+import 'package:swrv/view/user/useredit/usereditfour.dart';
 
 import '../../../services/apirequest.dart';
 import '../../../state/user/influenceredit.dart';
@@ -310,11 +310,10 @@ class UserEditThree extends HookConsumerWidget {
                               backgroundColor: secondaryC,
                             ),
                             onPressed: () async {
-                              Navigator.pushAndRemoveUntil(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => const HomePage()),
-                                (route) => false,
+                                    builder: (context) => const UserEditFour()),
                               );
                             },
                             child: const Text(

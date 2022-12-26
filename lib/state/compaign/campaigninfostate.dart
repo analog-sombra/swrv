@@ -148,6 +148,7 @@ class CampaignInfoState extends ChangeNotifier {
   Future<void> applyForChamp(
       BuildContext context, String des, String champId, String toUserId) async {
     final req = {
+      
       "campaignId": champId,
       "influencerId": await userState.getUserId(),
       "fromUserId": await userState.getUserId(),

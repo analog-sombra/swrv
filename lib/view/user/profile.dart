@@ -18,7 +18,7 @@ import '../home/help.dart';
 import '../home/home.dart';
 import '../navigation/bottomnavbar.dart';
 import '../navigation/drawer.dart';
-import 'brandedit/brandeditone.dart';
+import 'invitetobrand.dart';
 
 class Profile extends HookConsumerWidget {
   const Profile({super.key});
@@ -156,22 +156,23 @@ class Profile extends HookConsumerWidget {
                         InkWell(
                           onTap: () async {
                             final res = await userStateW.isProfileCompleted();
+
                             if (res) {
-                              if (isBrand.value) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const BrandEditOne(),
-                                  ),
-                                );
-                              } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const UserEditOne(),
-                                  ),
-                                );
-                              }
+                              // if (isBrand.value) {
+                              //   Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //       builder: (context) => const BrandEditOne(),
+                              //     ),
+                              //   );
+                              // } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const UserEditOne(),
+                                ),
+                              );
+                              // }
                             } else {
                               Navigator.pushAndRemoveUntil(
                                 context,
@@ -311,7 +312,7 @@ class Profile extends HookConsumerWidget {
                         ),
                       ),
                     ),
-                    GestureDetector(
+                    InkWell(
                       onTap: () {
                         Navigator.push(
                           context,
@@ -377,6 +378,7 @@ class Profile extends HookConsumerWidget {
                             MaterialPageRoute(
                               builder: ((context) => MyAccount(
                                     id: userId,
+                                    isSendMsg: false,
                                   )),
                             ),
                           );
@@ -407,6 +409,29 @@ class Profile extends HookConsumerWidget {
                         ),
                       ),
                     ),
+                    if (isBrand.value) ...[
+                      InkWell(
+                        onTap: () async {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const InviteToBrand(),
+                              ));
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: Text(
+                            "Invite Users",
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                              color: Colors.black.withOpacity(0.75),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                     InkWell(
                       onTap: () async {
                         resetPassAlert(context, resetpass, ref);

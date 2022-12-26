@@ -16,6 +16,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../state/user/myaccoutstate.dart';
 import '../../state/userstate.dart';
 import '../../utils/alerts.dart';
+import '../../widgets/alerts.dart';
 import '../../widgets/componets.dart';
 import '../campaings/createchamp/selectecategory.dart';
 import '../home/home.dart';
@@ -24,10 +25,8 @@ import '../navigation/drawer.dart';
 
 class MyAccount extends HookConsumerWidget {
   final String id;
-  const MyAccount({
-    super.key,
-    required this.id,
-  });
+  final bool isSendMsg;
+  const MyAccount({super.key, required this.id, required this.isSendMsg});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,6 +47,8 @@ class MyAccount extends HookConsumerWidget {
     ValueNotifier<String?> personalHistory = useState(null);
     ValueNotifier<String?> careerHistory = useState(null);
     ValueNotifier<String?> externalLinks = useState(null);
+
+    TextEditingController msg = useTextEditingController();
 
     void init() async {
       final req = {"id": id};
@@ -316,19 +317,21 @@ class MyAccount extends HookConsumerWidget {
                                   color: blackC),
                             ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 20),
-                            child: CusBtn(
-                              btnColor: secondaryC,
-                              btnText: "Sent Message",
-                              textSize: 18,
-                              btnFunction: () {
-                                comingalert(context);
-                              },
-                              elevation: 1,
+                          if (isSendMsg) ...[
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 20),
+                              child: CusBtn(
+                                btnColor: secondaryC,
+                                btnText: "Sent Message",
+                                textSize: 18,
+                                btnFunction: () {
+                                  sendMsgAlert(context, ref, msg, id);
+                                },
+                                elevation: 1,
+                              ),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                     ),
@@ -786,13 +789,15 @@ class PersnalInfo extends HookConsumerWidget {
           const SizedBox(
             height: 10,
           ),
-          Text(
-            personalHistory,
-            textScaleFactor: 1,
-            textAlign: TextAlign.left,
-            style: const TextStyle(
-                fontSize: 12, fontWeight: FontWeight.w400, color: blackC),
-          ),
+          if (personalHistory == "") ...[
+            const Text(
+              "User not completed this part",
+              textScaleFactor: 1,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                  fontSize: 14, fontWeight: FontWeight.w400, color: blackC),
+            ),
+          ],
           const SizedBox(
             height: 20,
           ),
@@ -806,6 +811,15 @@ class PersnalInfo extends HookConsumerWidget {
           const SizedBox(
             height: 10,
           ),
+          if (careerHistory == "") ...[
+            const Text(
+              "User not completed this part",
+              textScaleFactor: 1,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                  fontSize: 14, fontWeight: FontWeight.w400, color: blackC),
+            ),
+          ],
           Text(
             careerHistory,
             textScaleFactor: 1,
@@ -816,39 +830,42 @@ class PersnalInfo extends HookConsumerWidget {
           const SizedBox(
             height: 20,
           ),
-          const Text(
-            "External links",
-            textScaleFactor: 1,
-            textAlign: TextAlign.left,
-            style: TextStyle(
-                fontSize: 16, fontWeight: FontWeight.w500, color: secondaryC),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          InkWell(
-            onTap: () async {
-              try {
-                if (!await launchUrl(Uri.parse(externalLinks))) {
-                  erroralert(context, "Error", 'Could not open $externalLinks');
-                }
-              } catch (e) {
-                erroralert(context, "Error", 'Could not opne $externalLinks');
-              }
-            },
-            child: const Text(
-              "Official website",
+          if (externalLinks != "") ...[
+            const Text(
+              "External links",
               textScaleFactor: 1,
               textAlign: TextAlign.left,
               style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  color: Colors.blue),
+                  fontSize: 16, fontWeight: FontWeight.w500, color: secondaryC),
             ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
+            const SizedBox(
+              height: 10,
+            ),
+            InkWell(
+              onTap: () async {
+                try {
+                  if (!await launchUrl(Uri.parse(externalLinks))) {
+                    erroralert(
+                        context, "Error", 'Could not open $externalLinks');
+                  }
+                } catch (e) {
+                  erroralert(context, "Error", 'Could not opne $externalLinks');
+                }
+              },
+              child: const Text(
+                "Official website",
+                textScaleFactor: 1,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.blue),
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+          ],
         ],
       ),
     );

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -274,7 +275,7 @@ class MyCampaings extends HookConsumerWidget {
                         ),
                       ],
                     ] else ...[
-                      // const UserCamp(),
+                      const UserCampaigns(),
                     ],
                     const SizedBox(
                       height: 80,
@@ -284,5 +285,182 @@ class MyCampaings extends HookConsumerWidget {
               ),
             ),
     );
+  }
+}
+
+class UserCampaigns extends HookConsumerWidget {
+  const UserCampaigns({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final width = MediaQuery.of(context).size.width;
+    final userStateW = ref.watch(userState);
+    ValueNotifier<bool> isLoading = useState(true);
+    CusApiReq apiReq = CusApiReq();
+    ValueNotifier<List> userCamp = useState([]);
+    void init() async {
+      final req = {
+        "search": {
+          "status": "3",
+          "influencer": await userStateW.getUserId(),
+          "fromUser": await userStateW.getUserId()
+        }
+      };
+      dynamic data =
+          await apiReq.postApi2(jsonEncode(req), path: "/api/search-invite");
+      userCamp.value = data[0]["data"];
+      isLoading.value = false;
+    }
+
+    useEffect(() {
+      init();
+      return null;
+    }, []);
+    return isLoading.value
+        ? const Padding(
+            padding: EdgeInsets.all(
+              20,
+            ),
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        : Container(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            width: width,
+            margin: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              color: whiteC,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: const [
+                BoxShadow(
+                  color: shadowC,
+                  blurRadius: 5,
+                  offset: Offset(0, 6),
+                ),
+              ],
+            ),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (userCamp.value.isEmpty) ...[
+                    Container(
+                      width: width,
+                      margin: const EdgeInsets.all(15),
+                      decoration: BoxDecoration(
+                        color: whiteC,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: shadowC,
+                            blurRadius: 5,
+                            offset: Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: const [
+                          Text(
+                            "You have no campaign connected right now",
+                            textScaleFactor: 1,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                                color: blackC),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ] else ...[
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              for (int i = 0;
+                                  i < userCamp.value.length;
+                                  i++) ...[
+                                Container(
+                                  margin: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 15),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: whiteC,
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: blackC.withOpacity(0.2),
+                                          blurRadius: 5)
+                                    ],
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 5),
+                                  child: Row(
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(10),
+                                        child: SizedBox(
+                                          width: 50,
+                                          height: 50,
+                                          child: CachedNetworkImage(
+                                            imageUrl: userCamp.value[i]["brand"]
+                                                ["logo"],
+                                            progressIndicatorBuilder: (context,
+                                                    url, downloadProgress) =>
+                                                Center(
+                                              child: CircularProgressIndicator(
+                                                  value: downloadProgress
+                                                      .progress),
+                                            ),
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    Image.asset(
+                                              "assets/images/user.png",
+                                              fit: BoxFit.cover,
+                                            ),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 10,
+                                      ),
+                                      Text(
+                                        userCamp.value[i]["campaign"]["name"],
+                                        textScaleFactor: 1,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.w500,
+                                            color: blackC),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          );
   }
 }

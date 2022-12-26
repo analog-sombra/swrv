@@ -367,7 +367,7 @@ class UInput1 extends HookConsumerWidget {
                               Padding(
                                 padding: const EdgeInsets.only(top: 2),
                                 child: Text(
-                                  "The image should either be jpg or jpeg or png format and be a maximum seixe of 10 MB.",
+                                  "The image should either be jpg or jpeg or png format and be a maximum seixe of 4 MB.",
                                   textScaleFactor: 1,
                                   style: TextStyle(
                                     color: Colors.black.withOpacity(0.5),
@@ -658,25 +658,20 @@ class UInput2 extends HookConsumerWidget {
     void init() async {
       userId.value = await userStateW.getUserId();
 
-      final req1 = {};
       List accountRes =
-          await apiReq.postApi(jsonEncode(req1), path: "/api/getcurrency");
+          await apiReq.postApi(jsonEncode({}), path: "/api/getcurrency");
 
-      final req2 = {};
       List categoryRes =
-          await apiReq.postApi(jsonEncode(req2), path: "/api/getcategory");
+          await apiReq.postApi(jsonEncode({}), path: "/api/getcategory");
 
-      final req3 = {};
       List languagesRes =
-          await apiReq.postApi(jsonEncode(req3), path: "/api/getlanguage");
+          await apiReq.postApi(jsonEncode({}), path: "/api/getlanguage");
 
-      final req4 = {};
       List mainmarketRes =
-          await apiReq.postApi(jsonEncode(req4), path: "/api/get-market");
+          await apiReq.postApi(jsonEncode({}), path: "/api/get-market");
 
-      final req5 = {};
       List othermarketRes =
-          await apiReq.postApi(jsonEncode(req5), path: "/api/get-market");
+          await apiReq.postApi(jsonEncode({}), path: "/api/get-market");
 
       if (accountRes[0]["status"] &&
           categoryRes[0]["status"] &&
@@ -1875,7 +1870,7 @@ class UInput4 extends HookConsumerWidget {
     TextEditingController country = useTextEditingController();
     TextEditingController number = useTextEditingController();
     TextEditingController gender = useTextEditingController();
-    TextEditingController city = useTextEditingController();
+    TextEditingController citySearch = useTextEditingController();
     ValueNotifier<bool> isLoading = useState(true);
 
     CusApiReq apiReq = CusApiReq();
@@ -2141,108 +2136,113 @@ class UInput4 extends HookConsumerWidget {
             borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
         context: context,
         builder: (context) => StatefulBuilder(builder: (context, setState) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 10),
-                child: Center(
-                    child: Text(
-                  "City",
-                  textScaleFactor: 1,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black.withOpacity(0.85),
-                  ),
-                )),
-              ),
-              const Divider(),
-              Expanded(
-                  child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    for (int i = 0;
-                        i < userInputStateW.cityList.length;
-                        i++) ...[
-                      CheckboxListTile(
-                        value: userInputStateW.selectedCity[i],
-                        onChanged: (val) {
-                          userInputStateW.setCity(i, val!);
-                          setState(() {});
-                        },
-                        title: Text(
-                            '${userInputStateW.cityList[i]["id"]} ${userInputStateW.cityList[i]["name"]}   [ ${userInputStateW.cityList[i]["code"]} ]'),
-                      )
-                    ]
-                  ],
-                ),
-              )),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          elevation: 0,
-                          backgroundColor: const Color(0xffef4444),
-                        ),
-                        onPressed: () {
-                          city.clear();
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          "Clear",
-                          textAlign: TextAlign.center,
-                          textScaleFactor: 1,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: Center(
+                      child: Text(
+                    "City",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black.withOpacity(0.85),
                     ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            elevation: 0,
+                  )),
+                ),
+                const Divider(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for (int i = 0;
+                            i < userInputStateW.cityList.length;
+                            i++) ...[
+                          CheckboxListTile(
+                            value: userInputStateW.selectedCity[i],
+                            onChanged: (val) {
+                              userInputStateW.setCity(i, val!);
+                              setState(() {});
+                            },
+                            title: Text(
+                              '${userInputStateW.cityList[i]["name"]}   [ ${userInputStateW.cityList[i]["code"]} ]',
+                            ),
+                          )
+                        ]
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            backgroundColor: const Color(0xff22c55e)),
-                        onPressed: () {
-                          if (userInputStateW.cityVal.isNotEmpty) {
-                            city.text =
-                                "${userInputStateW.cityVal[0]["name"]} [${userInputStateW.cityVal[0]["code"]}]";
-                          } else {
-                            city.clear();
-                          }
-
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          "confirm",
-                          textAlign: TextAlign.center,
-                          textScaleFactor: 1,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
+                            elevation: 0,
+                            backgroundColor: const Color(0xffef4444),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "Clear",
+                            textAlign: TextAlign.center,
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              backgroundColor: const Color(0xff22c55e)),
+                          onPressed: () {
+                            if (userInputStateW.cityVal.isNotEmpty) {
+                              userInputStateW.setCityValue(
+                                  "${userInputStateW.cityVal[0]["name"]} [${userInputStateW.cityVal[0]["code"]}]");
+                            } else {
+                              userInputStateW.setCityValue(null);
+                            }
+
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "confirm",
+                            textAlign: TextAlign.center,
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           );
         }),
       );
@@ -2390,27 +2390,92 @@ class UInput4 extends HookConsumerWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: TextField(
-                    controller: city,
-                    readOnly: true,
-                    onTap: () {
-                      cityBox();
-                    },
+                    controller: citySearch,
                     decoration: InputDecoration(
-                      suffixIcon: Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.black.withOpacity(0.8),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: blackC.withOpacity(0.65),
+                      ),
+                      suffixIcon: InkWell(
+                        onTap: () async {
+                          if (citySearch.text.isEmpty ||
+                              citySearch.text == "") {
+                            erroralert(context, "Error",
+                                "Please fill this filed before searching");
+                          } else {
+                            userInputStateW.resetCitySelection();
+                            final req = {"search": citySearch.text};
+                            List city = await apiReq.postApi(jsonEncode(req),
+                                path: "api/get-city");
+                            if (city[0]["status"] == false) {
+                              erroralert(context, "Error",
+                                  "No city found with this name");
+                            } else {
+                              userInputStateW.setCityList(city[0]["data"]);
+                              cityBox();
+                            }
+                          }
+                        },
+                        child: const Icon(
+                          Icons.arrow_forward,
+                          size: 25,
+                        ),
                       ),
                       filled: true,
-                      fillColor: const Color(0xfff3f4f6),
+                      fillColor: backgroundC,
+                      errorBorder: InputBorder.none,
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
                       disabledBorder: InputBorder.none,
+                      focusedErrorBorder: InputBorder.none,
                     ),
                   ),
                 ),
               ),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: Text(
+                  userInputStateW.cityValue ?? "city is not selected",
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: blackC.withOpacity(
+                      0.75,
+                    ),
+                  ),
+                ),
+              ),
+
+              // Padding(
+              //   padding: const EdgeInsets.only(top: 5),
+              //   child: ClipRRect(
+              //     borderRadius: BorderRadius.circular(10),
+              //     child: TextField(
+              //       controller: city,
+              //       readOnly: true,
+              //       onTap: () {
+              //         cityBox();
+              //       },
+              //       decoration: InputDecoration(
+              //         suffixIcon: Icon(
+              //           Icons.arrow_drop_down,
+              //           color: Colors.black.withOpacity(0.8),
+              //         ),
+              //         filled: true,
+              //         fillColor: const Color(0xfff3f4f6),
+              //         border: InputBorder.none,
+              //         focusedBorder: InputBorder.none,
+              //         enabledBorder: InputBorder.none,
+              //         errorBorder: InputBorder.none,
+              //         disabledBorder: InputBorder.none,
+              //       ),
+              //     ),
+              //   ),
+              // ),
               const SizedBox(
                 height: 15,
               ),

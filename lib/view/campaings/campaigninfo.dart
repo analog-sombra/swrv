@@ -1019,13 +1019,15 @@ class CampaignTarget extends HookWidget {
                 ),
               ),
               const Spacer(),
-              Text(
-                location,
-                textScaleFactor: 1,
-                style: const TextStyle(
-                  color: secondaryC,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
+              FittedBox(
+                child: Text(
+                  location,
+                  textScaleFactor: 1,
+                  style: const TextStyle(
+                    color: secondaryC,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ],
@@ -2428,6 +2430,53 @@ class PandingDraftRequest extends HookConsumerWidget {
                               fontSize: 14,
                               fontWeight: FontWeight.w400),
                         ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: ((context) => PdfViewer(
+                                      link: campaignInfoStateW.draftRequest[i]
+                                          ["attach01"],
+                                    )),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                                color: backgroundC,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              children: [
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  child: const Icon(
+                                    Icons.attachment,
+                                    color: blackC,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                const Text(
+                                  "Attachment",
+                                  textScaleFactor: 1,
+                                  style: TextStyle(
+                                      color: blackC,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                         const Divider(),
                         Row(
                           children: [
@@ -2674,6 +2723,52 @@ class UserDrafts extends HookConsumerWidget {
                               color: blackC,
                               fontSize: 14,
                               fontWeight: FontWeight.w400),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: ((context) => PdfViewer(
+                                      link: userDrafts.value[i]["attach01"],
+                                    )),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                                color: backgroundC,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              children: [
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  child: const Icon(
+                                    Icons.attachment,
+                                    color: blackC,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                const Text(
+                                  "Attachment",
+                                  textScaleFactor: 1,
+                                  style: TextStyle(
+                                      color: blackC,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                         const SizedBox(
                           height: 10,

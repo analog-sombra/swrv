@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:swrv/database/models/favoritebrand.dart';
 import 'package:swrv/database/models/favoritechamp.dart';
 import 'package:swrv/state/loginstate.dart';
+import 'package:swrv/state/user/myaccoutstate.dart';
 import 'package:swrv/utils/alerts.dart';
 import 'package:swrv/utils/utilthemes.dart';
 import 'package:swrv/view/home/home.dart';
@@ -323,6 +324,7 @@ void connectAlert(BuildContext context, WidgetRef ref,
                             await ref.watch(campaignInfoState).applyForChamp(
                                 context, msg.text, champId, toUserId);
                             msg.clear();
+                            Navigator.pop(context);
                           }
                         },
                       ),
@@ -1536,6 +1538,121 @@ void resetPassAlert(
                                   "Unable to send email, Try again..");
                             }
                             email.clear();
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+void sendMsgAlert(BuildContext context, WidgetRef ref,
+    TextEditingController msg, String toUserId) {
+  final formKey = GlobalKey<FormState>();
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+      child: AlertDialog(
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16.0))),
+        contentPadding: const EdgeInsets.all(5),
+        backgroundColor: whiteC,
+        content: Container(
+          width: MediaQuery.of(context).size.width - 50,
+          padding: const EdgeInsets.all(10),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: FaIcon(
+                        FontAwesomeIcons.xmark,
+                        color: blackC.withOpacity(0.65),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                const Text(
+                  "Send Msg",
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: secondaryC,
+                      fontSize: 25,
+                      fontWeight: FontWeight.w500),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty || value == "") {
+                          return 'Enter some messages..';
+                        }
+                        return null;
+                      },
+                      controller: msg,
+                      minLines: 5,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: const Color(0xfff3f4f6),
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        hintText: "Message",
+                        hintStyle: TextStyle(
+                          color: Colors.black.withOpacity(0.45),
+                          fontSize: 20,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Row(
+                  children: [
+                    const Spacer(),
+                    SizedBox(
+                      width: 100,
+                      child: CusBtn(
+                        btnColor: secondaryC,
+                        btnText: "sent",
+                        textSize: 16,
+                        textColor: whiteC,
+                        btnFunction: () async {
+                          if (formKey.currentState!.validate()) {
+                            await ref
+                                .watch(myAccountState)
+                                .sendMsg(context, msg.text, toUserId);
+                            msg.clear();
                           }
                         },
                       ),

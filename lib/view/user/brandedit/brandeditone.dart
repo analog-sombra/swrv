@@ -110,18 +110,20 @@ class BrandEditOne extends HookConsumerWidget {
                               width: 100,
                               height: 100,
                               child: Align(
-                                  alignment: Alignment.bottomRight,
-                                  child: Container(
-                                      padding: const EdgeInsets.all(6),
-                                      decoration: const BoxDecoration(
-                                        color: secondaryC,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: const Icon(
-                                        Icons.edit,
-                                        color: whiteC,
-                                        size: 14,
-                                      ))),
+                                alignment: Alignment.bottomRight,
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: const BoxDecoration(
+                                    color: secondaryC,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.edit,
+                                    color: whiteC,
+                                    size: 14,
+                                  ),
+                                ),
+                              ),
                             ),
                           )
                         ],

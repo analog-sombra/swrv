@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/utils/utilthemes.dart';
+import 'package:swrv/view/campaings/campaigninfo.dart';
 
 import '../../services/apirequest.dart';
 import '../../state/userstate.dart';
@@ -400,6 +401,52 @@ class UserCamp extends HookConsumerWidget {
                               color: blackC,
                               fontSize: 14,
                               fontWeight: FontWeight.w400),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: ((context) => PdfViewer(
+                                      link: userDrafts.value[i]["attach01"],
+                                    )),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 10),
+                            decoration: BoxDecoration(
+                                color: backgroundC,
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              children: [
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  child: const Icon(
+                                    Icons.attachment,
+                                    color: blackC,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 8,
+                                ),
+                                const Text(
+                                  "Attachment",
+                                  textScaleFactor: 1,
+                                  style: TextStyle(
+                                      color: blackC,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w400),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                         const Divider(),
                         Container(

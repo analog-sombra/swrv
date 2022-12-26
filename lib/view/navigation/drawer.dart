@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:swrv/state/navigation/drawer.dart';
 import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
@@ -24,9 +25,16 @@ class CusDrawer extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ValueNotifier<bool> isBrand = useState(false);
     UserState userStateW = ref.watch(userState);
+    ValueNotifier<String> version = useState("");
+
+    Future<void> setVerion() async {
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      version.value = packageInfo.version;
+    }
 
     void init() async {
       isBrand.value = await userStateW.isBrand();
+      await setVerion();
     }
 
     useEffect(() {
@@ -114,28 +122,30 @@ class CusDrawer extends HookConsumerWidget {
                     const SizedBox(
                       height: 15,
                     ),
-                    DrawerButton(
-                      index: 8,
-                      icon: FontAwesomeIcons.handHoldingDollar,
-                      title: "My earnings",
-                      isFontAwesome: true,
-                      scaffoldKey: scaffoldKey,
-                      page: const EarningsPage(),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    DrawerButton(
-                      index: 9,
-                      icon: Icons.drafts,
-                      title: "Drafts",
-                      isFontAwesome: false,
-                      scaffoldKey: scaffoldKey,
-                      page: const DraftsPage(),
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
+                    if (!isBrand.value) ...[
+                      DrawerButton(
+                        index: 8,
+                        icon: FontAwesomeIcons.handHoldingDollar,
+                        title: "My earnings",
+                        isFontAwesome: true,
+                        scaffoldKey: scaffoldKey,
+                        page: const EarningsPage(),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      DrawerButton(
+                        index: 9,
+                        icon: Icons.drafts,
+                        title: "Drafts",
+                        isFontAwesome: false,
+                        scaffoldKey: scaffoldKey,
+                        page: const DraftsPage(),
+                      ),
+                      const SizedBox(
+                        height: 15,
+                      ),
+                    ],
                     DrawerButton(
                       index: 10,
                       icon: Icons.favorite,
@@ -179,6 +189,20 @@ class CusDrawer extends HookConsumerWidget {
                       scaffoldKey: scaffoldKey,
                       page: const HelpPage(),
                     ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Center(
+                      child: Text(
+                        "App Version: ${version.value}",
+                        textScaleFactor: 1,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black.withOpacity(0.55),
+                        ),
+                      ),
+                    )
                   ],
                 )),
           ),

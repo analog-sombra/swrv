@@ -393,21 +393,43 @@ class CreateCampState extends ChangeNotifier {
   }
 
   String? cityValue;
-  String? cityId;
-  List cityList = [];
 
-  void setCity(List data) {
-    cityList = data;
-    notifyListeners();
-  }
-
-  void setCityId(int id) {
-    cityId = cityList[id]["id"];
-    notifyListeners();
-  }
-
-  void setCityValue(String val) {
+  void setCityValue(String? val) {
     cityValue = val;
+    notifyListeners();
+  }
+
+  List cityList = [];
+  List selectedCity = [];
+  List cityVal = [];
+
+  void setCityList(List data) {
+    cityList = data;
+    for (int i = 0; i < data.length; i++) {
+      selectedCity.add(false);
+    }
+    notifyListeners();
+  }
+
+  void setCity(int index, bool value) {
+    for (int i = 0; i < selectedCity.length; i++) {
+      selectedCity[i] = false;
+    }
+    selectedCity[index] = value;
+    if (value) {
+      cityVal = [cityList[index]];
+    } else {
+      cityVal = [];
+    }
+    notifyListeners();
+  }
+
+  void resetCitySelection() {
+    for (int i = 0; i < selectedCity.length; i++) {
+      selectedCity[i] = false;
+    }
+    cityVal = [];
+    cityValue = null;
     notifyListeners();
   }
 
@@ -432,7 +454,7 @@ class CreateCampState extends ChangeNotifier {
       "userId": await userState.getUserId(),
       "brandUserId": await userState.getUserId(),
       "brandId": await userState.getBrandId(),
-      "cityId": cityId,
+      "cityId": cityVal[0]["id"].toString(),
       "campaignTypeId": categoryId,
       "campaignName": name,
       "campaignInfo": campInfo,
@@ -493,6 +515,7 @@ class CreateCampState extends ChangeNotifier {
       req["maxTarget"] = target;
     }
 
+
     List data =
         await apiReq.postApi(jsonEncode(req), path: "/api/add-campaign");
 
@@ -527,7 +550,7 @@ class CreateCampState extends ChangeNotifier {
       imgFilePath = res["data"]["filePath"];
       final req = {
         "campaignId": champId,
-        "title": "moodboard$champId$i",
+        "title": "moodboard$champId${i.toString()}",
         "url": imgFilePath
       };
 
@@ -539,18 +562,19 @@ class CreateCampState extends ChangeNotifier {
     String? attFilePath;
     dynamic res = await apiReq.uploadFile(attachments!.path);
     if (res["status"] == false) {
-      erroralert(context, "error", res["messages"].toString());
+      erroralert(context, "error", res["message"].toString());
     }
     attFilePath = res["data"]["filePath"];
+
     final req = {
       "campaignId": champId,
       "title": "attachemtn$champId",
       "url": attFilePath
     };
 
+
     await apiReq.postApi(jsonEncode(req), path: "/api/add-campaign-attachment");
   }
-  
 
   String seletedText(List data) {
     String res = "";

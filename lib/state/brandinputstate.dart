@@ -269,6 +269,13 @@ class BrandInputState extends ChangeNotifier {
     notifyListeners();
   }
 
+  String? cityValue;
+
+  void setCityValue(String? val) {
+    cityValue = val;
+    notifyListeners();
+  }
+
   List cityList = [];
   List selectedCity = [];
   List cityVal = [];
@@ -294,6 +301,15 @@ class BrandInputState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void resetCitySelection() {
+    for (int i = 0; i < selectedCity.length; i++) {
+      selectedCity[i] = false;
+    }
+    cityVal = [];
+    cityValue = null;
+    notifyListeners();
+  }
+
   File? imageFile;
   Future pickImage(BuildContext context) async {
     try {
@@ -303,8 +319,8 @@ class BrandInputState extends ChangeNotifier {
 
       int sizeInBytes = imageTemp.lengthSync();
       double sizeInMb = sizeInBytes / (1024 * 1024);
-      if (sizeInMb > 1) {
-        erroralert(context, "Error", "File size should be less then 1 MB");
+      if (sizeInMb > 4) {
+        erroralert(context, "Error", "File size should be less then 4 MB");
         return;
       } else {
         imageFile = imageTemp;
@@ -539,6 +555,12 @@ class BrandInputState extends ChangeNotifier {
     return false;
   }
 
+  List invitedUser = [];
+  void setInvitedUser(String name, String email, String number) {
+    invitedUser.add({"name": name, "email": email, "number": number});
+    notifyListeners();
+  }
+
   Future<bool> inviteUser(
       BuildContext context, String name, String email, String number) async {
     final req = {
@@ -564,6 +586,7 @@ class BrandInputState extends ChangeNotifier {
         data[0]["message"],
       );
     } else {
+      setInvitedUser(name, email, number);
       susalert(context, "Invited", "Successfully Invited the user $name");
       notifyListeners();
       return true;

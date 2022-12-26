@@ -21,9 +21,9 @@ class CreateBrandState extends ChangeNotifier {
   UserState userState = UserState();
 
   CusApiReq apiReq = CusApiReq();
-  String? cityValue;
-  String? cityId;
-  List cityList = [];
+  // String? cityValue;
+  // String? cityId;
+  // List cityList = [];
   String? brandlogo;
   File? imageFile;
   String? countryCode;
@@ -33,25 +33,58 @@ class CreateBrandState extends ChangeNotifier {
       final image = await ImagePicker().pickImage(source: ImageSource.gallery);
       if (image == null) return;
       final imageTemp = File(image.path);
-      imageFile = imageTemp;
+      int sizeInBytes = imageTemp.lengthSync();
+      double sizeInMb = sizeInBytes / (1024 * 1024);
+      if (sizeInMb > 4) {
+        erroralert(context, "Error", "File size should be less then 4 MB");
+        return;
+      } else {
+        imageFile = imageTemp;
+      }
     } on PlatformException catch (e) {
       erroralert(context, "Error", 'Failed to pick image: $e');
     }
     notifyListeners();
   }
 
-  void setCity(List data) {
-    cityList = data;
-    notifyListeners();
-  }
+  String? cityValue;
 
-  void setCityId(int id) {
-    cityId = cityList[id]["id"];
-    notifyListeners();
-  }
-
-  void setCityValue(String val) {
+  void setCityValue(String? val) {
     cityValue = val;
+    notifyListeners();
+  }
+
+  List cityList = [];
+  List selectedCity = [];
+  List cityVal = [];
+
+  void setCityList(List data) {
+    cityList = data;
+    for (int i = 0; i < data.length; i++) {
+      selectedCity.add(false);
+    }
+    notifyListeners();
+  }
+
+  void setCity(int index, bool value) {
+    for (int i = 0; i < selectedCity.length; i++) {
+      selectedCity[i] = false;
+    }
+    selectedCity[index] = value;
+    if (value) {
+      cityVal = [cityList[index]];
+    } else {
+      cityVal = [];
+    }
+    notifyListeners();
+  }
+
+  void resetCitySelection() {
+    for (int i = 0; i < selectedCity.length; i++) {
+      selectedCity[i] = false;
+    }
+    cityVal = [];
+    cityValue = null;
     notifyListeners();
   }
 
@@ -76,7 +109,7 @@ class CreateBrandState extends ChangeNotifier {
         "Contact number",
         "Contact number should be 10 deigt",
       );
-    } else if (cityId == null) {
+    } else if (cityVal.isEmpty) {
       erroralert(
         context,
         "City Error",
@@ -94,7 +127,7 @@ class CreateBrandState extends ChangeNotifier {
         "brandSupportContact": fields[5],
         "brandBioInfo": fields[6],
         "comapnyBio": fields[7],
-        "cityId": cityId
+        "cityId": cityVal[0]["id"].toString()
       };
 
       List data = await apiReq.postApi(jsonEncode(req), path: "/api/add-brand");

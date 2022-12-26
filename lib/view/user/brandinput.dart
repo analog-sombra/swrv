@@ -421,7 +421,7 @@ class BInput1 extends HookConsumerWidget {
                               Padding(
                                 padding: const EdgeInsets.only(top: 2),
                                 child: Text(
-                                  "The image shoudl either be jpg or jpeg or png format and be a maximum seixe of 10 MB.",
+                                  "The image shoudl either be jpg or jpeg or png format and be a maximum seixe of 4 MB.",
                                   textScaleFactor: 1,
                                   style: TextStyle(
                                     color: Colors.black.withOpacity(0.5),
@@ -580,7 +580,7 @@ class BInput1 extends HookConsumerWidget {
                 const Padding(
                   padding: EdgeInsets.only(top: 16),
                   child: Text(
-                    "Company info",
+                    "Your bio",
                     textScaleFactor: 1,
                     style: TextStyle(
                       color: Colors.black,
@@ -624,25 +624,24 @@ class BInput1 extends HookConsumerWidget {
                     textSize: 18,
                     btnFunction: () async {
                       isLoading.value = true;
-                        if (brandInputStateW.imageFile == null) {
-                          erroralert(
-                              context, "Image", "Please select one image");
-                        } else if (formKey.currentState!.validate()) {
-                          final result = await brandInputStateW.userUpdate1(
-                            context,
-                            [
-                              name.text,
-                              website.text,
-                              dob.text,
-                              bio.text,
-                            ],
-                          );
+                      if (brandInputStateW.imageFile == null) {
+                        erroralert(context, "Image", "Please select one image");
+                      } else if (formKey.currentState!.validate()) {
+                        final result = await brandInputStateW.userUpdate1(
+                          context,
+                          [
+                            name.text,
+                            website.text,
+                            dob.text,
+                            bio.text,
+                          ],
+                        );
 
-                          if (result) {
-                            brandInputStateW
-                                .setCurInput(brandInputStateW.curInput + 1);
-                          }
+                        if (result) {
+                          brandInputStateW
+                              .setCurInput(brandInputStateW.curInput + 1);
                         }
+                      }
                       isLoading.value = false;
                     }),
               ],
@@ -1875,8 +1874,9 @@ class BInput4 extends HookConsumerWidget {
     TextEditingController country = useTextEditingController();
     TextEditingController number = useTextEditingController();
     TextEditingController gender = useTextEditingController();
-    TextEditingController city = useTextEditingController();
+    // TextEditingController city = useTextEditingController();
     TextEditingController address = useTextEditingController();
+    TextEditingController citySearch = useTextEditingController();
     ValueNotifier<bool> isLoading = useState(true);
 
     CusApiReq apiReq = CusApiReq();
@@ -2142,108 +2142,113 @@ class BInput4 extends HookConsumerWidget {
             borderRadius: BorderRadius.vertical(top: Radius.circular(10))),
         context: context,
         builder: (context) => StatefulBuilder(builder: (context, setState) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.symmetric(vertical: 10),
-                child: Center(
-                    child: Text(
-                  "City",
-                  textScaleFactor: 1,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black.withOpacity(0.85),
-                  ),
-                )),
-              ),
-              const Divider(),
-              Expanded(
-                  child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    for (int i = 0;
-                        i < brandInputStateW.cityList.length;
-                        i++) ...[
-                      CheckboxListTile(
-                        value: brandInputStateW.selectedCity[i],
-                        onChanged: (val) {
-                          brandInputStateW.setCity(i, val!);
-                          setState(() {});
-                        },
-                        title: Text(
-                            '${brandInputStateW.cityList[i]["id"]} ${brandInputStateW.cityList[i]["name"]}   [ ${brandInputStateW.cityList[i]["code"]} ]'),
-                      )
-                    ]
-                  ],
-                ),
-              )),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          elevation: 0,
-                          backgroundColor: const Color(0xffef4444),
-                        ),
-                        onPressed: () {
-                          city.clear();
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          "Clear",
-                          textAlign: TextAlign.center,
-                          textScaleFactor: 1,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 10),
+                  child: Center(
+                      child: Text(
+                    "City",
+                    textScaleFactor: 1,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black.withOpacity(0.85),
                     ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                            elevation: 0,
+                  )),
+                ),
+                const Divider(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        for (int i = 0;
+                            i < brandInputStateW.cityList.length;
+                            i++) ...[
+                          CheckboxListTile(
+                            value: brandInputStateW.selectedCity[i],
+                            onChanged: (val) {
+                              brandInputStateW.setCity(i, val!);
+                              setState(() {});
+                            },
+                            title: Text(
+                              '${brandInputStateW.cityList[i]["name"]}   [ ${brandInputStateW.cityList[i]["code"]} ]',
+                            ),
+                          )
+                        ]
+                      ],
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            backgroundColor: const Color(0xff22c55e)),
-                        onPressed: () {
-                          if (brandInputStateW.cityVal.isNotEmpty) {
-                            city.text =
-                                "${brandInputStateW.cityVal[0]["name"]} [${brandInputStateW.cityVal[0]["code"]}]";
-                          } else {
-                            city.clear();
-                          }
-
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          "confirm",
-                          textAlign: TextAlign.center,
-                          textScaleFactor: 1,
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500),
+                            elevation: 0,
+                            backgroundColor: const Color(0xffef4444),
+                          ),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "Clear",
+                            textAlign: TextAlign.center,
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500),
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+                      const SizedBox(width: 15),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              elevation: 0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              backgroundColor: const Color(0xff22c55e)),
+                          onPressed: () {
+                            if (brandInputStateW.cityVal.isNotEmpty) {
+                              brandInputStateW.setCityValue(
+                                  "${brandInputStateW.cityVal[0]["name"]} [${brandInputStateW.cityVal[0]["code"]}]");
+                            } else {
+                              brandInputStateW.setCityValue(null);
+                            }
+
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "confirm",
+                            textAlign: TextAlign.center,
+                            textScaleFactor: 1,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           );
         }),
       );
@@ -2391,27 +2396,91 @@ class BInput4 extends HookConsumerWidget {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: TextField(
-                    controller: city,
-                    readOnly: true,
-                    onTap: () {
-                      cityBox();
-                    },
+                    controller: citySearch,
                     decoration: InputDecoration(
-                      suffixIcon: Icon(
-                        Icons.arrow_drop_down,
-                        color: Colors.black.withOpacity(0.8),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: blackC.withOpacity(0.65),
+                      ),
+                      suffixIcon: InkWell(
+                        onTap: () async {
+                          if (citySearch.text.isEmpty ||
+                              citySearch.text == "") {
+                            erroralert(context, "Error",
+                                "Please fill this filed before searching");
+                          } else {
+                            brandInputStateW.resetCitySelection();
+                            final req = {"search": citySearch.text};
+                            List city = await apiReq.postApi(jsonEncode(req),
+                                path: "api/get-city");
+                            if (city[0]["status"] == false) {
+                              erroralert(context, "Error",
+                                  "No city found with this name");
+                            } else {
+                              brandInputStateW.setCityList(city[0]["data"]);
+                              cityBox();
+                            }
+                          }
+                        },
+                        child: const Icon(
+                          Icons.arrow_forward,
+                          size: 25,
+                        ),
                       ),
                       filled: true,
-                      fillColor: const Color(0xfff3f4f6),
+                      fillColor: backgroundC,
+                      errorBorder: InputBorder.none,
                       border: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       enabledBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
                       disabledBorder: InputBorder.none,
+                      focusedErrorBorder: InputBorder.none,
                     ),
                   ),
                 ),
               ),
+              const SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: Text(
+                  brandInputStateW.cityValue ?? "city is not selected",
+                  textScaleFactor: 1,
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: blackC.withOpacity(
+                      0.75,
+                    ),
+                  ),
+                ),
+              ),
+              // Padding(
+              //   padding: const EdgeInsets.only(top: 5),
+              //   child: ClipRRect(
+              //     borderRadius: BorderRadius.circular(10),
+              //     child: TextField(
+              //       controller: city,
+              //       readOnly: true,
+              //       onTap: () {
+              //         cityBox();
+              //       },
+              //       decoration: InputDecoration(
+              //         suffixIcon: Icon(
+              //           Icons.arrow_drop_down,
+              //           color: Colors.black.withOpacity(0.8),
+              //         ),
+              //         filled: true,
+              //         fillColor: const Color(0xfff3f4f6),
+              //         border: InputBorder.none,
+              //         focusedBorder: InputBorder.none,
+              //         enabledBorder: InputBorder.none,
+              //         errorBorder: InputBorder.none,
+              //         disabledBorder: InputBorder.none,
+              //       ),
+              //     ),
+              //   ),
+              // ),
               const Padding(
                 padding: EdgeInsets.only(top: 16),
                 child: Text(
@@ -2685,6 +2754,75 @@ class BInput5 extends HookConsumerWidget {
                     ),
                   ),
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
+                for (int i = 0;
+                    i < brandInputStateW.invitedUser.length;
+                    i++) ...[
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    margin: const EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(6),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 5)
+                        ]),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${i + 1}.",
+                            textScaleFactor: 1,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                brandInputStateW.invitedUser[i]["name"],
+                                textScaleFactor: 1,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              Text(
+                                "Number: ${brandInputStateW.invitedUser[i]["number"]}",
+                                textScaleFactor: 1,
+                                style: TextStyle(
+                                  color: Colors.black.withOpacity(0.75),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                              Text(
+                                brandInputStateW.invitedUser[i]["email"],
+                                textScaleFactor: 1,
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                ],
                 const SizedBox(
                   height: 15,
                 ),

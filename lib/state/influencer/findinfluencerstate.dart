@@ -75,6 +75,12 @@ class FindInfState extends ChangeNotifier {
   String? cmpValue;
   String? cmpId;
   List cmpList = [];
+  bool isCitySearch = false;
+
+  void setCitySearch(bool val) {
+    isCitySearch = val;
+    notifyListeners();
+  }
 
   void setCmp(List data) {
     cmpList = data;
@@ -92,34 +98,74 @@ class FindInfState extends ChangeNotifier {
   }
 
   String? cityValue;
-  String? cityId;
-  List cityList = [];
 
-  void setCity(List data) {
-    cityList = data;
-    notifyListeners();
-  }
-
-  void setCityId(int id) {
-    cityId = cityList[id]["id"];
-    notifyListeners();
-  }
-
-  void setCityValue(String val) {
+  void setCityValue(String? val) {
     cityValue = val;
     notifyListeners();
   }
+
+  List cityList = [];
+  List selectedCity = [];
+  List cityVal = [];
+
+  void setCityList(List data) {
+    cityList = data;
+    for (int i = 0; i < data.length; i++) {
+      selectedCity.add(false);
+    }
+    notifyListeners();
+  }
+
+  void setCity(int index, bool value) {
+    for (int i = 0; i < selectedCity.length; i++) {
+      selectedCity[i] = false;
+    }
+    selectedCity[index] = value;
+    if (value) {
+      cityVal = [cityList[index]];
+    } else {
+      cityVal = [];
+    }
+    notifyListeners();
+  }
+
+  void resetCitySelection() {
+    for (int i = 0; i < selectedCity.length; i++) {
+      selectedCity[i] = false;
+    }
+    cityVal = [];
+    cityValue = null;
+    notifyListeners();
+  }
+  // String? cityValue;
+  // String? cityId;
+  // List cityList = [];
+
+  // void setCity(List data) {
+  //   cityList = data;
+  //   notifyListeners();
+  // }
+
+  // void setCityId(int id) {
+  //   cityId = cityList[id]["id"];
+  //   notifyListeners();
+  // }
+
+  // void setCityValue(String val) {
+  //   cityValue = val;
+  //   notifyListeners();
+  // }
 
   Future<List> startSeatch(BuildContext context) async {
     if (selectedPlatfomrsList.isEmpty) {
       erroralert(context, "Error", "Please Select platform");
     } else if (cmpId == null) {
       erroralert(context, "Error", "Please Select category");
-    } else if (cityId == null) {
+    } else if (cityVal.isEmpty) {
       erroralert(context, "Error", "Please Select city");
     } else {
       final req = {
-        "city": cityId,
+        "city": cityVal[0]["id"].toString(),
         "platform": selectedPlatformList(),
         "category": cmpId,
         "active": isActiveChamp ? "1" : "0"
@@ -168,14 +214,14 @@ class FindInfState extends ChangeNotifier {
       erroralert(context, "Error", "Please Select platform");
     } else if (cmpId == null) {
       erroralert(context, "Error", "Please Select category");
-    } else if (cityId == null) {
+    } else if (cityVal.isEmpty) {
       erroralert(context, "Error", "Please Select city");
     } else {
       final newFilter = InfluencerSearch()
         ..name = filter
         ..category = cmpId
         ..platforms = selectedPlatformList()
-        ..city = cityId
+        ..city = cityVal[0]["id"].toString()
         ..isActive = isActiveChamp ? "1" : "0";
 
       await isarDB.writeTxn(() async {
@@ -281,7 +327,7 @@ class FindInfState extends ChangeNotifier {
     cmpId = null;
 
     cityValue = null;
-    cityId = null;
+    // cityId = null;
 
     isSearch = false;
     searchData = [];

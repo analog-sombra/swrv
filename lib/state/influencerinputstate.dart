@@ -30,8 +30,8 @@ class InfluencerInputState extends ChangeNotifier {
       final imageTemp = File(image.path);
       int sizeInBytes = imageTemp.lengthSync();
       double sizeInMb = sizeInBytes / (1024 * 1024);
-      if (sizeInMb > 1) {
-        erroralert(context, "Error", "File size should be less then 1 MB");
+      if (sizeInMb > 4) {
+        erroralert(context, "Error", "File size should be less then 4 MB");
         return;
       } else {
         imageFile = imageTemp;
@@ -286,6 +286,13 @@ class InfluencerInputState extends ChangeNotifier {
     notifyListeners();
   }
 
+  String? cityValue;
+
+  void setCityValue(String? val) {
+    cityValue = val;
+    notifyListeners();
+  }
+
   List cityList = [];
   List selectedCity = [];
   List cityVal = [];
@@ -308,6 +315,15 @@ class InfluencerInputState extends ChangeNotifier {
     } else {
       cityVal = [];
     }
+    notifyListeners();
+  }
+
+  void resetCitySelection() {
+    for (int i = 0; i < selectedCity.length; i++) {
+      selectedCity[i] = false;
+    }
+    cityVal = [];
+    cityValue = null;
     notifyListeners();
   }
 
@@ -505,7 +521,6 @@ class InfluencerInputState extends ChangeNotifier {
                 ? "2"
                 : "3"
       };
-
       List data =
           await apiReq.postApi(jsonEncode(req), path: "/api/updateuser");
 
