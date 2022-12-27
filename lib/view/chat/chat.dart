@@ -1,13 +1,22 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/utils/utilthemes.dart';
+import 'package:swrv/view/user/myaccount.dart';
 import 'package:swrv/widgets/buttons.dart';
 
 import '../../widgets/componets.dart';
 
 class ChatPage extends HookConsumerWidget {
-  const ChatPage({super.key});
+  const ChatPage(
+      {super.key,
+      required this.avatarUrl,
+      required this.userId,
+      required this.userName});
+  final String userId;
+  final String avatarUrl;
+  final String userName;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -64,21 +73,28 @@ class ChatPage extends HookConsumerWidget {
                             },
                             child: const Icon(Icons.arrow_back_ios)),
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.asset(
-                            "assets/images/post1.jpg",
-                            width: 35,
-                            height: 35,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
+                            borderRadius: BorderRadius.circular(10),
+                            child: SizedBox(
+                              width: 35,
+                              height: 35,
+                              child: CachedNetworkImage(
+                                imageUrl: avatarUrl,
+                                progressIndicatorBuilder:
+                                    (context, url, downloadProgress) =>
+                                        CircularProgressIndicator(
+                                            value: downloadProgress.progress),
+                                errorWidget: (context, url, error) =>
+                                    Image.asset("assets/images/user.png"),
+                                fit: BoxFit.cover,
+                              ),
+                            )),
                         const SizedBox(
                           width: 10,
                         ),
-                        const Text(
-                          "Adidas",
+                        Text(
+                          userName,
                           textScaleFactor: 1,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
@@ -90,7 +106,17 @@ class ChatPage extends HookConsumerWidget {
                             btnColor: primaryC,
                             btnText: "Info",
                             textSize: 16,
-                            btnFunction: () {},
+                            btnFunction: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: ((context) => MyAccount(
+                                        id: userId,
+                                        isSendMsg: true,
+                                      )),
+                                ),
+                              );
+                            },
                           ),
                         )
                       ],

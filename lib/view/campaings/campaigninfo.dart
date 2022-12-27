@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -1493,7 +1494,9 @@ class CampaignsTabs extends HookConsumerWidget {
               id: id,
             )
           ],
-          if (chamInfoState.curTab == 1) ...[],
+          if (chamInfoState.curTab == 1) ...[
+            LiveCampaigns(id: id),
+          ],
           if (chamInfoState.curTab == 2) ...[const CampPayments()],
         ],
       ),
@@ -2819,6 +2822,180 @@ class UserDrafts extends HookConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class LiveCampaigns extends HookConsumerWidget {
+  const LiveCampaigns({super.key, required this.id});
+  final String id;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final campaignInfoStateW = ref.watch(campaignInfoState);
+
+    TextEditingController brand = useTextEditingController();
+    TextEditingController influencer = useTextEditingController();
+    final GlobalKey<FormState> formKey =
+        useMemoized(() => GlobalKey<FormState>());
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      margin: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: whiteC,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 5,
+          ),
+        ],
+      ),
+      child: Form(
+        key: formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Rate your Experience",
+              textScaleFactor: 1,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: blackC,
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const Divider(),
+            Text(
+              "Brand Rating",
+              textScaleFactor: 1,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: blackC.withOpacity(0.65),
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            RatingBar.builder(
+              initialRating: campaignInfoStateW.brandRating,
+              minRating: 1,
+              direction: Axis.horizontal,
+              allowHalfRating: true,
+              itemCount: 5,
+              itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+              itemBuilder: (context, _) => const Icon(
+                Icons.star,
+                color: primaryC,
+              ),
+              onRatingUpdate: (rating) {
+                campaignInfoStateW.setBrandRating(rating);
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: TextFormField(
+                  minLines: 4,
+                  maxLines: 6,
+                  controller: brand,
+                  onChanged: (value) {
+                    campaignInfoStateW.setBrand(value);
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty || value == "") {
+                      return 'Please enter the some description.';
+                    }
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Color(0xfff3f4f6),
+                    hintText: "description...",
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 30),
+            Text(
+              "Influencer Rating",
+              textScaleFactor: 1,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: blackC.withOpacity(0.65),
+                fontSize: 16,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            RatingBar.builder(
+              initialRating: campaignInfoStateW.influencerRating,
+              minRating: 1,
+              direction: Axis.horizontal,
+              allowHalfRating: true,
+              itemCount: 5,
+              itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+              itemBuilder: (context, _) => const Icon(
+                Icons.star,
+                color: primaryC,
+              ),
+              onRatingUpdate: (rating) {
+                campaignInfoStateW.setInfluencerRating(rating);
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 5),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: TextFormField(
+                  minLines: 4,
+                  maxLines: 6,
+                  controller: influencer,
+                  onChanged: (value) {
+                    campaignInfoStateW.setInfluencer(value);
+                  },
+                  validator: (value) {
+                    if (value == null || value.isEmpty || value == "") {
+                      return 'Please enter the some description.';
+                    }
+                    return null;
+                  },
+                  decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Color(0xfff3f4f6),
+                    hintText: "description...",
+                    border: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    disabledBorder: InputBorder.none,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            CusBtn(
+              btnColor: primaryC,
+              btnText: "Submit",
+              textSize: 18,
+              btnFunction: () async {
+                if (formKey.currentState!.validate()) {
+                  await campaignInfoStateW.reviewDraft(context, id);
+                  // await campaignInfoStateW.createcmapDraft(context, id);
+                }
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

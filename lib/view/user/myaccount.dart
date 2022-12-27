@@ -317,6 +317,9 @@ class MyAccount extends HookConsumerWidget {
                                   color: blackC),
                             ),
                           ),
+                          const SizedBox(
+                            height: 20,
+                          ),
                           if (isSendMsg) ...[
                             Padding(
                               padding: const EdgeInsets.symmetric(
@@ -760,7 +763,7 @@ class PersnalInfo extends HookConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            name.value,
+            name.value.toString().split("@")[0],
             textScaleFactor: 1,
             textAlign: TextAlign.left,
             style: const TextStyle(

@@ -12,6 +12,7 @@ import '../../state/userstate.dart';
 import '../navigation/bottomnavbar.dart';
 import '../navigation/drawer.dart';
 import 'campaigninfo.dart';
+import 'createchamp/selectecategory.dart';
 
 class MyCampaings extends HookConsumerWidget {
   const MyCampaings({super.key});
@@ -65,6 +66,34 @@ class MyCampaings extends HookConsumerWidget {
       bottomNavigationBar: BotttomBar(
         scaffoldKey: scaffoldKey,
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: isBrand.value
+          ? Transform.translate(
+              offset: const Offset(0, -20),
+              child: FloatingActionButton.extended(
+                tooltip: "Create a new campaign",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CreateCampaignsPage(),
+                    ),
+                  );
+                },
+                backgroundColor: primaryC,
+                icon: const Icon(Icons.add),
+                label: const Text(
+                  "Create Campaign",
+                  textScaleFactor: 1,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            )
+          : null,
       body: isLoading.value
           ? const Padding(
               padding: EdgeInsets.all(
@@ -396,6 +425,7 @@ class UserCampaigns extends HookConsumerWidget {
                                   i < userCamp.value.length;
                                   i++) ...[
                                 Container(
+                                  width: 160,
                                   margin: const EdgeInsets.symmetric(
                                       vertical: 10, horizontal: 15),
                                   decoration: BoxDecoration(
@@ -407,37 +437,53 @@ class UserCampaigns extends HookConsumerWidget {
                                           blurRadius: 5)
                                     ],
                                   ),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 5),
-                                  child: Row(
+                                  padding: const EdgeInsets.only(bottom: 10),
+                                  child: Column(
                                     children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(10),
-                                        child: SizedBox(
-                                          width: 50,
-                                          height: 50,
-                                          child: CachedNetworkImage(
-                                            imageUrl: userCamp.value[i]["brand"]
-                                                ["logo"],
-                                            progressIndicatorBuilder: (context,
-                                                    url, downloadProgress) =>
-                                                Center(
-                                              child: CircularProgressIndicator(
-                                                  value: downloadProgress
-                                                      .progress),
+                                      InkWell(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ChampignInfo(
+                                                id: userCamp.value[i]
+                                                    ["campaign"]["id"],
+                                              ),
                                             ),
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    Image.asset(
-                                              "assets/images/user.png",
+                                          );
+                                        },
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          child: SizedBox(
+                                            width: 160,
+                                            height: 160,
+                                            child: CachedNetworkImage(
+                                              imageUrl: userCamp.value[i]
+                                                  ["brand"]["logo"],
+                                              progressIndicatorBuilder:
+                                                  (context, url,
+                                                          downloadProgress) =>
+                                                      Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                        value: downloadProgress
+                                                            .progress),
+                                              ),
+                                              errorWidget:
+                                                  (context, url, error) =>
+                                                      Image.asset(
+                                                "assets/images/user.png",
+                                                fit: BoxFit.cover,
+                                              ),
                                               fit: BoxFit.cover,
                                             ),
-                                            fit: BoxFit.cover,
                                           ),
                                         ),
                                       ),
                                       const SizedBox(
-                                        width: 10,
+                                        width: 20,
                                       ),
                                       Text(
                                         userCamp.value[i]["campaign"]["name"],

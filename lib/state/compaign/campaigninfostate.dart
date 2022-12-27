@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -148,7 +149,6 @@ class CampaignInfoState extends ChangeNotifier {
   Future<void> applyForChamp(
       BuildContext context, String des, String champId, String toUserId) async {
     final req = {
-      
       "campaignId": champId,
       "influencerId": await userState.getUserId(),
       "fromUserId": await userState.getUserId(),
@@ -318,6 +318,64 @@ class CampaignInfoState extends ChangeNotifier {
     } else {
       Navigator.pop(context);
       susalert(context, "Sent", "Successfully rejected the draft request.");
+    }
+  }
+
+  String? brand;
+  String? influencer;
+  double brandRating = 2;
+  double influencerRating = 2;
+  void setBrand(String val) {
+    brand = val;
+    notifyListeners();
+  }
+
+  void setInfluencer(String val) {
+    influencer = val;
+    notifyListeners();
+  }
+
+  void setBrandRating(double val) {
+    brandRating = val;
+    notifyListeners();
+  }
+
+  void setInfluencerRating(double val) {
+    influencerRating = val;
+    notifyListeners();
+  }
+
+  Future<void> reviewDraft(BuildContext context, String champId) async {
+    final req = {
+      "id": champId,
+      "brandRating": brandRating.toInt().toString(),
+      "brandReviewMessage": brand,
+      "influencerRating": influencerRating.toInt().toString(),
+      "influencerReviewMessage": influencer
+    };
+    log(req.toString());
+
+    List data =
+        await apiReq.postApi(jsonEncode(req), path: "/api/review-draft");
+    log(data.toString());
+    if (data[0] == false) {
+      Navigator.pop(context);
+      erroralert(
+        context,
+        "Error1",
+        data[1].toString(),
+      );
+    } else if (data[0]["status"] == false) {
+      Navigator.pop(context);
+
+      erroralert(
+        context,
+        "Error2",
+        data[0]["message"],
+      );
+    } else {
+      Navigator.pop(context);
+      susalert(context, "Sent", "Successfully submited your review.");
     }
   }
 }

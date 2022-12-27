@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/state/navigation/drawer.dart';
-import 'package:swrv/view/chat/chat.dart';
 import 'package:swrv/view/home/earnings.dart';
 import 'package:swrv/view/home/invite.dart';
 import 'package:swrv/utils/utilthemes.dart';
@@ -76,14 +75,7 @@ class BotttomBar extends HookConsumerWidget {
           Transform.translate(
             offset: const Offset(0, -25),
             child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: ((context) => const ChatPage()),
-                  ),
-                );
-              },
+              onTap: () {},
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 5),
                 padding: const EdgeInsets.all(15),
@@ -120,15 +112,15 @@ class BotttomBar extends HookConsumerWidget {
               ),
             ),
           ),
-          GestureDetector(
+          InkWell(
             onTap: () {
               bottomBarW.setIndex(5);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const Profile(),
-                ),
-              );
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const Profile(),
+                  ),
+                  (Route<dynamic> route) => false);
             },
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 10),
