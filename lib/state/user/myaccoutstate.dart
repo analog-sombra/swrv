@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -38,7 +37,6 @@ class MyAccountState extends ChangeNotifier {
     };
 
     List data = await apiReq.postApi(jsonEncode(req), path: "/api/add-chat");
-    log(data.toString());
     if (data[0] == false) {
       Navigator.pop(context);
       erroralert(

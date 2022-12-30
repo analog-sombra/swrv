@@ -1,10 +1,11 @@
-import 'dart:developer';
+// ignore_for_file: use_build_context_synchronously
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:swrv/state/inboxstate.dart';
+import 'package:swrv/state/userstate.dart';
 import 'package:swrv/utils/utilthemes.dart';
 
 import '../../widgets/componets.dart';
@@ -20,53 +21,16 @@ class Inbox extends HookConsumerWidget {
     final GlobalKey<ScaffoldState> scaffoldKey =
         useMemoized(() => GlobalKey<ScaffoldState>());
     final width = MediaQuery.of(context).size.width;
-
-    // ValueNotifier<List> darfData = useState([
-    //   {
-    //     "img": "assets/images/1.jpg",
-    //     "name": "sohan",
-    //     "msg":
-    //         "There’s just one more thing you need to do to get started with us."
-    //   },
-    //   {
-    //     "img": "assets/images/2.jpg",
-    //     "name": "Rahul",
-    //     "msg":
-    //         "Thank you for scheduling an appointment with our office. You are confirmed for an appointment with"
-    //   },
-    //   {
-    //     "img": "assets/images/3.jpg",
-    //     "name": "Mohan",
-    //     "msg":
-    //         "Thank you for providing the information we requested. We will follow up with you shortly regarding the next steps."
-    //   },
-    //   {
-    //     "img": "assets/images/4.jpg",
-    //     "name": "Soniya",
-    //     "msg":
-    //         "We’re super excited to announce that we’re opening our doors on DATE at TIME. Come join us!"
-    //   },
-    //   {
-    //     "img": "assets/images/5.jpg",
-    //     "name": "Sonali",
-    //     "msg":
-    //         "Thank you for your business! We pride ourselves on great service and it’s your feedback that makes that possible!"
-    //   },
-    //   {
-    //     "img": "assets/images/6.jpg",
-    //     "name": "Sakhi",
-    //     "msg":
-    //         "We just wanted to remind you that we’re waiting for the DOCUMENT you agreed to send us so we can complete the TRANSACTION we discussed."
-    //   },
-    // ]);
+    UserState userState = UserState();
 
     ValueNotifier<bool> isLoading = useState(true);
+    ValueNotifier<String?> userId = useState<String?>(null);
     final inboxStateW = ref.watch(inboxState);
 
     void init() async {
+      userId.value = await userState.getUserId();
       await inboxStateW.showInboxMsg(context);
       isLoading.value = false;
-      log(inboxStateW.messages.toString());
     }
 
     useEffect(() {
@@ -154,11 +118,30 @@ class Inbox extends HookConsumerWidget {
                                       MaterialPageRoute(
                                         builder: ((context) => ChatPage(
                                               avatarUrl: inboxStateW.messages[i]
-                                                  ["fromUser"]["pic"],
+                                                          ["fromUser"]["id"] ==
+                                                      userId.value
+                                                  ? inboxStateW.messages[i]
+                                                      ["toUser"]["pic"]
+                                                  : inboxStateW.messages[i]
+                                                      ["fromUser"]["pic"],
                                               userName: inboxStateW.messages[i]
-                                                  ["fromUser"]["name"],
+                                                          ["fromUser"]["id"] ==
+                                                      userId.value
+                                                  ? inboxStateW.messages[i]
+                                                          ["toUser"]["name"]
+                                                      .toString()
+                                                      .split("@")[0]
+                                                  : inboxStateW.messages[i]
+                                                          ["fromUser"]["name"]
+                                                      .toString()
+                                                      .split("@")[0],
                                               userId: inboxStateW.messages[i]
-                                                  ["fromUser"]["id"],
+                                                          ["fromUser"]["id"] ==
+                                                      userId.value
+                                                  ? inboxStateW.messages[i]
+                                                      ["toUser"]["id"]
+                                                  : inboxStateW.messages[i]
+                                                      ["fromUser"]["id"],
                                             )),
                                       ),
                                     );
@@ -176,7 +159,12 @@ class Inbox extends HookConsumerWidget {
                                           height: 40,
                                           child: CachedNetworkImage(
                                             imageUrl: inboxStateW.messages[i]
-                                                ["fromUser"]["pic"],
+                                                        ["fromUser"]["id"] ==
+                                                    userId.value
+                                                ? inboxStateW.messages[i]
+                                                    ["toUser"]["pic"]
+                                                : inboxStateW.messages[i]
+                                                    ["fromUser"]["pic"],
                                             progressIndicatorBuilder: (context,
                                                     url, downloadProgress) =>
                                                 CircularProgressIndicator(
@@ -200,7 +188,16 @@ class Inbox extends HookConsumerWidget {
                                           children: [
                                             Text(
                                               inboxStateW.messages[i]
-                                                  ["fromUser"]["name"],
+                                                          ["fromUser"]["id"] ==
+                                                      userId.value
+                                                  ? inboxStateW.messages[i]
+                                                          ["toUser"]["name"]
+                                                      .toString()
+                                                      .split("@")[0]
+                                                  : inboxStateW.messages[i]
+                                                          ["fromUser"]["name"]
+                                                      .toString()
+                                                      .split("@")[0],
                                               textScaleFactor: 1,
                                               textAlign: TextAlign.start,
                                               style: const TextStyle(
@@ -210,8 +207,7 @@ class Inbox extends HookConsumerWidget {
                                               ),
                                             ),
                                             Text(
-                                              inboxStateW.messages[i]
-                                                  ["comment"],
+                                              "${inboxStateW.messages[i]["fromUser"]["id"] == userId.value ? "you: " : ""} ${inboxStateW.messages[i]["comment"]}",
                                               overflow: TextOverflow.ellipsis,
                                               textScaleFactor: 1,
                                               textAlign: TextAlign.start,

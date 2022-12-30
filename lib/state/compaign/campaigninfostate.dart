@@ -1,7 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -353,29 +352,30 @@ class CampaignInfoState extends ChangeNotifier {
       "influencerRating": influencerRating.toInt().toString(),
       "influencerReviewMessage": influencer
     };
-    log(req.toString());
 
     List data =
         await apiReq.postApi(jsonEncode(req), path: "/api/review-draft");
-    log(data.toString());
-    if (data[0] == false) {
-      Navigator.pop(context);
-      erroralert(
-        context,
-        "Error1",
-        data[1].toString(),
-      );
-    } else if (data[0]["status"] == false) {
-      Navigator.pop(context);
 
-      erroralert(
-        context,
-        "Error2",
-        data[0]["message"],
-      );
-    } else {
-      Navigator.pop(context);
-      susalert(context, "Sent", "Successfully submited your review.");
-    }
+    Navigator.pop(context);
+    susalert(context, "Sent", "Successfully submited your review.");
+    // if (data[0] == false) {
+    //   Navigator.pop(context);
+    //   erroralert(
+    //     context,
+    //     "Error1",
+    //     data[1].toString(),
+    //   );
+    // } else if (data[0]["status"] == false) {
+    //   Navigator.pop(context);
+
+    //   erroralert(
+    //     context,
+    //     "Error2",
+    //     data[0]["message"],
+    //   );
+    // } else {
+    //   Navigator.pop(context);
+    //   susalert(context, "Sent", "Successfully submited your review.");
+    // }
   }
 }

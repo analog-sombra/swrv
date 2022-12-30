@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -9,6 +11,8 @@ import 'package:swrv/widgets/componets.dart';
 
 import '../../services/apirequest.dart';
 import '../../state/userstate.dart';
+import '../../utils/alerts.dart';
+import '../home/home.dart';
 import '../navigation/bottomnavbar.dart';
 import '../navigation/drawer.dart';
 import 'campaigninfo.dart';
@@ -72,13 +76,30 @@ class MyCampaings extends HookConsumerWidget {
               offset: const Offset(0, -20),
               child: FloatingActionButton.extended(
                 tooltip: "Create a new campaign",
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const CreateCampaignsPage(),
-                    ),
-                  );
+                onPressed: () async {
+                  final res = await userStateW.isProfileCompleted();
+
+                  if (res) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CreateCampaignsPage(),
+                      ),
+                    );
+                  } else {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomePage(),
+                      ),
+                      (route) => false,
+                    );
+                    erroralert(
+                      context,
+                      "Uncomplete Profile",
+                      "Please Complete your profile first",
+                    );
+                  }
                 },
                 backgroundColor: primaryC,
                 icon: const Icon(Icons.add),
@@ -135,71 +156,74 @@ class MyCampaings extends HookConsumerWidget {
                             color: blackC),
                       ),
                     ),
+                    const SizedBox(
+                      height: 20,
+                    ),
                     if (isBrand.value) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 25, vertical: 10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  elevation: 0,
-                                  backgroundColor: isFinished.value
-                                      ? whiteC
-                                      : const Color(0xff01fff4),
-                                ),
-                                onPressed: () {
-                                  isFinished.value = false;
-                                },
-                                child: Text(
-                                  "Active Campaign",
-                                  textAlign: TextAlign.center,
-                                  textScaleFactor: 1,
-                                  style: TextStyle(
-                                      color: isFinished.value
-                                          ? blackC.withOpacity(0.65)
-                                          : blackC,
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 15),
-                            Expanded(
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  backgroundColor: isFinished.value
-                                      ? const Color(0xff01fff4)
-                                      : whiteC,
-                                ),
-                                onPressed: () {
-                                  isFinished.value = true;
-                                },
-                                child: Text(
-                                  "Finished campaign",
-                                  textAlign: TextAlign.center,
-                                  textScaleFactor: 1,
-                                  style: TextStyle(
-                                      color: isFinished.value
-                                          ? blackC
-                                          : blackC.withOpacity(0.65),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w400),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(
+                      //       horizontal: 25, vertical: 10),
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //     children: [
+                      //       Expanded(
+                      //         child: ElevatedButton(
+                      //           style: ElevatedButton.styleFrom(
+                      //             shape: RoundedRectangleBorder(
+                      //               borderRadius: BorderRadius.circular(10),
+                      //             ),
+                      //             elevation: 0,
+                      //             backgroundColor: isFinished.value
+                      //                 ? whiteC
+                      //                 : const Color(0xff01fff4),
+                      //           ),
+                      //           onPressed: () {
+                      //             isFinished.value = false;
+                      //           },
+                      //           child: Text(
+                      //             "Active Campaign",
+                      //             textAlign: TextAlign.center,
+                      //             textScaleFactor: 1,
+                      //             style: TextStyle(
+                      //                 color: isFinished.value
+                      //                     ? blackC.withOpacity(0.65)
+                      //                     : blackC,
+                      //                 fontSize: 12,
+                      //                 fontWeight: FontWeight.w400),
+                      //           ),
+                      //         ),
+                      //       ),
+                      //       const SizedBox(width: 15),
+                      //       Expanded(
+                      //         child: ElevatedButton(
+                      //           style: ElevatedButton.styleFrom(
+                      //             elevation: 0,
+                      //             shape: RoundedRectangleBorder(
+                      //               borderRadius: BorderRadius.circular(10),
+                      //             ),
+                      //             backgroundColor: isFinished.value
+                      //                 ? const Color(0xff01fff4)
+                      //                 : whiteC,
+                      //           ),
+                      //           onPressed: () {
+                      //             isFinished.value = true;
+                      //           },
+                      //           child: Text(
+                      //             "Finished campaign",
+                      //             textAlign: TextAlign.center,
+                      //             textScaleFactor: 1,
+                      //             style: TextStyle(
+                      //                 color: isFinished.value
+                      //                     ? blackC
+                      //                     : blackC.withOpacity(0.65),
+                      //                 fontSize: 12,
+                      //                 fontWeight: FontWeight.w400),
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                       if (champ.value.isEmpty) ...[
                         Container(
                           padding: const EdgeInsets.symmetric(
